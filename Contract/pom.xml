@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
+
+	<groupId>pt.tecnico.sdis.2023.GXX</groupId>
+	<artifactId>Contract</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+
+	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<version.java>11</version.java>
+		
+		<version.maven-enforcer-plugin>1.4.1</version.maven-enforcer-plugin>
+		<version.protobuf-maven-plugin>0.6.1</version.protobuf-maven-plugin>
+		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+
+		<version.grpc>1.36.0</version.grpc>
+		<version.protoc>3.12.0</version.protoc><!-- aligned with the gRPC dependency version -->
+		<version.javax.annotation-api>1.3.2</version.javax.annotation-api>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- gRPC BoM (Bill-of-Materials) defines a set of versions for subdependencies. -->
+			<!-- https://mvnrepository.com/artifact/io.grpc/grpc-bom -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-bom</artifactId>
+				<version>${version.grpc}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- Common Annotations for the JavaTM Platform API
+			https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api 
+			explicitly required since Java 9 -->
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>${version.javax.annotation-api}</version>
+		</dependency>
+		<!-- 
+			gRPC dependencies (versions are defined by the BoM).
+		-->
+		<!-- gRPC Protocol Buffers
+			https://mvnrepository.com/artifact/io.grpc/grpc-protobuf -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-protobuf</artifactId>
+		</dependency>
+		<!-- gRPC Stub support
+			https://mvnrepository.com/artifact/io.grpc/grpc-stub -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-stub</artifactId>
+		</dependency>
+		<!-- Netty is an asynchronous, event-driven, network application development framework.
+			https://mvnrepository.com/artifact/io.grpc/grpc-netty-shaded 
+			The library is shaded to prevent conflicts with other versions of Netty. 
+			More about shaded jars: https://stackoverflow.com/a/49811665/129497 -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- gRPC Testing support
+			https://mvnrepository.com/artifact/io.grpc/grpc-testing -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<!-- An extension is a library that goes into Core classloader, 
+			unlike a plug-in that runs in a child classloader separated from other plug-ins. -->
+		<extensions>
+			<!-- Extension/plug-in that generates various useful platform-dependent project properties normalized from ${os.name} and ${os.arch} -->
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+			</extension>
+		</extensions>
+		<!-- Plug-ins allow for the reuse of common build logic across multiple projects. 
+		They do this by executing an "action" in the context of a project's description. -->
+		<plugins>
+			<!-- Plug-in that provides goals to control certain environmental constraints such as Maven version, JDK version and OS family along with many more built-in rules and user created rules. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${version.maven-enforcer-plugin}</version>
+				<executions>
+					<execution>
+						<id>enforce</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<!-- This rule requires a Maven version. Maven supports Java 9 and 
+									higher from version 3.5.0 onward. -->
+								<requireMavenVersion>
+									<version>3.5.0</version>
+								</requireMavenVersion>
+								<!-- This rule requires that the version for each dependency resolved 
+									during a build, is equal to or higher than all transitive dependency declarations. -->
+								<requireUpperBoundDeps />
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Plug-in that uses Protocol Buffer Compiler (protoc) tool to generate 
+				Java source files from .proto (protocol buffer definition) files for the 
+				specified project -->
+			<plugin>
+				<groupId>org.xolstice.maven.plugins</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>${version.protobuf-maven-plugin}</version>
+				<configuration>
+					<protocArtifact>com.google.protobuf:protoc:${version.protoc}:exe:${os.detected.classifier}</protocArtifact>
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${version.grpc}:exe:${os.detected.classifier}</pluginArtifact>
+					<!-- FOR MACS WITH ARM PROCESSORS COMMENT THE LINES ABOVE AND UNCOMMENT THE FOLLOWING
+					<protocArtifact>com.google.protobuf:protoc:${version.protoc}:exe:osx-x86_64</protocArtifact>
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${version.grpc}:exe:osx-x86_64</pluginArtifact>
+					-->
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>compile-custom</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Plug-in used to compile the sources of your project. Java 9 requires
+				at least version 3.7.0 to properly handle modules. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>${version.java}</source>
+					<target>${version.java}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

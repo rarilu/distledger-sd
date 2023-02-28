@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
+
+	<groupId>pt.tecnico.sdis.2023.GXX</groupId>
+	<artifactId>DistLedgerServer</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+
+	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<version.java>11</version.java>
+
+		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+		<version.exec-maven-plugin>3.0.0</version.exec-maven-plugin>
+
+		<mainclass>pt.tecnico.distledger.server.ServerMain</mainclass>
+		<server.port>2001</server.port>
+		<server.qual>A</server.qual>
+
+	</properties>
+
+	<dependencies>
+		<!-- contract brings gRPC dependencies with it -->
+		<dependency>
+			<groupId>pt.tecnico.sdis</groupId>
+			<artifactId>Contract</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Plug-in used to compile the sources of your project. Java 9 requires 
+				at least version 3.7.0 to properly handle modules. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>${version.java}</source>
+					<target>${version.java}</target>
+				</configuration>
+			</plugin>
+			<!-- Plug-in that provides two goals to execute system and Java programs -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${version.exec-maven-plugin}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>${mainclass}</mainClass>
+					<arguments>
+						<argument>${server.port}</argument>
+						<argument>${server.qual}</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
