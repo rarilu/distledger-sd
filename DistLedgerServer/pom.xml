@@ -19,6 +19,7 @@
 
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.exec-maven-plugin>3.0.0</version.exec-maven-plugin>
+		<version.maven-failsafe-plugin>3.0.0-M9</version.maven-failsafe-plugin>
 
 		<mainclass>pt.tecnico.distledger.server.ServerMain</mainclass>
 		<server.port>2001</server.port>
@@ -67,6 +68,19 @@
 						<argument>${server.qual}</argument>
 					</arguments>
 				</configuration>
+			</plugin>
+			<!-- The Failsafe plug-in runs integration tests. -->
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${version.maven-failsafe-plugin}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
