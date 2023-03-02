@@ -5,7 +5,7 @@ Distributed Systems Project 2022/2023
 ## Authors
 
 *(fill the line below with the group identifier, for example A25 or T25, and then delete this line)*  
-**Group GXX**
+**Group A02**
 
 ### Code Identification
 
