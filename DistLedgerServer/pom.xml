@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-	<groupId>pt.tecnico.sdis.2023.GXX</groupId>
+	<groupId>pt.tecnico.sdis.2023.A02</groupId>
 	<artifactId>DistLedgerServer</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
