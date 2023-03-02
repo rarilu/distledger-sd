@@ -20,6 +20,8 @@
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.exec-maven-plugin>3.0.0</version.exec-maven-plugin>
 		<version.maven-failsafe-plugin>3.0.0-M9</version.maven-failsafe-plugin>
+		<version.fmt-maven-plugin>2.19</version.fmt-maven-plugin>
+		<version.maven-checkstyle-plugin>3.2.1</version.maven-checkstyle-plugin>
 
 		<mainclass>pt.tecnico.distledger.namingserver.NamingServer</mainclass>
 		<server.port>5001</server.port>
@@ -76,6 +78,42 @@
 						<goals>
 							<goal>integration-test</goal>
 							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Plug-in for verifying formatting according to google's code styleguide -->
+			<plugin>
+				<groupId>com.spotify.fmt</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<version>${version.fmt-maven-plugin}</version>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Plug-in for veryfing checkstyle -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${version.maven-checkstyle-plugin}</version>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+					<failOnViolation>false</failOnViolation>
+					<violationSeverity>warning</violationSeverity>
+				</configuration>
+				<executions>
+					<execution>
+						<id>verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>
