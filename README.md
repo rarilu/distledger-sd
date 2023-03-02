@@ -17,11 +17,11 @@ code dependency management, to ensure your code runs using the correct component
 
 *(fill the table below with the team members, and then delete this line)*
 
-| Number | Name              | User                             | Email                               |
-|--------|-------------------|----------------------------------|-------------------------------------|
-| 11111  | Alice Distributed | <https://github.com/AliceUser>   | <mailto:alice@tecnico.ulisboa.pt>   |
-| 22222  | Bob Systems       | <https://github.com/BobUser>     | <mailto:bob@tecnico.ulisboa.pt>     |
-| 33333  | Charlie Rules     | <https://github.com/CharlieUser> | <mailto:charlie@tecnico.ulisboa.pt> |
+| Number | Name            | User                              | Email                                         |
+| ------ | --------------- | --------------------------------- | --------------------------------------------- |
+| 99266  | Luís Fonseca    | <https://github.com/luishfonseca> | <mailto:luis.h.fonseca@tecnico.ulisboa.pt>    |
+| 99311  | Rafael Oliveira | <https://github.com/RafDevX>      | <mailto:rafael.oliveira@tecnico.ulisboa.pt>   |
+| 99316  | Ricardo Antunes | <https://github.com/RiscadoA>     | <mailto:ricardo.g.antunes@tecnico.ulisboa.pt> |
 
 ## Getting Started
 
