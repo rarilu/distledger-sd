@@ -87,9 +87,6 @@
 				<groupId>com.spotify.fmt</groupId>
 				<artifactId>fmt-maven-plugin</artifactId>
 				<version>${version.fmt-maven-plugin}</version>
-				<configuration>
-					<failOnError>false</failOnError>
-				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -105,8 +102,9 @@
 				<version>${version.maven-checkstyle-plugin}</version>
 				<configuration>
 					<configLocation>google_checks.xml</configLocation>
-					<failOnViolation>false</failOnViolation>
 					<violationSeverity>warning</violationSeverity>
+					<failsOnError>true</failsOnError>
+					<failOnViolation>false</failOnViolation>
 				</configuration>
 				<executions>
 					<execution>
