@@ -17,7 +17,7 @@ public class UserService implements AutoCloseable {
     Logger.debug("Connecting to " + target);
 
     this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-    this.stub = UserServiceGrpc.newBlockingStub(channel);
+    this.stub = UserServiceGrpc.newBlockingStub(this.channel);
   }
 
   private <Request, Response> void makeRequest(
@@ -40,7 +40,7 @@ public class UserService implements AutoCloseable {
   public void createAccount(String server, String userId) {
     CreateAccountRequest request = CreateAccountRequest.newBuilder().setUserId(userId).build();
 
-    this.makeRequest(request, stub::createAccount);
+    this.makeRequest(request, this.stub::createAccount);
   }
 
   // TODO: remote operation methods
