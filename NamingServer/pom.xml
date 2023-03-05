@@ -25,8 +25,8 @@
 		<version.fmt-maven-plugin>2.19</version.fmt-maven-plugin>
 		<version.maven-checkstyle-plugin>3.2.1</version.maven-checkstyle-plugin>
 		<version.junit>5.9.1</version.junit>
-		<version.gmavenplus-plugin>1.9.0</version.gmavenplus-plugin>
-		<version.spock-core>2.0-M2-groovy-3.0</version.spock-core>
+		<version.gmavenplus-plugin>2.0.0</version.gmavenplus-plugin>
+		<version.spock-core>2.3-groovy-4.0</version.spock-core>
 
 		<mainclass>pt.tecnico.distledger.namingserver.NamingServer</mainclass>
 		<server.port>5001</server.port>
