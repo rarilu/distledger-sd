@@ -4,7 +4,6 @@ import pt.tecnico.distledger.adminclient.grpc.AdminService;
 
 public class AdminClientMain {
   public static void main(String[] args) {
-
     System.out.println(AdminClientMain.class.getSimpleName());
 
     // receive and print arguments
