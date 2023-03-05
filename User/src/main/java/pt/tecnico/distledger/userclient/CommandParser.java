@@ -18,46 +18,47 @@ public class CommandParser {
     this.userService = userService;
   }
 
-  void parseInput() {
-    Scanner scanner = new Scanner(System.in);
+  public void parseInput() {
     boolean exit = false;
 
-    while (!exit) {
-      System.out.print("> ");
-      String line = scanner.nextLine().trim();
-      String cmd = line.split(SPACE)[0];
+    try (final Scanner scanner = new Scanner(System.in)) {
+      while (!exit) {
+        System.out.print("> ");
+        String line = scanner.nextLine().trim();
+        String cmd = line.split(SPACE)[0];
 
-      try {
-        switch (cmd) {
-          case CREATE_ACCOUNT:
-            this.createAccount(line);
-            break;
+        try {
+          switch (cmd) {
+            case CREATE_ACCOUNT:
+              this.createAccount(line);
+              break;
 
-          case DELETE_ACCOUNT:
-            this.deleteAccount(line);
-            break;
+            case DELETE_ACCOUNT:
+              this.deleteAccount(line);
+              break;
 
-          case TRANSFER_TO:
-            this.transferTo(line);
-            break;
+            case TRANSFER_TO:
+              this.transferTo(line);
+              break;
 
-          case BALANCE:
-            this.balance(line);
-            break;
+            case BALANCE:
+              this.balance(line);
+              break;
 
-          case HELP:
-            this.printUsage();
-            break;
+            case HELP:
+              this.printUsage();
+              break;
 
-          case EXIT:
-            exit = true;
-            break;
+            case EXIT:
+              exit = true;
+              break;
 
-          default:
-            break;
+            default:
+              break;
+          }
+        } catch (Exception e) {
+          System.err.println(e.getMessage());
         }
-      } catch (Exception e) {
-        System.err.println(e.getMessage());
       }
     }
   }
