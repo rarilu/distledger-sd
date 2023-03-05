@@ -2,6 +2,8 @@ package pt.tecnico.distledger.userclient.grpc;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
+import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
@@ -15,6 +17,23 @@ public class UserService implements AutoCloseable {
 
     this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
     this.stub = UserServiceGrpc.newBlockingStub(channel);
+  }
+
+  private <Request, Response> void makeRequest(
+      Request request, Function<Request, Response> stubMethod) {
+    try {
+      Logger.debug("Sending request: " + request.toString());
+      Response response = stubMethod.apply(request);
+      String representation = response.toString();
+
+      System.out.println("OK");
+      System.out.println(representation);
+      if (!representation.isEmpty()) {
+        System.out.println();
+      }
+    } catch (StatusRuntimeException e) {
+      System.out.println("Error: " + e.getStatus().getDescription());
+    }
   }
 
   // TODO: remote operation methods
