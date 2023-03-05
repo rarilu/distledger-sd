@@ -11,7 +11,7 @@ public class ServerState {
   private Map<String, Integer> accounts = new HashMap<>();
 
   public ServerState() {
-    this.ledger = new ArrayList<>();
+    accounts.put("broker", 1000);
   }
 
   public void add(Operation op) {
