@@ -73,7 +73,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    System.out.println("TODO: implement createAccount command");
+    this.userService.createAccount(server, username);
   }
 
   private void deleteAccount(String line) {
