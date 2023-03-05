@@ -1,7 +1,44 @@
 package pt.tecnico.distledger.adminclient.grpc;
 
-public class AdminService {
-  /* TODO: The gRPC client-side logic should be here.
-  This should include a method that builds a channel and stub,
-  as well as individual methods for each remote operation of this service. */
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
+import java.util.function.Function;
+import pt.tecnico.distledger.utils.Logger;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc;
+
+public class AdminService implements AutoCloseable {
+  ManagedChannel channel;
+  AdminServiceGrpc.AdminServiceBlockingStub stub;
+
+  public AdminService(String host, int port) {
+    final String target = host + ":" + port;
+    Logger.debug("Connecting to " + target);
+
+    this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+    this.stub = AdminServiceGrpc.newBlockingStub(this.channel);
+  }
+
+  private <Request, Response> void makeRequest(
+      Request request, Function<Request, Response> stubMethod) {
+    try {
+      Logger.debug("Sending request: " + request.toString());
+      Response response = stubMethod.apply(request);
+      String representation = response.toString();
+
+      System.out.println("OK");
+      System.out.println(representation);
+      if (!representation.isEmpty()) {
+        System.out.println();
+      }
+    } catch (StatusRuntimeException e) {
+      System.out.println("Error: " + e.getStatus().getDescription());
+    }
+  }
+
+  @Override
+  public void close() {
+    this.channel.shutdownNow();
+  }
 }
