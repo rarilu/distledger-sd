@@ -15,4 +15,17 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public UserServiceImpl(ServerState state) {
     this.state = state;
   }
+
+  @Override
+  public void createAccount(
+      CreateAccountRequest request, StreamObserver<CreateAccountResponse> responseObserver) {
+    try {
+      state.add(new CreateOp(request.getUserId()));
+      responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (OperationException e) {
+      responseObserver.onError(
+          Status.INVALID_ARGUMENT.withCause(e).withDescription(e.getMessage()).asException());
+    }
+  }
 }
