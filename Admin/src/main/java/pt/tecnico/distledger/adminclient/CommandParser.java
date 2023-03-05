@@ -80,7 +80,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    System.out.println("TODO: implement deactivate command");
+    this.adminService.deactivate(server);
   }
 
   private void dump(String line) {
