@@ -18,42 +18,43 @@ public class CommandParser {
     this.adminService = adminService;
   }
 
-  void parseInput() {
-    Scanner scanner = new Scanner(System.in);
+  public void parseInput() {
     boolean exit = false;
 
-    while (!exit) {
-      System.out.print("> ");
-      String line = scanner.nextLine().trim();
-      String cmd = line.split(SPACE)[0];
+    try (final Scanner scanner = new Scanner(System.in)) {
+      while (!exit) {
+        System.out.print("> ");
+        String line = scanner.nextLine().trim();
+        String cmd = line.split(SPACE)[0];
 
-      switch (cmd) {
-        case ACTIVATE:
-          this.activate(line);
-          break;
+        switch (cmd) {
+          case ACTIVATE:
+            this.activate(line);
+            break;
 
-        case DEACTIVATE:
-          this.deactivate(line);
-          break;
+          case DEACTIVATE:
+            this.deactivate(line);
+            break;
 
-        case GET_LEDGER_STATE:
-          this.dump(line);
-          break;
+          case GET_LEDGER_STATE:
+            this.dump(line);
+            break;
 
-        case GOSSIP:
-          this.gossip(line);
-          break;
+          case GOSSIP:
+            this.gossip(line);
+            break;
 
-        case HELP:
-          this.printUsage();
-          break;
+          case HELP:
+            this.printUsage();
+            break;
 
-        case EXIT:
-          exit = true;
-          break;
+          case EXIT:
+            exit = true;
+            break;
 
-        default:
-          break;
+          default:
+            break;
+        }
       }
     }
   }
