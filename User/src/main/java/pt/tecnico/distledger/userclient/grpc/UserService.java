@@ -5,6 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
 public class UserService implements AutoCloseable {
@@ -34,6 +35,12 @@ public class UserService implements AutoCloseable {
     } catch (StatusRuntimeException e) {
       System.out.println("Error: " + e.getStatus().getDescription());
     }
+  }
+
+  public void createAccount(String server, String userId) {
+    CreateAccountRequest request = CreateAccountRequest.newBuilder().setUserId(userId).build();
+
+    this.makeRequest(request, stub::createAccount);
   }
 
   // TODO: remote operation methods
