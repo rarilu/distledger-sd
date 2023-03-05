@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class DeleteOp extends Operation {
   public DeleteOp(String account) {
@@ -8,7 +9,7 @@ public class DeleteOp extends Operation {
   }
 
   @Override
-  public void apply(ServerState state) {
+  public void apply(ServerState state) throws OperationException {
     // TODO
   }
 }

@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class TransferOp extends Operation {
   private String destAccount;
@@ -29,7 +30,7 @@ public class TransferOp extends Operation {
   }
 
   @Override
-  public void apply(ServerState state) {
+  public void apply(ServerState state) throws OperationException {
     // TODO
   }
 }
