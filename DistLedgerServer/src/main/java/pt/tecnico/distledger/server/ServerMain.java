@@ -1,8 +1,10 @@
 package pt.tecnico.distledger.server;
 
+import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import pt.tecnico.distledger.server.domain.ServerState;
 
 public class ServerMain {
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -24,8 +26,14 @@ public class ServerMain {
     final int port = Integer.parseInt(args[0]);
     final String qualifier = args[1];
 
+    // Init server state.
+    final ServerState state = new ServerState();
+
+    // Init services.
+    final BindableService userService = new UserServiceImpl(state);
+
     // Launch server.
-    Server server = ServerBuilder.forPort(port).build();
+    final Server server = ServerBuilder.forPort(port).addService(userService).build();
     server.start();
     System.out.println("Server started, listening on " + port);
 
