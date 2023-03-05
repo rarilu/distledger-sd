@@ -20,6 +20,7 @@
 		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
 		<version.exec-maven-plugin>3.0.0</version.exec-maven-plugin>
 		<version.maven-failsafe-plugin>3.0.0-M9</version.maven-failsafe-plugin>
+		<version.maven-surefire-plugin>3.0.0-M9</version.maven-surefire-plugin>
 		<version.fmt-maven-plugin>2.19</version.fmt-maven-plugin>
 		<version.maven-checkstyle-plugin>3.2.1</version.maven-checkstyle-plugin>
 
@@ -35,6 +36,13 @@
 			<artifactId>Contract</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+		<!-- unit testing -->
+		<dependency>
+      		<groupId>junit</groupId>
+      		<artifactId>junit</artifactId>
+      		<version>4.13.2</version>
+      		<scope>test</scope>
+    	</dependency>
 	</dependencies>
 
 	<build>
@@ -69,6 +77,12 @@
 						</arguments>
 				</configuration>
 			</plugin>
+			<!-- The Surefire plug-in runs integration tests. -->
+			<plugin>
+          		<groupId>org.apache.maven.plugins</groupId>
+          		<artifactId>maven-surefire-plugin</artifactId>
+          		<version>${version.maven-surefire-plugin}</version>
+        	</plugin>
 			<!-- The Failsafe plug-in runs integration tests. -->
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
