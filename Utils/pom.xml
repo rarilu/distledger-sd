@@ -5,7 +5,7 @@
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
 	<groupId>pt.tecnico.sdis.2023.A02</groupId>
-	<artifactId>Admin</artifactId>
+	<artifactId>Utils</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -28,7 +28,7 @@
 		<version.gmavenplus-plugin>2.0.0</version.gmavenplus-plugin>
 		<version.spock-core>2.3-groovy-4.0</version.spock-core>
 
-		<mainclass>pt.tecnico.distledger.adminclient.AdminClientMain</mainclass>
+		<mainclass>pt.tecnico.distledger.userclient.UserClientMain</mainclass>
 		<server.host>localhost</server.host>
 		<server.port>2001</server.port>
 
@@ -39,18 +39,6 @@
 		When you execute a goal, these dependencies are resolved, and 
 		are then loaded from the local repository. -->
 	<dependencies>
-		<!-- contract brings gRPC dependencies with it -->
-		<dependency>
-			<groupId>pt.tecnico.sdis.2023.A02</groupId>
-			<artifactId>Contract</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<!-- common utilities -->
-		<dependency>
-			<groupId>pt.tecnico.sdis.2023.A02</groupId>
-			<artifactId>Utils</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
 		<!-- testing framework -->
 		<dependency>
 			<groupId>org.spockframework</groupId>
@@ -80,26 +68,6 @@
 				<configuration>
 					<source>${version.java}</source>
 					<target>${version.java}</target>
-				</configuration>
-			</plugin>
-			<!-- Plugin that provides two goals to execute system and Java programs -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>${version.exec-maven-plugin}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>${mainclass}</mainClass>
-					<arguments>
-						<argument>${server.host}</argument>
-						<argument>${server.port}</argument>
-					</arguments>
 				</configuration>
 			</plugin>
 			<!-- Plugin that compiles the tests -->

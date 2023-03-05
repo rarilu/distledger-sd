@@ -14,6 +14,7 @@
 		builds the selected projects in order. -->
 	<modules>
 		<module>Contract</module>
+		<module>Utils</module>
 		<module>User</module>
 		<module>Admin</module>
 		<module>DistLedgerServer</module>

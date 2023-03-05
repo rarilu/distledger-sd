@@ -41,6 +41,12 @@
 			<artifactId>Contract</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+		<!-- common utilities -->
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>Utils</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<!-- testing framework -->
 		<dependency>
 			<groupId>org.spockframework</groupId>
