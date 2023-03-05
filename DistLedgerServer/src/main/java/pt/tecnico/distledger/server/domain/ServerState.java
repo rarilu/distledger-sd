@@ -13,5 +13,4 @@ public class ServerState {
 
   /* TODO: Here should be declared all the server state attributes
   as well as the methods to access and interact with the state. */
-
 }

@@ -4,7 +4,6 @@ import pt.tecnico.distledger.userclient.grpc.UserService;
 
 public class UserClientMain {
   public static void main(String[] args) {
-
     System.out.println(UserClientMain.class.getSimpleName());
 
     // receive and print arguments

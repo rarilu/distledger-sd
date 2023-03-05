@@ -4,7 +4,6 @@ import java.util.Scanner;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 
 public class CommandParser {
-
   private static final String SPACE = " ";
   private static final String ACTIVATE = "activate";
   private static final String DEACTIVATE = "deactivate";
@@ -20,7 +19,6 @@ public class CommandParser {
   }
 
   void parseInput() {
-
     Scanner scanner = new Scanner(System.in);
     boolean exit = false;
 
@@ -62,11 +60,11 @@ public class CommandParser {
 
   private void activate(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 2) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
 
     System.out.println("TODO: implement activate command");
@@ -74,11 +72,11 @@ public class CommandParser {
 
   private void deactivate(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 2) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
 
     System.out.println("TODO: implement deactivate command");
@@ -86,11 +84,11 @@ public class CommandParser {
 
   private void dump(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 2) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
 
     System.out.println("TODO: implement getLedgerState command");

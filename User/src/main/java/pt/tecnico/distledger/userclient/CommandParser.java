@@ -4,7 +4,6 @@ import java.util.Scanner;
 import pt.tecnico.distledger.userclient.grpc.UserService;
 
 public class CommandParser {
-
   private static final String SPACE = " ";
   private static final String CREATE_ACCOUNT = "createAccount";
   private static final String DELETE_ACCOUNT = "deleteAccount";
@@ -20,7 +19,6 @@ public class CommandParser {
   }
 
   void parseInput() {
-
     Scanner scanner = new Scanner(System.in);
     boolean exit = false;
 
@@ -66,7 +64,6 @@ public class CommandParser {
 
   private void createAccount(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 3) {
       this.printUsage();
       return;
@@ -80,11 +77,11 @@ public class CommandParser {
 
   private void deleteAccount(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 3) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
     String username = split[2];
 
@@ -93,11 +90,11 @@ public class CommandParser {
 
   private void balance(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 3) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
     String username = split[2];
 
@@ -106,11 +103,11 @@ public class CommandParser {
 
   private void transferTo(String line) {
     String[] split = line.split(SPACE);
-
     if (split.length != 5) {
       this.printUsage();
       return;
     }
+
     String server = split[1];
     String from = split[2];
     String dest = split[3];
