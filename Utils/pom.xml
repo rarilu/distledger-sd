@@ -27,10 +27,6 @@
 		<version.gmavenplus-plugin>2.0.0</version.gmavenplus-plugin>
 		<version.spock-core>2.3-groovy-4.0</version.spock-core>
 
-		<mainclass>pt.tecnico.distledger.userclient.UserClientMain</mainclass>
-		<server.host>localhost</server.host>
-		<server.port>2001</server.port>
-
 	</properties>
 
 	<!-- Dependencies are code archives - JARs - 
