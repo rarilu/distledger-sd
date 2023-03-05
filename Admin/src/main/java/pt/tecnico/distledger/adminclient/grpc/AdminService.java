@@ -37,6 +37,12 @@ public class AdminService implements AutoCloseable {
     }
   }
 
+  public void deactivate(String server) {
+    DeactivateRequest request = DeactivateRequest.newBuilder().build();
+
+    this.makeRequest(request, this.stub::deactivate);
+  }
+
   @Override
   public void close() {
     this.channel.shutdownNow();
