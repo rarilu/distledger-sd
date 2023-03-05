@@ -1,5 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
+import pt.tecnico.distledger.server.domain.ServerState;
+
 public class TransferOp extends Operation {
   private String destAccount;
   private int amount;
@@ -24,5 +26,10 @@ public class TransferOp extends Operation {
 
   public void setAmount(int amount) {
     this.amount = amount;
+  }
+
+  @Override
+  public void apply(ServerState state) {
+    // TODO
   }
 }
