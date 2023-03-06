@@ -16,8 +16,8 @@ public class ServerState {
   }
 
   public void add(Operation op) throws OperationException {
-    ledger.add(op);
     op.apply(this);
+    ledger.add(op);
   }
 
   public Map<String, Integer> getAccounts() {
