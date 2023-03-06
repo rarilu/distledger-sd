@@ -1,7 +1,10 @@
 package pt.tecnico.distledger.server.domain.operation;
 
+import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.exceptions.OperationException;
+import pt.tecnico.distledger.server.exceptions.UnknownAccountException;
 
 public class TransferOp extends Operation {
   private String destUserId;
@@ -23,6 +26,26 @@ public class TransferOp extends Operation {
 
   @Override
   public void apply(ServerState state) throws OperationException {
-    // TODO
+    // Get the accounts.
+    Account fromAccount = state.getAccounts().get(this.getUserId());
+    Account destAccount = state.getAccounts().get(this.getDestUserId());
+
+    // Check if the accounts exist.
+    if (fromAccount == null) {
+      throw new UnknownAccountException(this.getUserId());
+    }
+
+    if (destAccount == null) {
+      throw new UnknownAccountException(this.getDestUserId());
+    }
+
+    // Check if the account has enough money.
+    if (fromAccount.getBalance() < this.getAmount()) {
+      throw new NotEnoughBalanceException(this.getUserId(), this.getAmount());
+    }
+
+    // Transfer the money.
+    fromAccount.setBalance(fromAccount.getBalance() - this.getAmount());
+    destAccount.setBalance(destAccount.getBalance() + this.getAmount());
   }
 }
