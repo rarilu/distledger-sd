@@ -1,7 +1,16 @@
 package pt.tecnico.distledger.server.exceptions;
 
+import io.grpc.Status;
+
 public class OperationException extends Exception {
-  public OperationException(String message) {
-    super(message);
+  private final Status status;
+
+  public OperationException(Status status) {
+    super(status.getDescription());
+    this.status = status;
+  }
+
+  public final Status getGrpcStatus() {
+    return this.status;
   }
 }
