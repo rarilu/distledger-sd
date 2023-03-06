@@ -3,10 +3,10 @@ import spock.lang.Specification
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.tecnico.distledger.server.exceptions.UnknownAccountException
-import pt.tecnico.distledger.server.exceptions.NotEnoughBalanceException
-import pt.tecnico.distledger.server.exceptions.NopTransferException
-import pt.tecnico.distledger.server.exceptions.NonPositiveTransferException
+import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
+import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException
+import pt.tecnico.distledger.server.domain.exceptions.NopTransferException
+import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException
 
 class TransferOpTest extends Specification {
     def "transfer from broker to a new user"() {

@@ -2,11 +2,11 @@ package pt.tecnico.distledger.server.domain.operation;
 
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
-import pt.tecnico.distledger.server.exceptions.NonPositiveTransferException;
-import pt.tecnico.distledger.server.exceptions.NopTransferException;
-import pt.tecnico.distledger.server.exceptions.NotEnoughBalanceException;
-import pt.tecnico.distledger.server.exceptions.OperationException;
-import pt.tecnico.distledger.server.exceptions.UnknownAccountException;
+import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
+import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
+import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
+import pt.tecnico.distledger.server.domain.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.utils.Logger;
 
 public class TransferOp extends Operation {
