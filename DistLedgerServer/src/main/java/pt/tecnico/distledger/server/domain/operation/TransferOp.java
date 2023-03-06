@@ -5,6 +5,7 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.exceptions.OperationException;
 import pt.tecnico.distledger.server.exceptions.UnknownAccountException;
+import pt.tecnico.distledger.utils.Logger;
 
 public class TransferOp extends Operation {
   private String destUserId;
@@ -32,20 +33,31 @@ public class TransferOp extends Operation {
 
     // Check if the accounts exist.
     if (fromAccount == null) {
+      Logger.debug("Account " + this.getUserId() + " does not exist");
       throw new UnknownAccountException(this.getUserId());
     }
 
     if (destAccount == null) {
+      Logger.debug("Account " + this.getDestUserId() + " does not exist");
       throw new UnknownAccountException(this.getDestUserId());
     }
 
     // Check if the account has enough money.
     if (fromAccount.getBalance() < this.getAmount()) {
+      Logger.debug("Account " + this.getUserId() + " does not have enough balance");
       throw new NotEnoughBalanceException(this.getUserId(), this.getAmount());
     }
 
     // Transfer the money.
     fromAccount.setBalance(fromAccount.getBalance() - this.getAmount());
     destAccount.setBalance(destAccount.getBalance() + this.getAmount());
+
+    Logger.debug(
+        "Transferred "
+            + this.getAmount()
+            + " from "
+            + this.getUserId()
+            + " to "
+            + this.getDestUserId());
   }
 }
