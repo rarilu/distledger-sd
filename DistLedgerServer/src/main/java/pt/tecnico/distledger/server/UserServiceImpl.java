@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.server;
 
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
@@ -24,8 +23,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (OperationException e) {
-      responseObserver.onError(
-          Status.INVALID_ARGUMENT.withCause(e).withDescription(e.getMessage()).asException());
+      responseObserver.onError(e.getGrpcStatus().asRuntimeException());
     }
   }
 }
