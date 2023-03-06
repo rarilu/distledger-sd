@@ -27,6 +27,7 @@
 		<version.junit>5.9.1</version.junit>
 		<version.gmavenplus-plugin>2.0.0</version.gmavenplus-plugin>
 		<version.spock-core>2.3-groovy-4.0</version.spock-core>
+		<version.grpcmock>0.5.2</version.grpcmock>
 
 		<mainclass>pt.tecnico.distledger.userclient.UserClientMain</mainclass>
 		<server.host>localhost</server.host>
@@ -64,6 +65,12 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${version.junit}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- gRPC stub mocking -->
+		<dependency>
+			<groupId>org.grpcmock</groupId>
+			<artifactId>grpcmock-junit5</artifactId>
+			<version>${version.grpcmock}</version>
 		</dependency>
 	</dependencies>
 
