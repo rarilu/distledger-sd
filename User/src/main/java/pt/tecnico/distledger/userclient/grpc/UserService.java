@@ -20,11 +20,11 @@ public class UserService implements AutoCloseable {
     this.stub = UserServiceGrpc.newBlockingStub(this.channel);
   }
 
-  private <Request, Response> void makeRequest(
-      Request request, Function<Request, Response> stubMethod) {
+  private <RequestT, ResponseT> void makeRequest(
+      RequestT request, Function<RequestT, ResponseT> stubMethod) {
     try {
       Logger.debug("Sending request: " + request.toString());
-      Response response = stubMethod.apply(request);
+      ResponseT response = stubMethod.apply(request);
       String representation = response.toString();
 
       System.out.println("OK");
@@ -34,16 +34,14 @@ public class UserService implements AutoCloseable {
       }
     } catch (StatusRuntimeException e) {
       System.out.println("Error: " + e.getStatus().getDescription());
+      System.out.println();
     }
   }
 
   public void createAccount(String server, String userId) {
     CreateAccountRequest request = CreateAccountRequest.newBuilder().setUserId(userId).build();
-
     this.makeRequest(request, this.stub::createAccount);
   }
-
-  // TODO: remote operation methods
 
   @Override
   public void close() {
