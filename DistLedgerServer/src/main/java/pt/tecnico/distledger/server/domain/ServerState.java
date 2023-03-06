@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
-import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class ServerState {
   private List<Operation> ledger = new ArrayList<>();

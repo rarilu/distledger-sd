@@ -2,8 +2,8 @@ package pt.tecnico.distledger.server.domain.operation;
 
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
-import pt.tecnico.distledger.server.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
+import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.utils.Logger;
 
 public class CreateOp extends Operation {

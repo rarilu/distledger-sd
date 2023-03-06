@@ -2,8 +2,8 @@ package pt.tecnico.distledger.server;
 
 import io.grpc.stub.StreamObserver;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
-import pt.tecnico.distledger.server.exceptions.OperationException;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;

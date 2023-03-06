@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
 import pt.tecnico.distledger.server.domain.ServerState;
-import pt.tecnico.distledger.server.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 
 public class DeleteOp extends Operation {
   public DeleteOp(String userId) {
