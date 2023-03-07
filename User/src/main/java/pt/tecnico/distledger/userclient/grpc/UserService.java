@@ -5,6 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
@@ -38,6 +39,11 @@ public class UserService implements AutoCloseable {
       System.out.println("Error: " + e.getStatus().getDescription());
       System.out.println();
     }
+  }
+
+  public void balance(String server, String userId) {
+    BalanceRequest request = BalanceRequest.newBuilder().setUserId(userId).build();
+    this.makeRequest(request, this.stub::balance);
   }
 
   public void createAccount(String server, String userId) {
