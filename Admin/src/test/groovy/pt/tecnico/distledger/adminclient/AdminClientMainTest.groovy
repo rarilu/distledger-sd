@@ -1,8 +1,5 @@
 package pt.tecnico.distledger.adminclient
 
-import org.grpcmock.GrpcMock
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc
-
 class AdminClientMainTest extends BaseTest {
     def "main is called with no arguments"() {
         when: "the admin client is run with no arguments"

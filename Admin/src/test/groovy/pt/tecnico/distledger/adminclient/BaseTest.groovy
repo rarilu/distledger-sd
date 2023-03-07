@@ -2,7 +2,6 @@ package pt.tecnico.distledger.adminclient
 
 import spock.lang.Specification
 
-import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import org.grpcmock.GrpcMock;
 
 abstract class BaseTest extends Specification {
