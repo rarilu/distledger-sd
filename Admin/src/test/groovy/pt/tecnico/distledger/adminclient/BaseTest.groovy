@@ -6,8 +6,6 @@ import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import org.grpcmock.GrpcMock;
 
 abstract class BaseTest extends Specification {
-    def runMain 
-
     def initialStdin
     def initialStdout
     def initialStderr
@@ -24,8 +22,6 @@ abstract class BaseTest extends Specification {
     def setup() {
         GrpcMock.configureFor(GrpcMock.grpcMock(0).build().start())
         // port 0 means that the OS will assign a random free port
-
-        runMain = () -> AdminClientMain.main(new String[]{"localhost", GrpcMock.getGlobalPort().toString()})
 
         initialStdin = System.in
         initialStdout = System.out
@@ -45,5 +41,9 @@ abstract class BaseTest extends Specification {
     def provideInput(String input) {
         ByteArrayInputStream mockStdin = new ByteArrayInputStream(input.getBytes())
         System.setIn(mockStdin)
+    }
+
+    def runMain() {
+        AdminClientMain.main(new String[]{"localhost", GrpcMock.getGlobalPort().toString()})
     }
 }
