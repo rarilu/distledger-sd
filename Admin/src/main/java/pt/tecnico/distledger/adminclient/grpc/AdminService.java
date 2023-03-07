@@ -20,11 +20,11 @@ public class AdminService implements AutoCloseable {
     this.stub = AdminServiceGrpc.newBlockingStub(this.channel);
   }
 
-  private <Request, Response> void makeRequest(
-      Request request, Function<Request, Response> stubMethod) {
+  private <RequestT, ResponseT> void makeRequest(RequestT request,
+      Function<RequestT, ResponseT> stubMethod) {
     try {
       Logger.debug("Sending request: " + request.toString());
-      Response response = stubMethod.apply(request);
+      ResponseT response = stubMethod.apply(request);
       String representation = response.toString();
 
       System.out.println("OK");
@@ -34,12 +34,12 @@ public class AdminService implements AutoCloseable {
       }
     } catch (StatusRuntimeException e) {
       System.out.println("Error: " + e.getStatus().getDescription());
+      System.out.println();
     }
   }
 
   public void deactivate(String server) {
     DeactivateRequest request = DeactivateRequest.newBuilder().build();
-
     this.makeRequest(request, this.stub::deactivate);
   }
 
