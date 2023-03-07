@@ -11,7 +11,7 @@ public abstract class Operation {
   }
 
   public String getUserId() {
-    return userId;
+    return this.userId;
   }
 
   public abstract void apply(ServerState state) throws OperationException;

@@ -14,11 +14,11 @@ public class TransferOp extends Operation {
   }
 
   public String getDestUserId() {
-    return destUserId;
+    return this.destUserId;
   }
 
   public int getAmount() {
-    return amount;
+    return this.amount;
   }
 
   @Override

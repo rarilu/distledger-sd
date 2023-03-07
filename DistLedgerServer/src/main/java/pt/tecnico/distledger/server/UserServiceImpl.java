@@ -19,7 +19,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public void createAccount(
       CreateAccountRequest request, StreamObserver<CreateAccountResponse> responseObserver) {
     try {
-      state.registerOperation(new CreateOp(request.getUserId()));
+      this.state.registerOperation(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (OperationException e) {
