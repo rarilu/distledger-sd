@@ -4,18 +4,14 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public abstract class Operation {
-  private String account;
+  private String userId;
 
-  public Operation(String fromAccount) {
-    this.account = fromAccount;
+  public Operation(String userId) {
+    this.userId = userId;
   }
 
-  public String getAccount() {
-    return account;
-  }
-
-  public void setAccount(String account) {
-    this.account = account;
+  public String getUserId() {
+    return userId;
   }
 
   public abstract void apply(ServerState state) throws OperationException;
