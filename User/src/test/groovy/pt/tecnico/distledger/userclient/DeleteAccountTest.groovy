@@ -55,8 +55,8 @@ class DeleteAccountTest extends BaseTest {
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(UserServiceGrpc.getDeleteAccountMethod())
                         .willReturn(GrpcMock.statusException(
-                                Status.ALREADY_EXISTS
-                                        .withDescription("Account already exists")
+                                Status.NOT_FOUND
+                                        .withDescription("Account not found")
                         ))
         )
 
@@ -64,7 +64,7 @@ class DeleteAccountTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: Account already exists\n\n> "
+        outBuf.toString() == "> Error: Account not found\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
