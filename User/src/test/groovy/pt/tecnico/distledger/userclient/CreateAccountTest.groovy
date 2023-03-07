@@ -11,16 +11,14 @@ class CreateAccountTest extends BaseTest {
         given: "an invalid create account input"
         provideInput("createAccount wrong\nexit\n")
 
-        when: "the input is parsed"
-        commandParser.parseInput()
+        when: "the user client is run"
+        runMain()
 
         then: "the output is correct"
-        outBuf.toString() == ("> " + "Usage:\n"
-        + "- createAccount <server> <username>\n"
-        + "- deleteAccount <server> <username>\n"
-        + "- balance <server> <username>\n"
-        + "- transferTo <server> <username_from> <username_to> <amount>\n"
-        + "- exit\n" + "\n> ")
+        outBuf.toString() == ("> " + EXPECTED_USAGE_STRING + "\n> ")
+
+        and: "no errors were logged"
+        errBuf.toString() == ""
 
         and: "the mock server received no requests"
         GrpcMock.verifyThat(GrpcMock.calledMethod(UserServiceGrpc.getCreateAccountMethod()), GrpcMock.never())
@@ -35,11 +33,14 @@ class CreateAccountTest extends BaseTest {
                 GrpcMock.unaryMethod(UserServiceGrpc.getCreateAccountMethod())
                         .willReturn(GrpcMock.response(CreateAccountResponse.getDefaultInstance())))
 
-        when: "the input is parsed"
-        commandParser.parseInput()
+        when: "the user client is run"
+        runMain()
 
         then: "the output is correct"
         outBuf.toString() == "> OK\n\n> "
+
+        and: "no errors were logged"
+        errBuf.toString() == ""
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
@@ -65,11 +66,14 @@ class CreateAccountTest extends BaseTest {
                         ))
         )
 
-        when: "the input is parsed"
-        commandParser.parseInput()
+        when: "the user client is run"
+        runMain()
 
         then: "the output is correct"
         outBuf.toString() == "> Error: Account already exists\n\n> "
+
+        and: "no errors were logged"
+        errBuf.toString() == ""
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
