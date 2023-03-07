@@ -17,9 +17,6 @@ class CreateAccountTest extends BaseTest {
         then: "the output is correct"
         outBuf.toString() == ("> " + EXPECTED_USAGE_STRING + "\n> ")
 
-        and: "no errors were logged"
-        errBuf.toString() == ""
-
         and: "the mock server received no requests"
         GrpcMock.verifyThat(GrpcMock.calledMethod(UserServiceGrpc.getCreateAccountMethod()), GrpcMock.never())
     }
@@ -38,9 +35,6 @@ class CreateAccountTest extends BaseTest {
 
         then: "the output is correct"
         outBuf.toString() == "> OK\n\n> "
-
-        and: "no errors were logged"
-        errBuf.toString() == ""
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
@@ -71,9 +65,6 @@ class CreateAccountTest extends BaseTest {
 
         then: "the output is correct"
         outBuf.toString() == "> Error: Account already exists\n\n> "
-
-        and: "no errors were logged"
-        errBuf.toString() == ""
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(

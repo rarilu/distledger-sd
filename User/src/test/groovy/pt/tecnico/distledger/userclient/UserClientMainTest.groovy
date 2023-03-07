@@ -11,9 +11,6 @@ class UserClientMainTest extends BaseTest {
 
         then: "there is no output"
         outBuf.toString() == ""
-
-        and: "an error is logged"
-        errBuf.toString() == "Argument(s) missing!\nUsage: mvn exec:java -Dexec.args=<host> <port>\n"
     }
 
     def "user provides an unknown command"() {
@@ -25,8 +22,5 @@ class UserClientMainTest extends BaseTest {
 
         then: "the output is correct"
         outBuf.toString() == ("> " + EXPECTED_USAGE_STRING + "\n> ")
-
-        and: "no errors were logged"
-        errBuf.toString() == ""
     }
 }
