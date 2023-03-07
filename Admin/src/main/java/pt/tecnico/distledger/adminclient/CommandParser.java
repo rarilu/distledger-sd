@@ -31,7 +31,7 @@ public class CommandParser {
         switch (cmd) {
           case ACTIVATE -> this.activate(line);
           case DEACTIVATE -> this.deactivate(line);
-          case GET_LEDGER_STATE -> this.dump(line);
+          case GET_LEDGER_STATE -> this.getLedgerState(line);
           case GOSSIP -> this.gossip(line);
           case HELP -> this.printUsage();
           case EXIT -> exit = true;
@@ -68,7 +68,7 @@ public class CommandParser {
     this.adminService.deactivate(server);
   }
 
-  private void dump(String line) {
+  private void getLedgerState(String line) {
     String[] split = line.split(SPACE);
     if (split.length != 2) {
       this.printUsage();
@@ -77,7 +77,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    System.out.println("TODO: implement getLedgerState command");
+    this.adminService.getLedgerState(server);
   }
 
   @SuppressWarnings("unused")

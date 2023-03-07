@@ -6,6 +6,7 @@ import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 public class AdminService implements AutoCloseable {
@@ -41,6 +42,11 @@ public class AdminService implements AutoCloseable {
   public void deactivate(String server) {
     DeactivateRequest request = DeactivateRequest.getDefaultInstance();
     this.makeRequest(request, this.stub::deactivate);
+  }
+
+  public void getLedgerState(String server) {
+    getLedgerStateRequest request = getLedgerStateRequest.getDefaultInstance();
+    this.makeRequest(request, this.stub::getLedgerState);
   }
 
   @Override
