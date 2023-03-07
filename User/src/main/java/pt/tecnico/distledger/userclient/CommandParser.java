@@ -88,7 +88,7 @@ public class CommandParser {
     System.out.println("TODO: implement balance command");
   }
 
-  private void transferTo(String line) {
+  private void transferTo(String line) throws NumberFormatException {
     String[] split = line.split(SPACE);
     if (split.length != 5) {
       this.printUsage();
