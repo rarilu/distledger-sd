@@ -9,8 +9,8 @@ class AdminClientMainTest extends BaseTest {
         def adminClient = new AdminClientMain() // main is static, but this is needed to cover the constructor
         adminClient.main(new String[]{})
 
-        then: "the output is correct"
-        errBuf.toString() == "Argument(s) missing!\nUsage: mvn exec:java -Dexec.args=<host> <port>\n"
+        then: "the output is empty"
+        outBuf.toString() == ""
     }
 
     def "user provides an unknown command"() {
