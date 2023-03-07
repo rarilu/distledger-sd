@@ -9,10 +9,10 @@ import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class ServerState {
   private List<Operation> ledger = new ArrayList<>();
-  private Map<String, Integer> accounts = new HashMap<>();
+  private Map<String, Account> accounts = new HashMap<>();
 
   public ServerState() {
-    this.accounts.put("broker", 1000);
+    this.accounts.put("broker", new Account(1000));
   }
 
   public synchronized void registerOperation(Operation op) throws OperationException {
@@ -20,7 +20,7 @@ public class ServerState {
     this.ledger.add(op);
   }
 
-  public Map<String, Integer> getAccounts() {
+  public Map<String, Account> getAccounts() {
     return this.accounts;
   }
 }

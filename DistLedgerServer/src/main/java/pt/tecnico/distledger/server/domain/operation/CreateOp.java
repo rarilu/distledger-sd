@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.domain.operation;
 
+import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.exceptions.AccountAlreadyExistsException;
 import pt.tecnico.distledger.server.exceptions.OperationException;
@@ -16,7 +17,7 @@ public class CreateOp extends Operation {
       Logger.debug("Account " + this.getAccount() + " already exists");
       throw new AccountAlreadyExistsException(this.getAccount());
     } else {
-      state.getAccounts().put(this.getAccount(), 0);
+      state.getAccounts().put(this.getAccount(), new Account());
       Logger.debug("Created account " + this.getAccount());
     }
   }

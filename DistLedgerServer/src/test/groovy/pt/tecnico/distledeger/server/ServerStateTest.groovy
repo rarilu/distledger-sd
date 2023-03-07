@@ -13,7 +13,7 @@ class ServerStateTest extends Specification {
         state.getAccounts().size() == 1        
 
         and: "the broker account has the correct balance"
-        state.getAccounts().get("broker") == 1000
+        state.getAccounts().get("broker").getBalance() == 1000
     }
 
     def "create a new account"() {
@@ -27,7 +27,7 @@ class ServerStateTest extends Specification {
         state.getAccounts().size() == 2
 
         and: "the new account has the correct balance"
-        state.getAccounts().get("Alice") == 0
+        state.getAccounts().get("Alice").getBalance() == 0
     }
 
     def "create a duplicate account"() {
