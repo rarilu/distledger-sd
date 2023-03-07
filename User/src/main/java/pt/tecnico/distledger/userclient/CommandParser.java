@@ -2,6 +2,7 @@ package pt.tecnico.distledger.userclient;
 
 import java.util.Scanner;
 import pt.tecnico.distledger.userclient.grpc.UserService;
+import pt.tecnico.distledger.utils.Logger;
 
 public class CommandParser {
   private static final String SPACE = " ";
@@ -27,37 +28,17 @@ public class CommandParser {
         String line = scanner.nextLine().trim();
         String cmd = line.split(SPACE)[0];
 
-        try {
-          switch (cmd) {
-            case CREATE_ACCOUNT:
-              this.createAccount(line);
-              break;
-
-            case DELETE_ACCOUNT:
-              this.deleteAccount(line);
-              break;
-
-            case TRANSFER_TO:
-              this.transferTo(line);
-              break;
-
-            case BALANCE:
-              this.balance(line);
-              break;
-
-            case HELP:
-              this.printUsage();
-              break;
-
-            case EXIT:
-              exit = true;
-              break;
-
-            default:
-              break;
+        switch (cmd) {
+          case CREATE_ACCOUNT -> this.createAccount(line);
+          case DELETE_ACCOUNT -> this.deleteAccount(line);
+          case TRANSFER_TO -> this.transferTo(line);
+          case BALANCE -> this.balance(line);
+          case HELP -> this.printUsage();
+          case EXIT -> exit = true;
+          default -> {
+            Logger.debug("Unknown command: " + cmd);
+            this.printUsage();
           }
-        } catch (Exception e) {
-          System.err.println(e.getMessage());
         }
       }
     }
