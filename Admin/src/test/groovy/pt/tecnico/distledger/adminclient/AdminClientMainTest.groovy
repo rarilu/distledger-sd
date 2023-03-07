@@ -21,6 +21,6 @@ class AdminClientMainTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == EXPECTED_USAGE_STRING
+        outBuf.toString() == ("> " + EXPECTED_USAGE_STRING + "\n> ")
     }
 }
