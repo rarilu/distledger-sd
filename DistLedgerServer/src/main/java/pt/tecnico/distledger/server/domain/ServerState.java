@@ -15,7 +15,7 @@ public class ServerState {
     accounts.put("broker", 1000);
   }
 
-  public void registerOperation(Operation op) throws OperationException {
+  public synchronized void registerOperation(Operation op) throws OperationException {
     op.apply(this);
     ledger.add(op);
   }
