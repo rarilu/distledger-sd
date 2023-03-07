@@ -14,6 +14,13 @@ abstract class BaseTest extends Specification {
     def outBuf
     def errBuf
 
+    def usageString = ("> " + "Usage:\n"
+        + "- activate <server>\n"
+        + "- deactivate <server>\n"
+        + "- getLedgerState <server>\n"
+        + "- gossip <server>\n"
+        + "- exit\n" + "\n> ")
+
     def setup() {
         GrpcMock.configureFor(GrpcMock.grpcMock(0).build().start())
         // port 0 means that the OS will assign a random free port
