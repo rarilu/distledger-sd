@@ -5,6 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
@@ -36,6 +37,11 @@ public class AdminService implements AutoCloseable {
       System.out.println("Error: " + e.getStatus().getDescription());
       System.out.println();
     }
+  }
+
+  public void activate(String server) {
+    ActivateRequest request = ActivateRequest.getDefaultInstance();
+    this.makeRequest(request, this.stub::activate);
   }
 
   public void deactivate(String server) {
