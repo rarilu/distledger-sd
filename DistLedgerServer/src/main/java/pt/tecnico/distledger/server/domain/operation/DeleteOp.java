@@ -4,8 +4,8 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class DeleteOp extends Operation {
-  public DeleteOp(String account) {
-    super(account);
+  public DeleteOp(String userId) {
+    super(userId);
   }
 
   @Override

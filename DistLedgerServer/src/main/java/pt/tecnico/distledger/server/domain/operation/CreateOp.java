@@ -7,18 +7,18 @@ import pt.tecnico.distledger.server.exceptions.OperationException;
 import pt.tecnico.distledger.utils.Logger;
 
 public class CreateOp extends Operation {
-  public CreateOp(String account) {
-    super(account);
+  public CreateOp(String userId) {
+    super(userId);
   }
 
   @Override
   public void apply(ServerState state) throws OperationException {
-    if (state.getAccounts().containsKey(this.getAccount())) {
-      Logger.debug("Account " + this.getAccount() + " already exists");
-      throw new AccountAlreadyExistsException(this.getAccount());
+    if (state.getAccounts().containsKey(this.getUserId())) {
+      Logger.debug("Account " + this.getUserId() + " already exists");
+      throw new AccountAlreadyExistsException(this.getUserId());
     } else {
-      state.getAccounts().put(this.getAccount(), new Account());
-      Logger.debug("Created account " + this.getAccount());
+      state.getAccounts().put(this.getUserId(), new Account());
+      Logger.debug("Created account for " + this.getUserId());
     }
   }
 }

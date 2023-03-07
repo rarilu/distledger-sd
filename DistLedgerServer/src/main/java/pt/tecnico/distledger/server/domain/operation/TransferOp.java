@@ -4,29 +4,21 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.exceptions.OperationException;
 
 public class TransferOp extends Operation {
-  private String destAccount;
+  private String destUserId;
   private int amount;
 
-  public TransferOp(String fromAccount, String destAccount, int amount) {
-    super(fromAccount);
-    this.destAccount = destAccount;
+  public TransferOp(String fromUserId, String destUserId, int amount) {
+    super(fromUserId);
+    this.destUserId = destUserId;
     this.amount = amount;
   }
 
-  public String getDestAccount() {
-    return destAccount;
-  }
-
-  public void setDestAccount(String destAccount) {
-    this.destAccount = destAccount;
+  public String getDestUserId() {
+    return destUserId;
   }
 
   public int getAmount() {
     return amount;
-  }
-
-  public void setAmount(int amount) {
-    this.amount = amount;
   }
 
   @Override
