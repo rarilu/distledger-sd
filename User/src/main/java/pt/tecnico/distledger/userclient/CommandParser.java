@@ -85,7 +85,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    System.out.println("TODO: implement balance command");
+    this.userService.balance(server, username);
   }
 
   private void transferTo(String line) throws NumberFormatException {
