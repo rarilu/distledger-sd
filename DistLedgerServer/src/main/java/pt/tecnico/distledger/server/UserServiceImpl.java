@@ -5,6 +5,7 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
+import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
@@ -26,6 +27,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (OperationException e) {
+      Logger.debug("Create account failed: " + e.getMessage());
       responseObserver.onError(e.getGrpcStatus().asRuntimeException());
     }
   }
@@ -39,6 +41,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (OperationException e) {
+      Logger.debug("Transfer failed: " + e.getMessage());
       responseObserver.onError(e.getGrpcStatus().asRuntimeException());
     }
   }
