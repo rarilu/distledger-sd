@@ -1,16 +1,11 @@
 package pt.tecnico.distledger.adminclient;
 
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
+import pt.tecnico.distledger.utils.Logger;
 
 public class AdminClientMain {
   public static void main(String[] args) {
-    System.out.println(AdminClientMain.class.getSimpleName());
-
-    // receive and print arguments
-    System.out.printf("Received %d arguments%n", args.length);
-    for (int i = 0; i < args.length; i++) {
-      System.out.printf("arg[%d] = %s%n", i, args[i]);
-    }
+    Logger.debug(AdminClientMain.class.getSimpleName());
 
     // check arguments
     if (args.length != 2) {
