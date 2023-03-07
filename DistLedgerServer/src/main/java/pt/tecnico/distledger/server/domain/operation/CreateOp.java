@@ -14,11 +14,10 @@ public class CreateOp extends Operation {
   @Override
   public void apply(ServerState state) throws OperationException {
     if (state.getAccounts().containsKey(this.getUserId())) {
-      Logger.debug("Account " + this.getUserId() + " already exists");
       throw new AccountAlreadyExistsException(this.getUserId());
-    } else {
-      state.getAccounts().put(this.getUserId(), new Account());
-      Logger.debug("Created account for " + this.getUserId());
     }
+
+    state.getAccounts().put(this.getUserId(), new Account());
+    Logger.debug("Created account for " + this.getUserId());
   }
 }

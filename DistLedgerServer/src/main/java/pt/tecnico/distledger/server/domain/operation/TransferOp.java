@@ -31,13 +31,11 @@ public class TransferOp extends Operation {
   public void apply(ServerState state) throws OperationException {
     // Check if the amount is positive.
     if (this.getAmount() <= 0) {
-      Logger.debug("Transfer amount must be positive");
       throw new NonPositiveTransferException();
     }
 
     // Check if the accounts are the same.
     if (this.getUserId().equals(this.getDestUserId())) {
-      Logger.debug("Transfer accounts must be different");
       throw new NopTransferException();
     }
 
@@ -47,18 +45,15 @@ public class TransferOp extends Operation {
 
     // Check if the accounts exist.
     if (fromAccount == null) {
-      Logger.debug("Account " + this.getUserId() + " does not exist");
       throw new UnknownAccountException(this.getUserId());
     }
 
     if (destAccount == null) {
-      Logger.debug("Account " + this.getDestUserId() + " does not exist");
       throw new UnknownAccountException(this.getDestUserId());
     }
 
     // Check if the account has enough money.
     if (fromAccount.getBalance() < this.getAmount()) {
-      Logger.debug("Account " + this.getUserId() + " does not have enough balance");
       throw new NotEnoughBalanceException(this.getUserId(), this.getAmount());
     }
 
