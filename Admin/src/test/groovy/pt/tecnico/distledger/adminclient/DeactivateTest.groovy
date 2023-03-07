@@ -15,7 +15,7 @@ class DeactivateTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == usageString
+        outBuf.toString() == EXPECTED_USAGE_STRING
 
         and: "the mock server received no requests"
         GrpcMock.verifyThat(GrpcMock.calledMethod(AdminServiceGrpc.getDeactivateMethod()), GrpcMock.never())

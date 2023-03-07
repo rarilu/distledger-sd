@@ -12,7 +12,7 @@ abstract class BaseTest extends Specification {
     def outBuf
     def errBuf
 
-    def usageString = ("> " + "Usage:\n"
+    protected static final String EXPECTED_USAGE_STRING = ("> " + "Usage:\n"
         + "- activate <server>\n"
         + "- deactivate <server>\n"
         + "- getLedgerState <server>\n"
