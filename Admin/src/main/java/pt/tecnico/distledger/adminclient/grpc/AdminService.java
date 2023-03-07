@@ -20,8 +20,8 @@ public class AdminService implements AutoCloseable {
     this.stub = AdminServiceGrpc.newBlockingStub(this.channel);
   }
 
-  private <RequestT, ResponseT> void makeRequest(RequestT request,
-      Function<RequestT, ResponseT> stubMethod) {
+  private <RequestT, ResponseT> void makeRequest(
+      RequestT request, Function<RequestT, ResponseT> stubMethod) {
     try {
       Logger.debug("Sending request: " + request.toString());
       ResponseT response = stubMethod.apply(request);
