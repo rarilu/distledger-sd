@@ -45,7 +45,7 @@ class DeactivateTest extends BaseTest {
     }
 
     def "deactivate returns a status exception"() {
-        given: "a create account input"
+        given: "a deactivate input"
         provideInput("deactivate A\nexit\n")
 
         and: "a mock server that returns a status exception"
