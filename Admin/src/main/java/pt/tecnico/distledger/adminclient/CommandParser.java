@@ -53,7 +53,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    System.out.println("TODO: implement activate command");
+    this.adminService.activate(server);
   }
 
   private void deactivate(String line) {
