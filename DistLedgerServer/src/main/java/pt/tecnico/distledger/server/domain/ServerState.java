@@ -12,15 +12,15 @@ public class ServerState {
   private Map<String, Integer> accounts = new HashMap<>();
 
   public ServerState() {
-    accounts.put("broker", 1000);
+    this.accounts.put("broker", 1000);
   }
 
   public synchronized void registerOperation(Operation op) throws OperationException {
     op.apply(this);
-    ledger.add(op);
+    this.ledger.add(op);
   }
 
   public Map<String, Integer> getAccounts() {
-    return accounts;
+    return this.accounts;
   }
 }
