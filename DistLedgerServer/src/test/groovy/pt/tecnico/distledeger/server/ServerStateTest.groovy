@@ -21,13 +21,13 @@ class ServerStateTest extends Specification {
         def state = new ServerState()
 
         when: "a new account is created"
-        state.registerOperation(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("Alice"))
 
         then: "there are exactly two accounts"
         state.getAccounts().size() == 2
 
         and: "the new account has the correct balance"
-        state.getAccounts().get("alice") == 0
+        state.getAccounts().get("Alice") == 0
     }
 
     def "create a duplicate account"() {
@@ -35,10 +35,10 @@ class ServerStateTest extends Specification {
         def state = new ServerState()
 
         and: "with an account already created"
-        state.registerOperation(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("Alice"))
 
         when: "an account with the same name is created"
-        state.registerOperation(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("Alice"))
 
         then: "an exception is thrown"
         def e = thrown(AccountAlreadyExistsException)
