@@ -7,6 +7,7 @@ import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
 public class UserService implements AutoCloseable {
@@ -47,6 +48,16 @@ public class UserService implements AutoCloseable {
   public void deleteAccount(String server, String userId) {
     DeleteAccountRequest request = DeleteAccountRequest.newBuilder().setUserId(userId).build();
     this.makeRequest(request, this.stub::deleteAccount);
+  }
+
+  public void transferTo(String server, String from, String dest, int amount) {
+    TransferToRequest request =
+        TransferToRequest.newBuilder()
+            .setAccountFrom(from)
+            .setAccountTo(dest)
+            .setAmount(amount)
+            .build();
+    this.makeRequest(request, this.stub::transferTo);
   }
 
   @Override
