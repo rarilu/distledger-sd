@@ -1,8 +1,5 @@
 package pt.tecnico.distledger.userclient
 
-import org.grpcmock.GrpcMock
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc
-
 class UserClientMainTest extends BaseTest {
     def "main is called with no arguments"() {
         when: "the user client is called with no arguments"
