@@ -39,7 +39,7 @@ public class AdminService implements AutoCloseable {
   }
 
   public void deactivate(String server) {
-    DeactivateRequest request = DeactivateRequest.newBuilder().build();
+    DeactivateRequest request = DeactivateRequest.getDefaultInstance();
     this.makeRequest(request, this.stub::deactivate);
   }
 
