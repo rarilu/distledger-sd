@@ -24,21 +24,26 @@ public class CommandParser {
 
     try (final Scanner scanner = new Scanner(System.in)) {
       while (!exit) {
-        System.out.print("> ");
-        String line = scanner.nextLine().trim();
-        String cmd = line.split(SPACE)[0];
+        try {
+          System.out.print("> ");
+          String line = scanner.nextLine().trim();
+          String cmd = line.split(SPACE)[0];
 
-        switch (cmd) {
-          case CREATE_ACCOUNT -> this.createAccount(line);
-          case DELETE_ACCOUNT -> this.deleteAccount(line);
-          case TRANSFER_TO -> this.transferTo(line);
-          case BALANCE -> this.balance(line);
-          case HELP -> this.printUsage();
-          case EXIT -> exit = true;
-          default -> {
-            Logger.debug("Unknown command: " + cmd);
-            this.printUsage();
+          switch (cmd) {
+            case CREATE_ACCOUNT -> this.createAccount(line);
+            case DELETE_ACCOUNT -> this.deleteAccount(line);
+            case TRANSFER_TO -> this.transferTo(line);
+            case BALANCE -> this.balance(line);
+            case HELP -> this.printUsage();
+            case EXIT -> exit = true;
+            default -> {
+              Logger.debug("Unknown command: " + cmd);
+              this.printUsage();
+            }
           }
+        } catch (NumberFormatException e) {
+          Logger.debug(e.getMessage());
+          System.out.println("Error: Invalid number provided");
         }
       }
     }
@@ -93,9 +98,9 @@ public class CommandParser {
     String server = split[1];
     String from = split[2];
     String dest = split[3];
-    Integer amount = Integer.valueOf(split[4]);
+    int amount = Integer.valueOf(split[4]);
 
-    System.out.println("TODO: implement transferTo command");
+    userService.transferTo(server, from, dest, amount);
   }
 
   private void printUsage() {
