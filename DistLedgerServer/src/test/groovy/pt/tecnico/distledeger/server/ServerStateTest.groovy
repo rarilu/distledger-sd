@@ -19,7 +19,7 @@ class ServerStateTest extends Specification {
         def state = new ServerState()
 
         when:
-        state.add(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("alice"))
 
         then:
         state.getAccounts().size() == 2
@@ -29,10 +29,10 @@ class ServerStateTest extends Specification {
     def "create a duplicate account"() {
         given:
         def state = new ServerState()
-        state.add(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("alice"))
 
         when:
-        state.add(new CreateOp("alice"))
+        state.registerOperation(new CreateOp("alice"))
 
         then:
         def e = thrown(AccountAlreadyExistsException)
