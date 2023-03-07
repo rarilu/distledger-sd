@@ -8,9 +8,7 @@ import org.grpcmock.GrpcMock;
 abstract class BaseTest extends Specification {
     def initialStdin
     def initialStdout
-    def initialStderr
     def outBuf
-    def errBuf
 
     protected static final String EXPECTED_USAGE_STRING = "Usage:\n" +
         "- createAccount <server> <username>\n" +
@@ -25,18 +23,14 @@ abstract class BaseTest extends Specification {
 
         initialStdin = System.in
         initialStdout = System.out
-        initialStderr = System.err
 
         outBuf = new ByteArrayOutputStream()
-        errBuf = new ByteArrayOutputStream()
         System.setOut(new PrintStream(outBuf))
-        System.setErr(new PrintStream(errBuf))
     }
 
     def cleanup() {
         System.setIn(initialStdin)
         System.setOut(initialStdout)
-        System.setErr(initialStderr)
     }
 
     def provideInput(String input) {
