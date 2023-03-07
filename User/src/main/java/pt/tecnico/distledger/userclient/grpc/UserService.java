@@ -6,6 +6,7 @@ import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
 public class UserService implements AutoCloseable {
@@ -41,6 +42,11 @@ public class UserService implements AutoCloseable {
   public void createAccount(String server, String userId) {
     CreateAccountRequest request = CreateAccountRequest.newBuilder().setUserId(userId).build();
     this.makeRequest(request, this.stub::createAccount);
+  }
+
+  public void deleteAccount(String server, String userId) {
+    DeleteAccountRequest request = DeleteAccountRequest.newBuilder().setUserId(userId).build();
+    this.makeRequest(request, this.stub::deleteAccount);
   }
 
   @Override

@@ -67,7 +67,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    System.out.println("TODO: implement deleteAccount command");
+    this.userService.deleteAccount(server, username);
   }
 
   private void balance(String line) {
