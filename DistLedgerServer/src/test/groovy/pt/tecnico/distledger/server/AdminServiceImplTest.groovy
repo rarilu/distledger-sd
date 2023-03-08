@@ -10,6 +10,8 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
@@ -26,6 +28,20 @@ class AdminServiceImplTest extends Specification {
         service = new AdminServiceImpl(state, active)
     }
 
+    def "activate server"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        when: "server is activated"
+        service.activate(ActivateRequest.getDefaultInstance(), observer)
+
+        then: "active flag is true"
+        active.get() == true
+
+        and: "response is sent"
+        1 * observer.onNext(ActivateResponse.getDefaultInstance())
+    }
+
     def "deactivate server"() {
         given: "a mock observer"
         def observer = Mock(StreamObserver)
@@ -34,7 +50,7 @@ class AdminServiceImplTest extends Specification {
         service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
 
         then: "active flag is false"
-        !active.get()
+        active.get() == false
 
         and: "response is sent"
         1 * observer.onNext(DeactivateResponse.getDefaultInstance())
