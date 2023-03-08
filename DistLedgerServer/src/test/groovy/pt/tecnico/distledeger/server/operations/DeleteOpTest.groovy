@@ -14,6 +14,7 @@ class DeleteOpTest extends Specification {
 
         and: "with an account already created"
         state.registerOperation(new CreateOp("Alice"))
+        state.getAccounts().size() == 2
 
         when: "the account is deleted"
         state.registerOperation(new DeleteOp("Alice"))
@@ -42,7 +43,7 @@ class DeleteOpTest extends Specification {
         def state = new ServerState()
 
         when: "an unknown account is deleted"
-        state.registerOperation(new DeleteOp("Alice"))
+        state.registerOperation(new DeleteOp("void"))
 
         then: "an exception is thrown"
         def e = thrown(UnknownAccountException)
