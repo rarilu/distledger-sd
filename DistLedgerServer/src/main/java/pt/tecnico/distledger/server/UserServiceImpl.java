@@ -2,7 +2,9 @@ package pt.tecnico.distledger.server;
 
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
@@ -19,15 +21,20 @@ import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   private ServerState state;
+  private AtomicBoolean active;
 
-  public UserServiceImpl(ServerState state) {
+  public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
+    this.active = active;
   }
 
   @Override
   public void createAccount(
       CreateAccountRequest request, StreamObserver<CreateAccountResponse> responseObserver) {
     try {
+      if (!active.get()) {
+        throw new ServerUnavailableException();
+      }
       this.state.registerOperation(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
@@ -41,6 +48,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public void deleteAccount(
       DeleteAccountRequest request, StreamObserver<DeleteAccountResponse> responseObserver) {
     try {
+      if (!active.get()) {
+        throw new ServerUnavailableException();
+      }
       this.state.registerOperation(new DeleteOp(request.getUserId()));
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
@@ -54,6 +64,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public void transferTo(
       TransferToRequest request, StreamObserver<TransferToResponse> responseObserver) {
     try {
+      if (!active.get()) {
+        throw new ServerUnavailableException();
+      }
       state.registerOperation(
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
@@ -67,6 +80,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   @Override
   public void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
     try {
+      if (!active.get()) {
+        throw new ServerUnavailableException();
+      }
       final int balance = this.state.getAccountBalance(request.getUserId());
       responseObserver.onNext(BalanceResponse.newBuilder().setValue(balance).build());
       responseObserver.onCompleted();

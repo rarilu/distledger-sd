@@ -4,6 +4,7 @@ import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.utils.Logger;
 
@@ -24,9 +25,12 @@ public class ServerMain {
     // Init server state.
     final ServerState state = new ServerState();
 
+    // Init active flag.
+    final AtomicBoolean active = new AtomicBoolean(true);
+
     // Init services.
-    final BindableService userService = new UserServiceImpl(state);
-    final BindableService adminService = new AdminServiceImpl(state);
+    final BindableService userService = new UserServiceImpl(state, active);
+    final BindableService adminService = new AdminServiceImpl(state, active);
 
     // Launch server.
     final Server server =
