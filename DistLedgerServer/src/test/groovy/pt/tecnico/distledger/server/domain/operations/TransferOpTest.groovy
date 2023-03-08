@@ -24,6 +24,21 @@ class TransferOpTest extends Specification {
         state.getAccounts().get("Alice").getBalance() == 100
     }
 
+    def "transfer all of the balance to a new user"() {
+        given: "a new server state"
+        def state = new ServerState()
+
+        and: "with an account already created"
+        state.registerOperation(new CreateOp("Alice"))
+
+        when: "a transfer is made from the broker to the new user"
+        state.registerOperation(new TransferOp("broker", "Alice", 1000))
+
+        then: "the accounts have the correct balance"
+        state.getAccounts().get("broker").getBalance() == 0
+        state.getAccounts().get("Alice").getBalance() == 1000
+    }
+
     def "transfer from non-existing account"() {
         given: "a new server state"
         def state = new ServerState()
