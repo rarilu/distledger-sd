@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.adminclient;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.utils.Logger;
@@ -24,21 +25,25 @@ public class CommandParser {
 
     try (final Scanner scanner = new Scanner(System.in)) {
       while (!exit) {
-        System.out.print("> ");
-        String line = scanner.nextLine().trim();
-        String cmd = line.split(SPACE)[0];
+        try {
+          System.out.print("> ");
+          String line = scanner.nextLine().trim();
+          String cmd = line.split(SPACE)[0];
 
-        switch (cmd) {
-          case ACTIVATE -> this.activate(line);
-          case DEACTIVATE -> this.deactivate(line);
-          case GET_LEDGER_STATE -> this.getLedgerState(line);
-          case GOSSIP -> this.gossip(line);
-          case HELP -> this.printUsage();
-          case EXIT -> exit = true;
-          default -> {
-            Logger.debug("Unknown command: " + cmd);
-            this.printUsage();
+          switch (cmd) {
+            case ACTIVATE -> this.activate(line);
+            case DEACTIVATE -> this.deactivate(line);
+            case GET_LEDGER_STATE -> this.getLedgerState(line);
+            case GOSSIP -> this.gossip(line);
+            case HELP -> this.printUsage();
+            case EXIT -> exit = true;
+            default -> {
+              Logger.debug("Unknown command: " + cmd);
+              this.printUsage();
+            }
           }
+        } catch (NoSuchElementException e) {
+          exit = true;
         }
       }
     }
