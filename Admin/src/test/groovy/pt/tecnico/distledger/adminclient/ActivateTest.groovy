@@ -22,7 +22,7 @@ class ActivateTest extends BaseTest {
     }
 
     def "activate server returns empty response"() {
-        given: "a activate input"
+        given: "an activate input"
         provideInput("activate A\nexit\n")
 
         and: "a mock server that returns an empty response"
@@ -45,7 +45,7 @@ class ActivateTest extends BaseTest {
     }
 
     def "activate returns a status exception"() {
-        given: "a create account input"
+        given: "an activate server input"
         provideInput("activate A\nexit\n")
 
         and: "a mock server that returns a status exception"
