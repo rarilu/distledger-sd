@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.server
 
 import io.grpc.stub.StreamObserver
+import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -11,11 +12,13 @@ import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {
     def state
+    def active
     def service
 
     def setup() {
         state = new ServerState()
-        service = new UserServiceImpl(state)
+        active = new AtomicBoolean(true)
+        service = new UserServiceImpl(state, active)
     }
 
     def "get balance for existing account"() {
