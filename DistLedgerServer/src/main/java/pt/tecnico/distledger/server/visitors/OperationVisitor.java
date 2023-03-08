@@ -1,4 +1,4 @@
-package pt.tecnico.distledger.server.domain.visitors;
+package pt.tecnico.distledger.server.visitors;
 
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;

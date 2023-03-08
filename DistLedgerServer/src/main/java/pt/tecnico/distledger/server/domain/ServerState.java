@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
-import pt.tecnico.distledger.server.domain.visitors.OperationExecutor;
+import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 public class ServerState {
   private List<Operation> ledger = new ArrayList<>();
