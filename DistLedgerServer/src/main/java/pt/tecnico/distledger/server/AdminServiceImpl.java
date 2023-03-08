@@ -4,6 +4,8 @@ import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest;
@@ -17,6 +19,13 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   public AdminServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
+  }
+
+  @Override
+  public void activate(ActivateRequest request, StreamObserver<ActivateResponse> responseObserver) {
+    this.active.set(true);
+    responseObserver.onNext(ActivateResponse.getDefaultInstance());
+    responseObserver.onCompleted();
   }
 
   @Override
