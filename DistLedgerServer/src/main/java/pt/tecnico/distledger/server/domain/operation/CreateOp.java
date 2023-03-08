@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.server.domain.operation;
 
-import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 public class CreateOp extends Operation {
@@ -9,7 +8,7 @@ public class CreateOp extends Operation {
   }
 
   @Override
-  public void accept(OperationVisitor visitor) throws OperationException {
+  public void accept(OperationVisitor visitor) {
     visitor.visit(this);
   }
 }

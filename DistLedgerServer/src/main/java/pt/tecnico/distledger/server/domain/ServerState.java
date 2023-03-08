@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
@@ -18,7 +17,7 @@ public class ServerState {
     this.executor = new OperationExecutor(this);
   }
 
-  public synchronized void registerOperation(Operation op) throws OperationException {
+  public synchronized void registerOperation(Operation op) {
     op.accept(this.executor);
     this.ledger.add(op);
   }

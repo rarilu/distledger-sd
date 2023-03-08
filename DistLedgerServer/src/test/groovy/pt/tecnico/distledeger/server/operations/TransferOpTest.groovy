@@ -36,7 +36,7 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(UnknownAccountException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
+        e.getStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -52,7 +52,7 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(UnknownAccountException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
+        e.getStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -70,7 +70,7 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(NotEnoughBalanceException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
+        e.getStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -86,7 +86,7 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(NopTransferException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
+        e.getStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
 
         and: "the broker has the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -104,7 +104,7 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(NonPositiveTransferException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
+        e.getStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000

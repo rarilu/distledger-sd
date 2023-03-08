@@ -1,8 +1,9 @@
 package pt.tecnico.distledger.server.domain.exceptions;
 
 import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 
-public class NonPositiveTransferException extends OperationException {
+public class NonPositiveTransferException extends StatusRuntimeException {
   public NonPositiveTransferException() {
     super(
         Status.INVALID_ARGUMENT.withDescription(
