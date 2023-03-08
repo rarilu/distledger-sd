@@ -32,9 +32,6 @@ public class UserService implements AutoCloseable {
 
       System.out.println("OK");
       System.out.println(representation);
-      if (!representation.isEmpty()) {
-        System.out.println();
-      }
     } catch (StatusRuntimeException e) {
       System.out.println("Error: " + e.getStatus().getDescription());
       System.out.println();
