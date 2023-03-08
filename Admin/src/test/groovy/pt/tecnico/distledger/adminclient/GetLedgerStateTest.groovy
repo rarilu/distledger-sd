@@ -2,6 +2,9 @@ package pt.tecnico.distledger.adminclient
 
 import io.grpc.Status
 import org.grpcmock.GrpcMock
+import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
+import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
+import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc
@@ -35,6 +38,72 @@ class GetLedgerStateTest extends BaseTest {
 
         then: "the output is correct"
         outBuf.toString() == "> OK\n\n> "
+
+        and: "the mock server received the correct request, exactly once"
+        GrpcMock.verifyThat(
+                GrpcMock.calledMethod(AdminServiceGrpc.getGetLedgerStateMethod())
+                        .withRequest(getLedgerStateRequest.getDefaultInstance()),
+                GrpcMock.times(1)
+        )
+    }
+
+    def "get ledger state server returns non-empty response"() {
+        given: "a get ledger state input"
+        provideInput("getLedgerState A\nexit\n")
+
+        and: "a mock server that returns a non-empty response"
+        def operations = [
+                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
+                        .setUserId("Alice")
+                        .build(),
+                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
+                        .setUserId("broker")
+                        .setDestUserId("Alice")
+                        .setAmount(100)
+                        .build(),
+                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
+                        .setUserId("Alice")
+                        .setDestUserId("broker")
+                        .setAmount(100)
+                        .build(),
+                Operation.newBuilder().setType(OperationType.OP_DELETE_ACCOUNT)
+                        .setUserId("Alice")
+                        .build()
+        ]
+        def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
+        GrpcMock.stubFor(
+                GrpcMock.unaryMethod(AdminServiceGrpc.getGetLedgerStateMethod())
+                        .willReturn(GrpcMock.response(getLedgerStateResponse.newBuilder()
+                        .setLedgerState(ledgerState).build())))
+
+        when: "the admin client is run"
+        runMain()
+
+        then: "the output is correct"
+        outBuf.toString() == ("> OK\n"
+                + "ledgerState {\n" +
+                "  ledger {\n" +
+                "    type: OP_CREATE_ACCOUNT\n" +
+                "    userId: \"Alice\"\n" +
+                "  }\n" +
+                "  ledger {\n" +
+                "    type: OP_TRANSFER_TO\n" +
+                "    userId: \"broker\"\n" +
+                "    destUserId: \"Alice\"\n" +
+                "    amount: 100\n" +
+                "  }\n" +
+                "  ledger {\n" +
+                "    type: OP_TRANSFER_TO\n" +
+                "    userId: \"Alice\"\n" +
+                "    destUserId: \"broker\"\n" +
+                "    amount: 100\n" +
+                "  }\n" +
+                "  ledger {\n" +
+                "    type: OP_DELETE_ACCOUNT\n" +
+                "    userId: \"Alice\"\n" +
+                "  }\n" +
+                "}\n"
+                + "\n> ")
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
