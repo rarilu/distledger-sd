@@ -26,9 +26,11 @@ public class ServerMain {
 
     // Init services.
     final BindableService userService = new UserServiceImpl(state);
+    final BindableService adminService = new AdminServiceImpl(state);
 
     // Launch server.
-    final Server server = ServerBuilder.forPort(port).addService(userService).build();
+    final Server server =
+        ServerBuilder.forPort(port).addService(userService).addService(adminService).build();
     server.start();
     System.out.println("Server started, listening on " + port);
 
