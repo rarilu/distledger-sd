@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
+import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
@@ -19,6 +20,25 @@ class UserServiceImplTest extends Specification {
         state = new ServerState()
         active = new AtomicBoolean(true)
         service = new UserServiceImpl(state, active)
+    }
+
+    def "deactivate server"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        when: "server is deactivated"
+        active.set(false)
+
+        and: "method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method is unavailable"
+        1 * observer.onError({
+            it instanceof ServerUnavailableException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
+        })
+
+        where:
+        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
     }
 
     def "get balance for existing account"() {
