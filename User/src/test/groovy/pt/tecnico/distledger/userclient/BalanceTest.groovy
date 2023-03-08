@@ -37,7 +37,7 @@ class BalanceTest extends BaseTest {
         if (balance == 0) {
              outBuf.toString() == "> OK\n\n> "
         } else {
-             outBuf.toString() == "> OK\nvalue: " + balance + "\n\n\n> "
+             outBuf.toString() == "> OK\nvalue: " + balance + "\n\n> "
         }
 
         and: "the mock server received the correct request, exactly once"
