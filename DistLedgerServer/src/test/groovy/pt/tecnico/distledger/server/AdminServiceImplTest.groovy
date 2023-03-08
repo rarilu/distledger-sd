@@ -1,6 +1,7 @@
 import spock.lang.Specification
 
 import io.grpc.stub.StreamObserver
+import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.AdminServiceImpl
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -11,14 +12,32 @@ import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operat
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 
 class AdminServiceImplTest extends Specification {
     def state
+    def active
     def service
 
     def setup() {
         state = new ServerState()
-        service = new AdminServiceImpl(state)
+        active = new AtomicBoolean(true)
+        service = new AdminServiceImpl(state, active)
+    }
+
+    def "deactivate server"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        when: "server is deactivated"
+        service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
+
+        then: "active flag is false"
+        !active.get()
+
+        and: "response is sent"
+        1 * observer.onNext(DeactivateResponse.getDefaultInstance())
     }
 
     def "get empty ledger state"() {
