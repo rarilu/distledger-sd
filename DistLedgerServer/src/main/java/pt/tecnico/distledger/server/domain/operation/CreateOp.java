@@ -1,10 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
-import pt.tecnico.distledger.server.domain.Account;
-import pt.tecnico.distledger.server.domain.ServerState;
-import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
-import pt.tecnico.distledger.utils.Logger;
+import pt.tecnico.distledger.server.domain.visitors.OperationVisitor;
 
 public class CreateOp extends Operation {
   public CreateOp(String userId) {
@@ -12,12 +9,7 @@ public class CreateOp extends Operation {
   }
 
   @Override
-  public void apply(ServerState state) throws OperationException {
-    if (state.getAccounts().containsKey(this.getUserId())) {
-      throw new AccountAlreadyExistsException(this.getUserId());
-    }
-
-    state.getAccounts().put(this.getUserId(), new Account());
-    Logger.debug("Created account for " + this.getUserId());
+  public void accept(OperationVisitor visitor) throws OperationException {
+    visitor.visit(this);
   }
 }

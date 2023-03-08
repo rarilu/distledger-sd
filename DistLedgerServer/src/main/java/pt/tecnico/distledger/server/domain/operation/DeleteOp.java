@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
-import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.visitors.OperationVisitor;
 
 public class DeleteOp extends Operation {
   public DeleteOp(String userId) {
@@ -9,7 +9,7 @@ public class DeleteOp extends Operation {
   }
 
   @Override
-  public void apply(ServerState state) throws OperationException {
-    // TODO
+  public void accept(OperationVisitor visitor) throws OperationException {
+    visitor.visit(this);
   }
 }

@@ -6,17 +6,20 @@ import java.util.List;
 import java.util.Map;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
+import pt.tecnico.distledger.server.domain.visitors.OperationExecutor;
 
 public class ServerState {
   private List<Operation> ledger = new ArrayList<>();
   private Map<String, Account> accounts = new HashMap<>();
+  private OperationExecutor executor;
 
   public ServerState() {
     this.accounts.put("broker", new Account(1000));
+    this.executor = new OperationExecutor(this);
   }
 
   public synchronized void registerOperation(Operation op) throws OperationException {
-    op.apply(this);
+    op.accept(this.executor);
     this.ledger.add(op);
   }
 

@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.server.domain.operation;
 
-import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.visitors.OperationVisitor;
 
 public abstract class Operation {
   private String userId;
@@ -14,5 +14,5 @@ public abstract class Operation {
     return this.userId;
   }
 
-  public abstract void apply(ServerState state) throws OperationException;
+  public abstract void accept(OperationVisitor visitor) throws OperationException;
 }
