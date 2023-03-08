@@ -3,6 +3,7 @@ package pt.tecnico.distledger.server.visitors;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
+import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
@@ -32,7 +33,17 @@ public class OperationExecutor extends OperationVisitor {
 
   @Override
   public void visit(DeleteOp op) throws OperationException {
-    // TODO
+    if (!state.getAccounts().containsKey(op.getUserId())) {
+      throw new UnknownAccountException(op.getUserId());
+    }
+
+    final int balance = state.getAccounts().get(op.getUserId()).getBalance();
+    if (balance > 0) {
+      throw new NonEmptyAccountException(op.getUserId(), balance);
+    }
+
+    state.getAccounts().remove(op.getUserId());
+    Logger.debug("Deleted account of " + op.getUserId());
   }
 
   @Override
