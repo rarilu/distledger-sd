@@ -7,6 +7,8 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
@@ -58,6 +60,18 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onCompleted();
     } catch (StatusRuntimeException e) {
       Logger.debug("Transfer failed: " + e.getMessage());
+      responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
+    try {
+      final int balance = this.state.getAccountBalance(request.getUserId());
+      responseObserver.onNext(BalanceResponse.newBuilder().setValue(balance).build());
+      responseObserver.onCompleted();
+    } catch (StatusRuntimeException e) {
+      Logger.debug("Balance failed: " + e.getMessage());
       responseObserver.onError(e);
     }
   }
