@@ -4,6 +4,7 @@ import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
+import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException
 
 class DeleteOpTest extends Specification {
@@ -19,6 +20,18 @@ class DeleteOpTest extends Specification {
 
         then: "there is only one account"
         state.getAccounts().size() == 1
+    }
+
+    def "delete the broker account"() {
+        given: "a new server state"
+        def state = new ServerState()
+
+        when: "the broker account is deleted"
+        state.registerOperation(new DeleteOp("broker"))
+
+        then: "an exception is thrown"
+        def e = thrown(ProtectedAccountException)
+        e.getGrpcStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
     }
 
     def "delete a non-existing account"() {
