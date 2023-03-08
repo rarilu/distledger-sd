@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.userclient;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import pt.tecnico.distledger.userclient.grpc.UserService;
 import pt.tecnico.distledger.utils.Logger;
@@ -44,6 +45,8 @@ public class CommandParser {
         } catch (NumberFormatException e) {
           Logger.debug(e.getMessage());
           System.out.println("Error: Invalid number provided");
+        } catch (NoSuchElementException e) {
+          exit = true;
         }
       }
     }
