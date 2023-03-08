@@ -32,7 +32,7 @@ class DeleteOpTest extends Specification {
 
         then: "an exception is thrown"
         def e = thrown(ProtectedAccountException)
-        e.getGrpcStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
+        e.getGrpcStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
 
         and: "the broker account still exists"
         state.getAccounts().containsKey("broker")
