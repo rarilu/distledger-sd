@@ -4,10 +4,13 @@ import io.grpc.stub.StreamObserver;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
+import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
@@ -28,6 +31,19 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onCompleted();
     } catch (OperationException e) {
       Logger.debug("Create account failed: " + e.getMessage());
+      responseObserver.onError(e.getGrpcStatus().asRuntimeException());
+    }
+  }
+
+  @Override
+  public void deleteAccount(
+      DeleteAccountRequest request, StreamObserver<DeleteAccountResponse> responseObserver) {
+    try {
+      this.state.registerOperation(new DeleteOp(request.getUserId()));
+      responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (OperationException e) {
+      Logger.debug("Delete account failed: " + e.getMessage());
       responseObserver.onError(e.getGrpcStatus().asRuntimeException());
     }
   }
