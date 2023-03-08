@@ -8,6 +8,7 @@ import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferExcepti
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.domain.exceptions.OperationException;
+import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
@@ -33,6 +34,10 @@ public class OperationExecutor extends OperationVisitor {
 
   @Override
   public void visit(DeleteOp op) throws OperationException {
+    if (op.getUserId().equals("broker")) {
+      throw new ProtectedAccountException(op.getUserId());
+    }
+
     if (!state.getAccounts().containsKey(op.getUserId())) {
       throw new UnknownAccountException(op.getUserId());
     }
