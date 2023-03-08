@@ -7,7 +7,6 @@ import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
-import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
@@ -23,7 +22,7 @@ public class OperationExecutor extends OperationVisitor {
   }
 
   @Override
-  public void visit(CreateOp op) throws OperationException {
+  public void visit(CreateOp op) {
     if (this.state.getAccounts().containsKey(op.getUserId())) {
       throw new AccountAlreadyExistsException(op.getUserId());
     }
@@ -33,7 +32,7 @@ public class OperationExecutor extends OperationVisitor {
   }
 
   @Override
-  public void visit(DeleteOp op) throws OperationException {
+  public void visit(DeleteOp op) {
     if (op.getUserId().equals("broker")) {
       throw new ProtectedAccountException(op.getUserId());
     }
@@ -52,7 +51,7 @@ public class OperationExecutor extends OperationVisitor {
   }
 
   @Override
-  public void visit(TransferOp op) throws OperationException {
+  public void visit(TransferOp op) {
     // Check if the amount is positive.
     if (op.getAmount() <= 0) {
       throw new NonPositiveTransferException();

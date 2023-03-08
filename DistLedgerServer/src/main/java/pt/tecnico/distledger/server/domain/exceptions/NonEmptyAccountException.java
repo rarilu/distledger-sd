@@ -1,8 +1,9 @@
 package pt.tecnico.distledger.server.domain.exceptions;
 
 import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 
-public class NonEmptyAccountException extends OperationException {
+public class NonEmptyAccountException extends StatusRuntimeException {
   public NonEmptyAccountException(String userId, int amount) {
     super(
         Status.FAILED_PRECONDITION.withDescription(

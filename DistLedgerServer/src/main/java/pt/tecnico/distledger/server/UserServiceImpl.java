@@ -1,8 +1,8 @@
 package pt.tecnico.distledger.server;
 
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import pt.tecnico.distledger.server.domain.ServerState;
-import pt.tecnico.distledger.server.domain.exceptions.OperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
@@ -29,9 +29,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.state.registerOperation(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (OperationException e) {
+    } catch (StatusRuntimeException e) {
       Logger.debug("Create account failed: " + e.getMessage());
-      responseObserver.onError(e.getGrpcStatus().asRuntimeException());
+      responseObserver.onError(e);
     }
   }
 
@@ -42,9 +42,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.state.registerOperation(new DeleteOp(request.getUserId()));
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (OperationException e) {
+    } catch (StatusRuntimeException e) {
       Logger.debug("Delete account failed: " + e.getMessage());
-      responseObserver.onError(e.getGrpcStatus().asRuntimeException());
+      responseObserver.onError(e);
     }
   }
 
@@ -56,9 +56,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (OperationException e) {
+    } catch (StatusRuntimeException e) {
       Logger.debug("Transfer failed: " + e.getMessage());
-      responseObserver.onError(e.getGrpcStatus().asRuntimeException());
+      responseObserver.onError(e);
     }
   }
 }
