@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
+import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 public class ServerState {
   private List<Operation> ledger = new ArrayList<>();
@@ -20,6 +21,12 @@ public class ServerState {
   public synchronized void registerOperation(Operation op) {
     op.accept(this.executor);
     this.ledger.add(op);
+  }
+
+  public synchronized void visitLedger(OperationVisitor visitor) {
+    for (Operation op : this.ledger) {
+      op.accept(visitor);
+    }
   }
 
   public Map<String, Account> getAccounts() {
