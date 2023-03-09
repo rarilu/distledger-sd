@@ -19,8 +19,8 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   private static final String DEACTIVATE_FAILED = "Deactivate failed: ";
   private static final String GET_LEDGER_STATE_FAILED = "Get Ledger State failed: ";
 
-  private ServerState state;
-  private AtomicBoolean active;
+  private final ServerState state;
+  private final AtomicBoolean active;
 
   public AdminServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;

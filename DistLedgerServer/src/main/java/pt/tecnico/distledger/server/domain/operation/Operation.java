@@ -3,7 +3,7 @@ package pt.tecnico.distledger.server.domain.operation;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 public abstract class Operation {
-  private String userId;
+  private final String userId;
 
   protected Operation(String userId) {
     this.userId = userId;

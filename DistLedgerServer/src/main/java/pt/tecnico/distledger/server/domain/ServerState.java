@@ -11,9 +11,9 @@ import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 public class ServerState {
-  private List<Operation> ledger = new ArrayList<>();
-  private Map<String, Account> accounts = new HashMap<>();
-  private OperationExecutor executor;
+  private final List<Operation> ledger = new ArrayList<>();
+  private final Map<String, Account> accounts = new HashMap<>();
+  private final OperationExecutor executor;
 
   public ServerState() {
     this.accounts.put("broker", new Account(1000));
