@@ -101,7 +101,7 @@ public class CommandParser {
     String server = split[1];
     String from = split[2];
     String dest = split[3];
-    int amount = Integer.valueOf(split[4]);
+    int amount = Integer.parseInt(split[4]);
 
     userService.transferTo(server, from, dest, amount);
   }
