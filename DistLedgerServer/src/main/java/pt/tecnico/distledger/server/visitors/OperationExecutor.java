@@ -14,7 +14,7 @@ import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 
-public class OperationExecutor extends OperationVisitor {
+public class OperationExecutor implements OperationVisitor {
   private ServerState state;
 
   public OperationExecutor(ServerState state) {
