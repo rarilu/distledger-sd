@@ -23,7 +23,7 @@ class TransferToTest extends BaseTest {
 
     def "user provides invalid transfer to amount"() {
         given: "an invalid transfer to amount input"
-        provideInput("transferTo A Alice Bob notanumber\nexit\n")
+        provideInput("transferTo A Alice Bob notANumber\nexit\n")
 
         when: "the user client is run"
         runMain()
