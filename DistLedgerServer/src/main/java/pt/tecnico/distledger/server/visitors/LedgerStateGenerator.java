@@ -1,11 +1,11 @@
 package pt.tecnico.distledger.server.visitors;
 
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState;
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation;
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState;
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation;
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType;
 
 public class LedgerStateGenerator extends OperationVisitor {
   private LedgerState.Builder builder;

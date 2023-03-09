@@ -1,5 +1,5 @@
 syntax = "proto3";
-package pt.ulisboa.tecnico.distledger.contract.user;
+package pt.tecnico.distledger.contract.user;
 
 // User Interface of the DistLedger Service
 

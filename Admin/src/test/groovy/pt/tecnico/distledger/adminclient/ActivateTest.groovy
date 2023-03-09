@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.adminclient
 
 import io.grpc.Status
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
+import pt.tecnico.distledger.contract.admin.AdminServiceGrpc
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
 import org.grpcmock.GrpcMock
 
 class ActivateTest extends BaseTest {

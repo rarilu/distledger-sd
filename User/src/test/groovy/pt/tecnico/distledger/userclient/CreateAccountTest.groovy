@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
+import pt.tecnico.distledger.contract.user.UserServiceGrpc
+import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
+import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
 import org.grpcmock.GrpcMock;
 
 class CreateAccountTest extends BaseTest {

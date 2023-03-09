@@ -2,12 +2,12 @@ package pt.tecnico.distledger.adminclient
 
 import io.grpc.Status
 import org.grpcmock.GrpcMock
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
+import pt.tecnico.distledger.contract.admin.AdminServiceGrpc
 
 class GetLedgerStateTest extends BaseTest {
     def "user provides invalid get ledger state command"() {

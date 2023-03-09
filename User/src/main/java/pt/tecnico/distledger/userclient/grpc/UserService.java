@@ -4,12 +4,12 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
+import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
+import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
+import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
+import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
+import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.utils.Logger;
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc;
 
 public class UserService implements AutoCloseable {
   ManagedChannel channel;

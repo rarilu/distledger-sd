@@ -1,5 +1,5 @@
 syntax = "proto3";
-package pt.ulisboa.tecnico.distledger.contract.distledgerserver;
+package pt.tecnico.distledger.contract.distledgerserver;
 
 import "DistLedgerCommonDefinitions.proto";
 
