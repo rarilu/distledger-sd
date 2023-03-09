@@ -15,6 +15,10 @@ import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 import pt.tecnico.distledger.utils.Logger;
 
 public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
+  private static final String ACTIVATE_FAILED = "Activate failed: ";
+  private static final String DEACTIVATE_FAILED = "Deactivate failed: ";
+  private static final String GET_LEDGER_STATE_FAILED = "Get Ledger State failed: ";
+
   private ServerState state;
   private AtomicBoolean active;
 
@@ -30,7 +34,7 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       responseObserver.onNext(ActivateResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
-      Logger.debug("Activate failed: " + e.getMessage());
+      Logger.debug(ACTIVATE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
@@ -43,7 +47,7 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       responseObserver.onNext(DeactivateResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
-      Logger.debug("Deactivate failed: " + e.getMessage());
+      Logger.debug(DEACTIVATE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
@@ -61,7 +65,7 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       responseObserver.onNext(response);
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
-      Logger.debug("Get Ledger State failed: " + e.getMessage());
+      Logger.debug(GET_LEDGER_STATE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
