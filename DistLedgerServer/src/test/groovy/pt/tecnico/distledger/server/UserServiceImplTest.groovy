@@ -4,7 +4,6 @@ import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean
 import pt.tecnico.distledger.server.domain.ServerState
-import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
