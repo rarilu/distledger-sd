@@ -1,3 +1,5 @@
+package pt.tecnico.distledger.server
+
 import spock.lang.Specification
 
 import io.grpc.stub.StreamObserver

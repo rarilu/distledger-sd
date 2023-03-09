@@ -1,3 +1,5 @@
+package pt.tecnico.distledger.server.domain
+
 import spock.lang.Specification
 
 import pt.tecnico.distledger.server.domain.ServerState
