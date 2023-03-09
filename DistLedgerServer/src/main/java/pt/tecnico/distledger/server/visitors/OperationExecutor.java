@@ -15,7 +15,7 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 
 public class OperationExecutor implements OperationVisitor {
-  private ServerState state;
+  private final ServerState state;
 
   public OperationExecutor(ServerState state) {
     this.state = state;

@@ -3,8 +3,8 @@ package pt.tecnico.distledger.server.domain.operation;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 public class TransferOp extends Operation {
-  private String destUserId;
-  private int amount;
+  private final String destUserId;
+  private final int amount;
 
   public TransferOp(String fromUserId, String destUserId, int amount) {
     super(fromUserId);

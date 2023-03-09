@@ -25,8 +25,8 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   private static final String TRANSFER_FAILED = "Transfer failed: ";
   private static final String BALANCE_FAILED = "Balance failed: ";
 
-  private ServerState state;
-  private AtomicBoolean active;
+  private final ServerState state;
+  private final AtomicBoolean active;
 
   public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;

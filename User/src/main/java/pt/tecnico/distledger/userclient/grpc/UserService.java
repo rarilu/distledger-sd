@@ -12,8 +12,8 @@ import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.utils.Logger;
 
 public class UserService implements AutoCloseable {
-  ManagedChannel channel;
-  UserServiceGrpc.UserServiceBlockingStub stub;
+  private final ManagedChannel channel;
+  private final UserServiceGrpc.UserServiceBlockingStub stub;
 
   public UserService(String host, int port) {
     final String target = host + ":" + port;

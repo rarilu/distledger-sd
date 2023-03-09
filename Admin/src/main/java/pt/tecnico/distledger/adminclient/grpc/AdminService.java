@@ -11,8 +11,8 @@ import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 import pt.tecnico.distledger.utils.Logger;
 
 public class AdminService implements AutoCloseable {
-  ManagedChannel channel;
-  AdminServiceGrpc.AdminServiceBlockingStub stub;
+  private final ManagedChannel channel;
+  private final AdminServiceGrpc.AdminServiceBlockingStub stub;
 
   public AdminService(String host, int port) {
     final String target = host + ":" + port;
