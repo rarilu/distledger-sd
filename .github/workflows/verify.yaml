@@ -3,7 +3,7 @@ name: Java CI
 on:
   push:
     branches: [ master ]
-    paths: [ '**.java', '.github/workflows/verify.yaml' ]
+    paths: [ '**.java', '**.groovy', '.github/workflows/verify.yaml' ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
