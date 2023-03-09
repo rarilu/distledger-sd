@@ -15,12 +15,13 @@ class UserServiceImplTest extends Specification {
     def state
     def active
     def service
-    def observer = Mock(StreamObserver)
+    def observer
 
     def setup() {
         state = new ServerState()
         active = new AtomicBoolean(true)
         service = new UserServiceImpl(state, active)
+        observer = Mock(StreamObserver)
     }
 
     def "deactivate server"() {
