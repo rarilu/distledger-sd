@@ -1,10 +1,7 @@
 package pt.tecnico.distledger.server.domain.exceptions;
 
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
-
-public class AccountAlreadyExistsException extends StatusRuntimeException {
+public class AccountAlreadyExistsException extends RuntimeException {
   public AccountAlreadyExistsException(String userId) {
-    super(Status.ALREADY_EXISTS.withDescription("Account for user " + userId + " already exists"));
+    super("Account for user " + userId + " already exists");
   }
 }

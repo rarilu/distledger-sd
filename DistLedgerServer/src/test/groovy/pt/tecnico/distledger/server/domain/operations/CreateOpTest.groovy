@@ -30,8 +30,7 @@ class CreateOpTest extends Specification {
         state.registerOperation(new CreateOp("Alice"))
 
         then: "an exception is thrown"
-        def e = thrown(AccountAlreadyExistsException)
-        e.getStatus().getCode() == io.grpc.Status.ALREADY_EXISTS.getCode()
+        thrown(AccountAlreadyExistsException)
 
         and: "the number of accounts is still 2"
         state.getAccounts().size() == 2
