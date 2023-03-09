@@ -2,8 +2,6 @@ package pt.tecnico.distledger.server.domain
 
 import spock.lang.Specification
 
-import pt.tecnico.distledger.server.domain.ServerState
-
 class ServerStateTest extends Specification {
     def "state has broker account with 1000"() {
         when: "a new server state is created"
