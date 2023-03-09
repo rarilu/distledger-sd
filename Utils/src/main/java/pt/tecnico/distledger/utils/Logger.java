@@ -20,4 +20,13 @@ public final class Logger {
       System.err.println(debugMessage);
     }
   }
+
+  /**
+   * Prints an error message.
+   *
+   * @param errorMessage the message to print
+   */
+  public static void error(String errorMessage) {
+    System.err.println(errorMessage);
+  }
 }
