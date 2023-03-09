@@ -15,6 +15,7 @@ class UserServiceImplTest extends Specification {
     def state
     def active
     def service
+    def observer = Mock(StreamObserver)
 
     def setup() {
         state = new ServerState()
@@ -23,9 +24,6 @@ class UserServiceImplTest extends Specification {
     }
 
     def "deactivate server"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
         when: "server is deactivated"
         active.set(false)
 
@@ -42,10 +40,7 @@ class UserServiceImplTest extends Specification {
     }
 
     def "get balance for existing account"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
-        and: "an account already created"
+        given: "an account already created"
         state.registerOperation(new CreateOp("Alice"))
 
         and: "with a given balance"
@@ -64,9 +59,6 @@ class UserServiceImplTest extends Specification {
     }
 
     def "get balance for non-existing account"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
         when: "get balance for account"
         service.balance(BalanceRequest.newBuilder().setUserId("void").build(), observer)
 

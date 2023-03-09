@@ -21,6 +21,7 @@ class AdminServiceImplTest extends Specification {
     def state
     def active
     def service
+    def observer = Mock(StreamObserver)
 
     def setup() {
         state = new ServerState()
@@ -29,9 +30,6 @@ class AdminServiceImplTest extends Specification {
     }
 
     def "toggle server active"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
         when: "server is deactivated"
         service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
         
@@ -61,10 +59,7 @@ class AdminServiceImplTest extends Specification {
     }
 
     def "get empty ledger state"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
-        and: "an expected empty ledger state"
+        given: "an expected empty ledger state"
         def ledgerState = LedgerState.getDefaultInstance()
 
         when: "get ledger state"
@@ -75,10 +70,7 @@ class AdminServiceImplTest extends Specification {
     }
 
     def "get non-empty ledger state"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
-        and: "an expected ledger state"
+        given: "an expected ledger state"
         def operations = [
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Alice")
