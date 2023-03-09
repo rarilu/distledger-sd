@@ -12,8 +12,8 @@ import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operat
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 
@@ -68,10 +68,10 @@ class AdminServiceImplTest extends Specification {
         def ledgerState = LedgerState.getDefaultInstance()
 
         when: "get ledger state"
-        service.getLedgerState(getLedgerStateRequest.getDefaultInstance(), observer)
+        service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)
 
         then: "ledger state is empty"
-        1 * observer.onNext(getLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
+        1 * observer.onNext(GetLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
     }
 
     def "get non-empty ledger state"() {
@@ -106,9 +106,9 @@ class AdminServiceImplTest extends Specification {
         state.registerOperation(new DeleteOp("Alice"))
 
         when: "get ledger state"
-        service.getLedgerState(getLedgerStateRequest.getDefaultInstance(), observer)
+        service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)
 
         then: "ledger state is correct"
-        1 * observer.onNext(getLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
+        1 * observer.onNext(GetLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
     }
 }
