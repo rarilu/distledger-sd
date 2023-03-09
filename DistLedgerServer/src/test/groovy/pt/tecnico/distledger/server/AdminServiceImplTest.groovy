@@ -7,15 +7,15 @@ import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
-import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 
 class AdminServiceImplTest extends Specification {
     def state

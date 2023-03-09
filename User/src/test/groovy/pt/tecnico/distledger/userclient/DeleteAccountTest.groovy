@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse
+import pt.tecnico.distledger.contract.user.UserServiceGrpc
+import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
+import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse
 import org.grpcmock.GrpcMock;
 
 class DeleteAccountTest extends BaseTest {

@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
+import pt.tecnico.distledger.contract.user.UserServiceGrpc
+import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
+import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
 import org.grpcmock.GrpcMock;
 
 class BalanceTest extends BaseTest {

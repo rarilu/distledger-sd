@@ -1,5 +1,5 @@
 syntax = "proto3";
-package pt.ulisboa.tecnico.distledger.contract;
+package pt.tecnico.distledger.contract;
 
 // Common definitions of the DistLedger Service contract
 

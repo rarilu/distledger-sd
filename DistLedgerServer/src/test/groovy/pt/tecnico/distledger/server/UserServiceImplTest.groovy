@@ -7,8 +7,8 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
+import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
+import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
 import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {

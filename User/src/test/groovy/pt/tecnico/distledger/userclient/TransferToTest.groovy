@@ -2,9 +2,9 @@ package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
 import org.grpcmock.GrpcMock
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
-import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse
-import pt.ulisboa.tecnico.distledger.contract.user.UserServiceGrpc
+import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
+import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse
+import pt.tecnico.distledger.contract.user.UserServiceGrpc
 
 class TransferToTest extends BaseTest {
     def "user provides invalid transfer to command"() {
