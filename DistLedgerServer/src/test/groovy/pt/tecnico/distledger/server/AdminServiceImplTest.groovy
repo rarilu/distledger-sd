@@ -28,32 +28,33 @@ class AdminServiceImplTest extends Specification {
         service = new AdminServiceImpl(state, active)
     }
 
-    def "activate server"() {
-        given: "a mock observer"
-        def observer = Mock(StreamObserver)
-
-        when: "server is activated"
-        service.activate(ActivateRequest.getDefaultInstance(), observer)
-
-        then: "active flag is true"
-        active.get() == true
-
-        and: "response is sent"
-        1 * observer.onNext(ActivateResponse.getDefaultInstance())
-    }
-
-    def "deactivate server"() {
+    def "toggle server active"() {
         given: "a mock observer"
         def observer = Mock(StreamObserver)
 
         when: "server is deactivated"
         service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
+        def afterDeactivate = active.get()
 
-        then: "active flag is false"
-        active.get() == false
+        and: "server is activated"
+        service.activate(ActivateRequest.getDefaultInstance(), observer)
+        def afterActivate = active.get()
 
-        and: "response is sent"
-        1 * observer.onNext(DeactivateResponse.getDefaultInstance())
+        and: "server is deactivated again"
+        service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
+
+        then: "active flag after first deactivate is correct"
+        afterDeactivate == false
+
+        and: "active flag after activate is correct"
+        afterActivate == true
+
+        and: "active flag after second deactivate is correct"
+        active.get() == false // now
+
+        and: "responses are sent"
+        2 * observer.onNext(DeactivateResponse.getDefaultInstance())
+        1 * observer.onNext(ActivateResponse.getDefaultInstance())
     }
 
     def "get empty ledger state"() {
