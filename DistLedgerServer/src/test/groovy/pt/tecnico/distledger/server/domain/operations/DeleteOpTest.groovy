@@ -31,8 +31,7 @@ class DeleteOpTest extends Specification {
         state.registerOperation(new DeleteOp("broker"))
 
         then: "an exception is thrown"
-        def e = thrown(ProtectedAccountException)
-        e.getStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
+        thrown(ProtectedAccountException)
 
         and: "the broker account still exists"
         state.getAccounts().containsKey("broker")
@@ -46,8 +45,7 @@ class DeleteOpTest extends Specification {
         state.registerOperation(new DeleteOp("void"))
 
         then: "an exception is thrown"
-        def e = thrown(UnknownAccountException)
-        e.getStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
+        thrown(UnknownAccountException)
     }
 
     def "delete a non-empty account"() {
@@ -64,8 +62,7 @@ class DeleteOpTest extends Specification {
         state.registerOperation(new DeleteOp("Alice"))
 
         then: "an exception is thrown"
-        def e = thrown(NonEmptyAccountException)
-        e.getStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
+        thrown(NonEmptyAccountException)
 
         and: "the account still exists"
         state.getAccounts().containsKey("Alice")

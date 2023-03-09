@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.server
 
+import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState
-import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
@@ -34,7 +34,7 @@ class UserServiceImplTest extends Specification {
 
         then: "method fails with ServerUnavailableException"
         1 * observer.onError({
-            it instanceof ServerUnavailableException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
+            it instanceof StatusRuntimeException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
         })
 
         where: "method is any void function of UserServiceImpl"
@@ -72,7 +72,7 @@ class UserServiceImplTest extends Specification {
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof UnknownAccountException && it.getMessage() == "NOT_FOUND: Account void does not exist"
+            it instanceof StatusRuntimeException && it.getMessage() == "NOT_FOUND: Account void does not exist"
         })
     }
 }

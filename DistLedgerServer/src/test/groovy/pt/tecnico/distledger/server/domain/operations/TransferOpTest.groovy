@@ -50,8 +50,7 @@ class TransferOpTest extends Specification {
         state.registerOperation(new TransferOp("void", "Alice", 100))
 
         then: "an exception is thrown"
-        def e = thrown(UnknownAccountException)
-        e.getStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
+        thrown(UnknownAccountException)
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -66,8 +65,7 @@ class TransferOpTest extends Specification {
         state.registerOperation(new TransferOp("broker", "void", 100))
 
         then: "an exception is thrown"
-        def e = thrown(UnknownAccountException)
-        e.getStatus().getCode() == io.grpc.Status.NOT_FOUND.getCode()
+        thrown(UnknownAccountException)
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -84,8 +82,7 @@ class TransferOpTest extends Specification {
         state.registerOperation(new TransferOp("broker", "Alice", 1001))
 
         then: "an exception is thrown"
-        def e = thrown(NotEnoughBalanceException)
-        e.getStatus().getCode() == io.grpc.Status.FAILED_PRECONDITION.getCode()
+        thrown(NotEnoughBalanceException)
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -100,8 +97,7 @@ class TransferOpTest extends Specification {
         state.registerOperation(new TransferOp("broker", "broker", 100))
 
         then: "an exception is thrown"
-        def e = thrown(NopTransferException)
-        e.getStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
+        thrown(NopTransferException)
 
         and: "the broker has the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
@@ -118,8 +114,7 @@ class TransferOpTest extends Specification {
         state.registerOperation(new TransferOp("broker", "Alice", -100))
 
         then: "an exception is thrown"
-        def e = thrown(NonPositiveTransferException)
-        e.getStatus().getCode() == io.grpc.Status.INVALID_ARGUMENT.getCode()
+        thrown(NonPositiveTransferException)
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
