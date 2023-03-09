@@ -34,27 +34,30 @@ class AdminServiceImplTest extends Specification {
 
         when: "server is deactivated"
         service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
-        def afterDeactivate = active.get()
+        
+        then: "active flag is correct"
+        active.get() == false
 
-        and: "server is activated"
+        and: "response is sent"
+        1 * observer.onNext(DeactivateResponse.getDefaultInstance())
+
+        when: "server is activated"
         service.activate(ActivateRequest.getDefaultInstance(), observer)
-        def afterActivate = active.get()
 
-        and: "server is deactivated again"
+        then: "active flag is correct"
+        active.get() == true
+
+        and: "response is sent"
+        1 * observer.onNext(ActivateResponse.getDefaultInstance())
+
+        when: "server is deactivated again"
         service.deactivate(DeactivateRequest.getDefaultInstance(), observer)
 
-        then: "active flag after first deactivate is correct"
-        afterDeactivate == false
+        then: "active flag is correct"
+        active.get() == false
 
-        and: "active flag after activate is correct"
-        afterActivate == true
-
-        and: "active flag after second deactivate is correct"
-        active.get() == false // now
-
-        and: "responses are sent"
-        2 * observer.onNext(DeactivateResponse.getDefaultInstance())
-        1 * observer.onNext(ActivateResponse.getDefaultInstance())
+        and: "response is sent"
+        1 * observer.onNext(DeactivateResponse.getDefaultInstance())
     }
 
     def "get empty ledger state"() {
