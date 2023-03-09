@@ -12,7 +12,7 @@ public class ServerMain {
   public static void main(String[] args) throws IOException, InterruptedException {
     Logger.debug(ServerMain.class.getSimpleName());
 
-    // Check arguments.
+    // Check arguments
     if (args.length != 2) {
       System.err.println("Argument(s) missing!");
       System.err.println("Usage: mvn exec:java -Dexec.args=<port> <qual>");
@@ -22,23 +22,23 @@ public class ServerMain {
     final int port = Integer.parseInt(args[0]);
     final String qualifier = args[1];
 
-    // Init server state.
+    // Init server state
     final ServerState state = new ServerState();
 
-    // Init active flag.
+    // Init active flag
     final AtomicBoolean active = new AtomicBoolean(true);
 
-    // Init services.
+    // Init services
     final BindableService userService = new UserServiceImpl(state, active);
     final BindableService adminService = new AdminServiceImpl(state, active);
 
-    // Launch server.
+    // Launch server
     final Server server =
         ServerBuilder.forPort(port).addService(userService).addService(adminService).build();
     server.start();
     System.out.println("Server started, listening on " + port);
 
-    // Wait until server is terminated.
+    // Wait until server is terminated
     server.awaitTermination();
   }
 }

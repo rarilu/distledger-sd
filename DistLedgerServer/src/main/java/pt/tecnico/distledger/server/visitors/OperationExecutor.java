@@ -52,21 +52,21 @@ public class OperationExecutor implements OperationVisitor {
 
   @Override
   public void visit(TransferOp op) {
-    // Check if the amount is positive.
+    // Check if the amount is positive
     if (op.getAmount() <= 0) {
       throw new NonPositiveTransferException();
     }
 
-    // Check if the accounts are the same.
+    // Check if the accounts are the same
     if (op.getUserId().equals(op.getDestUserId())) {
       throw new NopTransferException();
     }
 
-    // Get the accounts.
+    // Get the accounts
     Account fromAccount = state.getAccounts().get(op.getUserId());
     Account destAccount = state.getAccounts().get(op.getDestUserId());
 
-    // Check if the accounts exist.
+    // Check if the accounts exist
     if (fromAccount == null) {
       throw new UnknownAccountException(op.getUserId());
     }
@@ -75,12 +75,12 @@ public class OperationExecutor implements OperationVisitor {
       throw new UnknownAccountException(op.getDestUserId());
     }
 
-    // Check if the account has enough money.
+    // Check if the account has enough money
     if (fromAccount.getBalance() < op.getAmount()) {
       throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());
     }
 
-    // Transfer the money.
+    // Transfer the money
     fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());
     destAccount.setBalance(destAccount.getBalance() + op.getAmount());
 
