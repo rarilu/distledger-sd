@@ -9,7 +9,7 @@ Distributed Systems Project 2022/2023
 ### Team Members
 
 | Number | Name            | User                              | Email                                             |
-| ------ | --------------- | --------------------------------- |---------------------------------------------------|
+|--------|-----------------|-----------------------------------|---------------------------------------------------|
 | 99266  | Luís Fonseca    | <https://github.com/luishfonseca> | <mailto:luis.h.fonseca@tecnico.ulisboa.pt>        |
 | 99311  | Rafael Oliveira | <https://github.com/RafDevX>      | <mailto:rafael.serra.oliveira@tecnico.ulisboa.pt> |
 | 99316  | Ricardo Antunes | <https://github.com/RiscadoA>     | <mailto:ricardo.g.antunes@tecnico.ulisboa.pt>     |
