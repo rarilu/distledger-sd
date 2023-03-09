@@ -1,3 +1,5 @@
+![Coverage](.github/badges/jacoco.svg)
+
 # DistLedger
 
 Distributed Systems Project 2022/2023
