@@ -22,11 +22,10 @@ public class AdminService implements AutoCloseable {
     this.stub = AdminServiceGrpc.newBlockingStub(this.channel);
   }
 
-  private <RequestT, ResponseT> void makeRequest(
-      RequestT request, Function<RequestT, ResponseT> stubMethod) {
+  private <Q, R> void makeRequest(Q request, Function<Q, R> stubMethod) {
     try {
       Logger.debug("Sending request: " + request.toString());
-      ResponseT response = stubMethod.apply(request);
+      R response = stubMethod.apply(request);
       String representation = response.toString();
 
       System.out.println("OK");
