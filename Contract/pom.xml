@@ -10,21 +10,11 @@
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 
-	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<version.java>17</version.java>
-		
-		<version.maven-enforcer-plugin>1.4.1</version.maven-enforcer-plugin>
-		<version.protobuf-maven-plugin>0.6.1</version.protobuf-maven-plugin>
-		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
-
-		<version.grpc>1.36.0</version.grpc>
-		<version.protoc>3.12.0</version.protoc><!-- aligned with the gRPC dependency version -->
-		<version.javax.annotation-api>1.3.2</version.javax.annotation-api>
-	</properties>
+	<parent>
+		<groupId>pt.tecnico.sdis.2023.A02</groupId>
+		<artifactId>DistLedger</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
 
 	<dependencyManagement>
 		<dependencies>
@@ -146,17 +136,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<!-- Plug-in used to compile the sources of your project. Java 9 requires
-				at least version 3.7.0 to properly handle modules. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${version.maven-compiler-plugin}</version>
-				<configuration>
-					<source>${version.java}</source>
-					<target>${version.java}</target>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
