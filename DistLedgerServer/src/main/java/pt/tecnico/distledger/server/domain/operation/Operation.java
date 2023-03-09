@@ -5,7 +5,7 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 public abstract class Operation {
   private String userId;
 
-  public Operation(String userId) {
+  protected Operation(String userId) {
     this.userId = userId;
   }
 
