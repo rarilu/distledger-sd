@@ -4,7 +4,7 @@ import io.grpc.Status
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
-import org.grpcmock.GrpcMock;
+import org.grpcmock.GrpcMock
 
 class BalanceTest extends BaseTest {
     def "user provides invalid balance command"() {

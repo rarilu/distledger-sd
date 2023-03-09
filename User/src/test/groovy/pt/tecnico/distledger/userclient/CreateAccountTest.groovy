@@ -4,7 +4,7 @@ import io.grpc.Status
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
-import org.grpcmock.GrpcMock;
+import org.grpcmock.GrpcMock
 
 class CreateAccountTest extends BaseTest {
     def "user provides invalid create account command"() {
