@@ -2,7 +2,7 @@ package pt.tecnico.distledger.adminclient
 
 import spock.lang.Specification
 
-import org.grpcmock.GrpcMock;
+import org.grpcmock.GrpcMock
 
 abstract class BaseTest extends Specification {
     def initialStdin

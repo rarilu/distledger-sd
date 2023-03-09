@@ -3,7 +3,7 @@ package pt.tecnico.distledger.server
 import spock.lang.Specification
 
 import io.grpc.stub.StreamObserver
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicBoolean
 import pt.tecnico.distledger.server.AdminServiceImpl
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp

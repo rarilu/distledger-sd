@@ -4,7 +4,7 @@ import io.grpc.Status
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse
-import org.grpcmock.GrpcMock;
+import org.grpcmock.GrpcMock
 
 class DeleteAccountTest extends BaseTest {
     def "user provides invalid delete account command"() {
