@@ -9,6 +9,12 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
 import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
+import pt.ulisboa.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse
 import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {
@@ -74,5 +80,44 @@ class UserServiceImplTest extends Specification {
         1 * observer.onError({
             it instanceof UnknownAccountException && it.getMessage() == "NOT_FOUND: Account void does not exist"
         })
+    }
+
+    def "create account"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        when: "account is created"
+        service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
+
+        then: "account is created"
+        1 * observer.onNext(CreateAccountResponse.getDefaultInstance())
+    }
+
+    def "delete account"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        and: "an account already created"
+        state.registerOperation(new CreateOp("Alice"))
+
+        when: "account is deleted"
+        service.deleteAccount(DeleteAccountRequest.newBuilder().setUserId("Alice").build(), observer)
+
+        then: "account is deleted"
+        1 * observer.onNext(DeleteAccountResponse.getDefaultInstance())
+    }
+
+    def "transfer between accounts"() {
+        given: "a mock observer"
+        def observer = Mock(StreamObserver)
+
+        and: "an account already created"
+        state.registerOperation(new CreateOp("Alice"))
+
+        when: "a transfer is made"
+        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("broker").setAccountTo("Alice").setAmount(100).build(), observer)
+
+        then: "the transfer is made"
+        1 * observer.onNext(TransferToResponse.getDefaultInstance())
     }
 }
