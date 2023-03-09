@@ -8,8 +8,8 @@ import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequ
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest;
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
@@ -38,13 +38,13 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
 
   @Override
   public void getLedgerState(
-      getLedgerStateRequest request, StreamObserver<getLedgerStateResponse> responseObserver) {
+      GetLedgerStateRequest request, StreamObserver<GetLedgerStateResponse> responseObserver) {
     LedgerStateGenerator generator = new LedgerStateGenerator();
 
     this.state.visitLedger(generator);
 
-    getLedgerStateResponse response =
-        getLedgerStateResponse.newBuilder().setLedgerState(generator.build()).build();
+    GetLedgerStateResponse response =
+        GetLedgerStateResponse.newBuilder().setLedgerState(generator.build()).build();
     responseObserver.onNext(response);
     responseObserver.onCompleted();
   }

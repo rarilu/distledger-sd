@@ -7,7 +7,7 @@ import java.util.function.Function;
 import pt.tecnico.distledger.utils.Logger;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest;
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 public class AdminService implements AutoCloseable {
@@ -48,7 +48,7 @@ public class AdminService implements AutoCloseable {
   }
 
   public void getLedgerState(String server) {
-    getLedgerStateRequest request = getLedgerStateRequest.getDefaultInstance();
+    GetLedgerStateRequest request = GetLedgerStateRequest.getDefaultInstance();
     this.makeRequest(request, this.stub::getLedgerState);
   }
 

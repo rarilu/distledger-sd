@@ -5,8 +5,8 @@ import org.grpcmock.GrpcMock
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.ulisboa.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateRequest
-import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.getLedgerStateResponse
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
+import pt.ulisboa.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
 import pt.ulisboa.tecnico.distledger.contract.admin.AdminServiceGrpc
 
 class GetLedgerStateTest extends BaseTest {
@@ -31,7 +31,7 @@ class GetLedgerStateTest extends BaseTest {
         and: "a mock server that returns an empty response"
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(AdminServiceGrpc.getGetLedgerStateMethod())
-                        .willReturn(GrpcMock.response(getLedgerStateResponse.getDefaultInstance())))
+                        .willReturn(GrpcMock.response(GetLedgerStateResponse.getDefaultInstance())))
 
         when: "the admin client is run"
         runMain()
@@ -42,7 +42,7 @@ class GetLedgerStateTest extends BaseTest {
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
                 GrpcMock.calledMethod(AdminServiceGrpc.getGetLedgerStateMethod())
-                        .withRequest(getLedgerStateRequest.getDefaultInstance()),
+                        .withRequest(GetLedgerStateRequest.getDefaultInstance()),
                 GrpcMock.times(1)
         )
     }
@@ -73,7 +73,7 @@ class GetLedgerStateTest extends BaseTest {
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(AdminServiceGrpc.getGetLedgerStateMethod())
-                        .willReturn(GrpcMock.response(getLedgerStateResponse.newBuilder()
+                        .willReturn(GrpcMock.response(GetLedgerStateResponse.newBuilder()
                         .setLedgerState(ledgerState).build())))
 
         when: "the admin client is run"
@@ -108,7 +108,7 @@ class GetLedgerStateTest extends BaseTest {
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
                 GrpcMock.calledMethod(AdminServiceGrpc.getGetLedgerStateMethod())
-                        .withRequest(getLedgerStateRequest.getDefaultInstance()),
+                        .withRequest(GetLedgerStateRequest.getDefaultInstance()),
                 GrpcMock.times(1)
         )
     }
@@ -135,7 +135,7 @@ class GetLedgerStateTest extends BaseTest {
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
                 GrpcMock.calledMethod(AdminServiceGrpc.getGetLedgerStateMethod())
-                        .withRequest(getLedgerStateRequest.getDefaultInstance()),
+                        .withRequest(GetLedgerStateRequest.getDefaultInstance()),
                 GrpcMock.times(1)
         )
     }
