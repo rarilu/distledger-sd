@@ -20,6 +20,11 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
+  private static final String CREATE_ACCOUNT_FAILED = "Create account failed: ";
+  private static final String DELETE_ACCOUNT_FAILED = "Delete account failed: ";
+  private static final String TRANSFER_FAILED = "Transfer failed: ";
+  private static final String BALANCE_FAILED = "Balance failed: ";
+
   private ServerState state;
   private AtomicBoolean active;
 
@@ -39,15 +44,15 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
-      Logger.debug("Create account failed: " + e.getMessage());
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
     } catch (AccountAlreadyExistsException e) {
-      Logger.debug("Create account failed: " + e.getMessage());
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
-      Logger.debug("Create account failed: " + e.getMessage());
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
@@ -63,23 +68,23 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
-      Logger.debug("Delete account failed: " + e.getMessage());
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
     } catch (ProtectedAccountException e) {
-      Logger.debug("Delete account failed: " + e.getMessage());
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
     } catch (UnknownAccountException e) {
-      Logger.debug("Delete account failed: " + e.getMessage());
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
     } catch (NonEmptyAccountException e) {
-      Logger.debug("Delete account failed: " + e.getMessage());
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
-      Logger.debug("Delete account failed: " + e.getMessage());
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
@@ -96,23 +101,23 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
-      Logger.debug("Transfer failed: " + e.getMessage());
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
     } catch (NonPositiveTransferException | NopTransferException e) {
-      Logger.debug("Transfer failed: " + e.getMessage());
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
     } catch (UnknownAccountException e) {
-      Logger.debug("Transfer failed: " + e.getMessage());
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
     } catch (NotEnoughBalanceException e) {
-      Logger.debug("Transfer failed: " + e.getMessage());
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
-      Logger.debug("Transfer failed: " + e.getMessage());
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
@@ -127,15 +132,15 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       responseObserver.onNext(BalanceResponse.newBuilder().setValue(balance).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
-      Logger.debug("Balance failed: " + e.getMessage());
+      Logger.debug(BALANCE_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
     } catch (UnknownAccountException e) {
-      Logger.debug("Balance failed: " + e.getMessage());
+      Logger.debug(BALANCE_FAILED + e.getMessage());
       responseObserver.onError(
           Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
-      Logger.debug("Balance failed: " + e.getMessage());
+      Logger.debug(BALANCE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
