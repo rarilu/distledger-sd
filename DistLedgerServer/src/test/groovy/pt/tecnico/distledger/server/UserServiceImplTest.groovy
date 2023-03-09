@@ -29,15 +29,15 @@ class UserServiceImplTest extends Specification {
         when: "server is deactivated"
         active.set(false)
 
-        and: "method is called"
+        and: "a method is called"
         method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
 
-        then: "method is unavailable"
+        then: "method fails with ServerUnavailableException"
         1 * observer.onError({
             it instanceof ServerUnavailableException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
         })
 
-        where:
+        where: "method is any void function of UserServiceImpl"
         method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
     }
 
