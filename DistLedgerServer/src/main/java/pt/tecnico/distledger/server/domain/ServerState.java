@@ -26,9 +26,7 @@ public class ServerState {
   }
 
   public synchronized void visitLedger(OperationVisitor visitor) {
-    for (Operation op : this.ledger) {
-      op.accept(visitor);
-    }
+    this.ledger.stream().forEach(op -> op.accept(visitor));
   }
 
   public synchronized int getAccountBalance(String userId) {
