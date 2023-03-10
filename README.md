@@ -95,10 +95,10 @@ For each module, 3 JaCoCo coverage reports will be generated and saved on `<modu
 
 Additionaly, aggregated versions of each report (with the coverage of all the modules) will be generated and saved on `CoverageReport/target/site`.
 
-To open a coverage report, run:
+To open a coverage report, open it directly with your browser, or run:
 
 ```s
-firefox CoverageReport/target/site/jacoco-merged/index.html
+xdg-open CoverageReport/target/site/jacoco-merged/index.html
 ```
 
 ### Format
