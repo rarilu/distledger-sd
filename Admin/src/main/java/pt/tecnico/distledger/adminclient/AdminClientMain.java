@@ -10,7 +10,7 @@ public class AdminClientMain {
     // check arguments
     if (args.length != 2) {
       Logger.error("Argument(s) missing!");
-      Logger.error("Usage: mvn exec:java -Dexec.args=<host> <port>");
+      Logger.error("Usage: mvn exec:java -Dexec.args=\"<host> <port>\"");
       return;
     }
 
