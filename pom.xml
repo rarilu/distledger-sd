@@ -211,8 +211,6 @@
 					</sourceDirectories>
 					<configLocation>google_checks.xml</configLocation>
 					<violationSeverity>warning</violationSeverity>
-					<failsOnError>true</failsOnError>
-					<failOnViolation>false</failOnViolation>
 				</configuration>
 				<executions>
 					<execution>
