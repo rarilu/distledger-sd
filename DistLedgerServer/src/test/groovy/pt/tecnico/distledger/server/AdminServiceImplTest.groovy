@@ -9,6 +9,7 @@ import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
+import pt.tecnico.distledger.server.visitors.OperationExecutor
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
@@ -20,13 +21,14 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 
 class AdminServiceImplTest extends Specification {
-    def state
+    def executor
     def active
     def service
     def observer
 
     def setup() {
-        state = new ServerState()
+        def state = new ServerState()
+        executor = new OperationExecutor(state)
         active = new AtomicBoolean(true)
         service = new AdminServiceImpl(state, active)
         observer = Mock(StreamObserver)
@@ -95,10 +97,10 @@ class AdminServiceImplTest extends Specification {
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
         and: "a server state with some operations"
-        state.registerOperation(new CreateOp("Alice"))
-        state.registerOperation(new TransferOp("broker", "Alice", 100))
-        state.registerOperation(new TransferOp("Alice", "broker", 100))
-        state.registerOperation(new DeleteOp("Alice"))
+        executor.execute(new CreateOp("Alice"))
+        executor.execute(new TransferOp("broker", "Alice", 100))
+        executor.execute(new TransferOp("Alice", "broker", 100))
+        executor.execute(new DeleteOp("Alice"))
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)

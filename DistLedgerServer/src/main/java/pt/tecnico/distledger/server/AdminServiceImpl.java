@@ -57,7 +57,6 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       GetLedgerStateRequest request, StreamObserver<GetLedgerStateResponse> responseObserver) {
     try {
       LedgerStateGenerator generator = new LedgerStateGenerator();
-
       this.state.visitLedger(generator);
 
       GetLedgerStateResponse response =

@@ -11,6 +11,7 @@ import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
+import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 
@@ -21,13 +22,30 @@ public class OperationExecutor implements OperationVisitor {
     this.state = state;
   }
 
+  public void execute(Operation op) {
+    op.accept(this);
+  }
+
   @Override
   public void visit(CreateOp op) {
-    if (this.state.getAccounts().containsKey(op.getUserId())) {
-      throw new AccountAlreadyExistsException(op.getUserId());
+    Account account = new Account();
+
+    // Safety: the account needs to be locked between the .putIfAbsent() and the .addToLedger()
+    // because another operation could be executed between those two calls and access the account,
+    // possibly adding it to the ledger before this operation does, which would cause the ledger to
+    // be incoherent
+    //
+    // Liveness: its impossible for a deadlock to occur because the account was just created, and
+    // only this thread has access to it
+    synchronized (account) {
+      Account old = this.state.getAccounts().putIfAbsent(op.getUserId(), account);
+      if (old != null) {
+        throw new AccountAlreadyExistsException(op.getUserId());
+      }
+
+      this.state.addToLedger(op);
     }
 
-    this.state.getAccounts().put(op.getUserId(), new Account());
     Logger.debug("Created account for " + op.getUserId());
   }
 
@@ -37,16 +55,37 @@ public class OperationExecutor implements OperationVisitor {
       throw new ProtectedAccountException(op.getUserId());
     }
 
-    if (!state.getAccounts().containsKey(op.getUserId())) {
+    Account account = this.state.getAccounts().get(op.getUserId());
+    if (account == null) {
       throw new UnknownAccountException(op.getUserId());
     }
 
-    final int balance = state.getAccounts().get(op.getUserId()).getBalance();
-    if (balance > 0) {
-      throw new NonEmptyAccountException(op.getUserId(), balance);
+    // Safety: the account is only deleted when we are sure that no other operation is accessing
+    //
+    // Safety: the operation is added to the ledger before the account is removed from the map,
+    // because otherwise a CreateOp could be executed in the meantime and add an account with the
+    // same id to the ledger, before this operation is added, which would cause the ledger to be
+    // incoherent
+    //
+    // Liveness: only one synchronized block is needed, so this operation can never cause deadlocks
+    synchronized (account) {
+      // Now make sure that it wasn't deleted in the meantime
+      if (!this.state.getAccounts().containsKey(op.getUserId())) {
+        throw new UnknownAccountException(op.getUserId());
+      }
+
+      // Check if it has balance
+      final int balance = state.getAccounts().get(op.getUserId()).getBalance();
+      if (balance > 0) {
+        throw new NonEmptyAccountException(op.getUserId(), balance);
+      }
+
+      this.state.addToLedger(op);
+
+      // Now we can safely delete it since no other operation can access it
+      this.state.getAccounts().remove(op.getUserId());
     }
 
-    state.getAccounts().remove(op.getUserId());
     Logger.debug("Deleted account of " + op.getUserId());
   }
 
@@ -57,32 +96,59 @@ public class OperationExecutor implements OperationVisitor {
       throw new NonPositiveTransferException();
     }
 
-    // Check if the accounts are the same
-    if (op.getUserId().equals(op.getDestUserId())) {
+    int order = op.getUserId().compareTo(op.getDestUserId());
+    if (order == 0) {
       throw new NopTransferException();
     }
 
-    // Get the accounts
-    Account fromAccount = state.getAccounts().get(op.getUserId());
-    Account destAccount = state.getAccounts().get(op.getDestUserId());
-
-    // Check if the accounts exist
+    // Get the accounts, and do an initial check to see if they exist
+    Account fromAccount = this.state.getAccounts().get(op.getUserId());
     if (fromAccount == null) {
       throw new UnknownAccountException(op.getUserId());
     }
 
+    Account destAccount = this.state.getAccounts().get(op.getDestUserId());
     if (destAccount == null) {
       throw new UnknownAccountException(op.getDestUserId());
     }
 
-    // Check if the account has enough money
-    if (fromAccount.getBalance() < op.getAmount()) {
-      throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());
-    }
+    // Safety: since both accounts are locked, inside the sync block we can check safely if they
+    // exist, and if they do, if there is enough balance, and, ultimately, transfer the amount
+    // without worrying about other operations accessing the accounts in the meantime
+    //
+    // Liveness: we lock the accounts in lexicographical order, otherwise a deadlock could occur
+    // when two or more symmetric (cyclic) transfers are executed in parallel - one thread could be
+    // waiting for the other to release the lock, while the other is waiting for the first to
+    // release the lock
+    //
+    // Liveness: accounts never transfer to themselves, which is checked before the sync block, so
+    // no deadlock can occur by locking the same account twice (basically a special case of the
+    // previous point)
+    synchronized (order > 0 ? fromAccount : destAccount) {
+      synchronized (order > 0 ? destAccount : fromAccount) {
+        // The accounts may have been deleted in the meantime, so we need to check again, now that
+        // they are locked
+        if (!this.state.getAccounts().containsKey(op.getUserId())) {
+          throw new UnknownAccountException(op.getUserId());
+        }
 
-    // Transfer the money
-    fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());
-    destAccount.setBalance(destAccount.getBalance() + op.getAmount());
+        if (!this.state.getAccounts().containsKey(op.getDestUserId())) {
+          throw new UnknownAccountException(op.getDestUserId());
+        }
+
+        // Check if the account has enough balance
+        if (fromAccount.getBalance() < op.getAmount()) {
+          throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());
+        }
+
+        // Transfer the balance
+        fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());
+        destAccount.setBalance(destAccount.getBalance() + op.getAmount());
+
+        // Add the operation to the ledger
+        this.state.addToLedger(op);
+      }
+    }
 
     Logger.debug(
         "Transferred " + op.getAmount() + " from " + op.getUserId() + " to " + op.getDestUserId());
