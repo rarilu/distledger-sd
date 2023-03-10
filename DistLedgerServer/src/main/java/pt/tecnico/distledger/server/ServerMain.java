@@ -11,7 +11,7 @@ import pt.tecnico.distledger.utils.Logger;
 /** Main class for the DistLedger server. */
 public class ServerMain {
   /** Main method. */
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException {
     Logger.debug(ServerMain.class.getSimpleName());
 
     // Check arguments
@@ -48,6 +48,7 @@ public class ServerMain {
         // Shutdown gracefully on interrupt
         System.out.println("Server interrupted, shutting down");
         server.shutdown();
+        Thread.currentThread().interrupt();
       }
     }
   }
