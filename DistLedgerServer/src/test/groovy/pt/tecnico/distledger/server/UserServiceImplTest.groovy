@@ -97,8 +97,4 @@ class UserServiceImplTest extends Specification {
         where: "method is any void function of UserServiceImpl"
         method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
     }
-
-    def setFinalTo(obj, name, value) {
-        
-    }
 }
