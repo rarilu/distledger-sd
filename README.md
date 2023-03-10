@@ -29,7 +29,7 @@ See the [Project Statement](https://github.com/tecnico-distsys/DistLedger) for a
 The Project is configured with Java 17 (which is only compatible with Maven >= 3.8), but if you want to use Java 11 you
 can too -- just downgrade the version in the POMs.
 
-To confirm that you have them installed and which versions they are, run in the terminal:
+To confirm that you have them installed and which versions they are, run:
 
 ```s
 javac -version
@@ -38,10 +38,75 @@ mvn -version
 
 ### Installation
 
-To compile and install all modules:
+To compile and install all modules, run:
 
 ```s
 mvn clean install
+```
+
+### Run
+
+To execute a module, from the root directory of the project, run:
+
+#### User
+
+```s
+mvn exec:java -pl User -Dexec.args="<host> <port>"
+```
+
+Ommiting `-Dexec.args` will run with the default arguments `"localhost 2001"`
+
+#### Admin
+
+```s
+mvn exec:java -pl Admin -Dexec.args="<host> <port>"
+```
+
+Ommiting `-Dexec.args` will run with the default arguments `"localhost 2001"`
+
+#### DistLedgerServer
+
+```s
+mvn exec:java -pl DistLedgerServer -Dexec.args="<port> <qual>"
+```
+
+Ommiting `-Dexec.args` will run with the default arguments `"2001 A"`
+
+#### Running in Debug Mode
+
+To execute any of the modules in debug mode, add `-Ddebug` to the previous commands
+
+### Test
+
+To test all modules, run:
+
+```s
+mvn verify
+```
+
+This will fail before running the tests if there are formatting errors, see [Format](#format).
+
+#### Test Coverage
+
+For each module, 3 JaCoCo coverage reports will be generated and saved on `<module>/target/site`:
+- `target/site/jacoco` will have the coverage report of only Unit Tests.
+- `target/site/jacoco-it` will have the coverage report of only Integration Tests (only created when there are Integration Tests).
+- `target/site/jacoco-merged` will have the previous two reports merged.
+
+Additionaly, aggregated versions of each report (with the coverage of all the modules) will be generated and saved on `CoverageReport/target/site`.
+
+To open a coverage report, run:
+
+```s
+firefox CoverageReport/target/site/jacoco-merged/index.html
+```
+
+### Format
+
+To format all modules, run:
+
+```s
+mvn com.spotify.fmt:fmt-maven-plugin:format
 ```
 
 ## Built With
