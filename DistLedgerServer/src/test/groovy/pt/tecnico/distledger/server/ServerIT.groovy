@@ -26,6 +26,7 @@ class ServerIT extends Specification {
         }
 
         // hacky way to wait for the server to start
+        while (outBuf.size() == 0) {}
         // needed to prevent the initial server messages from being read by the tests
         prepareAdmin("getLedgerState A")
     }
