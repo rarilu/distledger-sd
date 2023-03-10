@@ -8,18 +8,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
-import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 /** Represents the current state of the server. */
 public class ServerState {
   private final List<Operation> ledger = Collections.synchronizedList(new ArrayList<>());
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
-  private final OperationExecutor executor;
 
   public ServerState() {
     this.accounts.put("broker", new Account(1000));
-    this.executor = new OperationExecutor(this);
   }
 
   /** Register a given operation in the ledger. */
