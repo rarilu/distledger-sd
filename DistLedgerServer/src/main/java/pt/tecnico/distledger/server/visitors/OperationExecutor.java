@@ -35,7 +35,7 @@ public class OperationExecutor implements OperationVisitor {
     // possibly adding it to the ledger before this operation does, which would cause the ledger to
     // be incoherent
     //
-    // Liveness: its impossible for a deadlock to occur because the account was just created, and
+    // Liveness: it's impossible for a deadlock to occur because the account was just created, and
     // only this thread has access to it
     synchronized (account) {
       Account old = this.state.getAccounts().putIfAbsent(op.getUserId(), account);
@@ -64,7 +64,7 @@ public class OperationExecutor implements OperationVisitor {
     //
     // Safety: the operation is added to the ledger before the account is removed from the map,
     // because otherwise a CreateOp could be executed in the meantime and add an account with the
-    // same id to the ledger, before this operation is added, which would cause the ledger to be
+    // same ID to the ledger, before this operation is added, which would cause the ledger to be
     // incoherent
     //
     // Liveness: only one synchronized block is needed, so this operation can never cause deadlocks

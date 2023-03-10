@@ -28,7 +28,7 @@ public class ServerState {
 
   public void visitLedger(OperationVisitor visitor) {
     // Safety: prevent operations from being added to the ledger while we are visiting it
-    // Operations themselves are read-only, so thats not an issue
+    // Operations themselves are read-only, so that's not an issue
     synchronized (this.ledger) {
       this.ledger.forEach(op -> op.accept(visitor));
     }
