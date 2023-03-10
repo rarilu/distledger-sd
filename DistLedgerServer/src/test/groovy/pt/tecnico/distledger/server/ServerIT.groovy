@@ -4,6 +4,7 @@ import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
 
 import spock.lang.Specification
+import spock.lang.Timeout
 
 class ServerIT extends Specification {
     def port = 2001
@@ -14,6 +15,7 @@ class ServerIT extends Specification {
 
     def serverThread
 
+    @Timeout(5)
     def setup() {
         initialStdin = System.in
         initialStdout = System.out
