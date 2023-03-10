@@ -22,12 +22,14 @@ public class ServerState {
     this.executor = new OperationExecutor(this);
   }
 
+  /** Register a given operation in the ledger. */
   public void addToLedger(Operation op) {
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
   }
 
+  /** Visit all operations in the ledger, using the specified visitor. */
   public void visitLedger(OperationVisitor visitor) {
     // Safety: prevent operations from being added to the ledger while we are
     // visiting it
@@ -37,6 +39,7 @@ public class ServerState {
     }
   }
 
+  /** Returns the balance of the account with the given User ID. */
   public int getAccountBalance(String userId) {
     // Safety: if the account is deleted after the .get(), but before the
     // .getBalance(), there is no
@@ -47,6 +50,7 @@ public class ServerState {
         .orElseThrow(() -> new UnknownAccountException(userId));
   }
 
+  /** Returns the current list of accounts. */
   public ConcurrentMap<String, Account> getAccounts() {
     return this.accounts;
   }

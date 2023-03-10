@@ -38,6 +38,12 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   private final AtomicBoolean active;
   private final OperationExecutor executor;
 
+  /**
+   * Creates a new UserServiceImpl, with an associated {@link OperationExecutor}.
+   *
+   * @param state The server state
+   * @param active This server's active flag
+   */
   public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
