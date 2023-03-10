@@ -24,6 +24,7 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
+import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.utils.Logger;
 
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
@@ -34,10 +35,12 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
 
   private final ServerState state;
   private final AtomicBoolean active;
+  private final OperationExecutor executor;
 
   public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
+    this.executor = new OperationExecutor(state);
   }
 
   @Override
@@ -47,7 +50,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.state.registerOperation(new CreateOp(request.getUserId()));
+      this.executor.execute(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
@@ -71,7 +74,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.state.registerOperation(new DeleteOp(request.getUserId()));
+      this.executor.execute(new DeleteOp(request.getUserId()));
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
@@ -103,7 +106,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.state.registerOperation(
+      this.executor.execute(
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
