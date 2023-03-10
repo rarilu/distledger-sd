@@ -43,7 +43,7 @@ public class ServerMain {
       try {
         server.awaitTermination();
       } catch (InterruptedException e) {
-        // Shutdown gracefully on interrupt.
+        // Shutdown gracefully on interrupt
         System.out.println("Server interrupted, shutting down");
         server.shutdown();
       }
