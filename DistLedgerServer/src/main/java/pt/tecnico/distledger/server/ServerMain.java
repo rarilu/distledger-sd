@@ -39,6 +39,14 @@ public class ServerMain {
     System.out.println("Server started, listening on " + port);
 
     // Wait until server is terminated
-    server.awaitTermination();
+    while (!server.isTerminated()) {
+      try {
+        server.awaitTermination();
+      } catch (InterruptedException e) {
+        // Shutdown gracefully on interrupt.
+        System.out.println("Server interrupted, shutting down");
+        server.shutdown();
+      }
+    }
   }
 }
