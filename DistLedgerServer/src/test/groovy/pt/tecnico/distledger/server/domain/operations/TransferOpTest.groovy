@@ -1,7 +1,8 @@
 package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
-
+import java.util.concurrent.ConcurrentMap
+import pt.tecnico.distledger.server.domain.Account
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
@@ -109,5 +110,36 @@ class TransferOpTest extends Specification {
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000
         state.getAccounts().get("Alice").getBalance() == 0
+    }
+
+    def "delete before entering the sync block"() {
+        given: "a mock state"
+        def state = Mock(ServerState)
+        def accounts = Mock(ConcurrentMap)
+        state.getAccounts() >> accounts
+
+        and: "an executor with the mock state"
+        def executor = new OperationExecutor(state)
+        
+        and: "first calls to get return accounts"
+        1 * accounts.get("Alice") >> new Account()
+        1 * accounts.get("Bob") >> new Account()
+
+        and: "first call to containsKey returns false"
+        if (failing == "Alice") {
+            1 * accounts.containsKey("Alice") >> false
+        } else {
+            1 * accounts.containsKey("Alice") >> true
+            1 * accounts.containsKey("Bob") >> false
+        }
+
+        when: "the transfer is executed"
+        executor.execute(new TransferOp("Alice", "Bob", 100))
+
+        then: "an exception is thrown"
+        thrown(UnknownAccountException)
+
+        where:
+        failing << ["Alice", "Bob"]
     }
 }
