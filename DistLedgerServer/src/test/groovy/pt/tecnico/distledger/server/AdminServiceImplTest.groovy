@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server
 
 import spock.lang.Specification
 
+import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean
 import pt.tecnico.distledger.server.domain.ServerState
@@ -104,5 +105,21 @@ class AdminServiceImplTest extends Specification {
 
         then: "ledger state is correct"
         1 * observer.onNext(GetLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
+    }
+
+    def "catch runtime exceptions"() {
+        given: "an observer that throws an exception when onNext is called"
+        observer.onNext(_) >> { throw new RuntimeException("Unknown error") }
+
+        when: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method fails with RuntimeException"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
+        })
+
+        where: "method is any void function of AdminServiceImpl"
+        method << AdminServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
     }
 }

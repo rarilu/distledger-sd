@@ -67,4 +67,25 @@ class UserServiceImplTest extends Specification {
             it instanceof StatusRuntimeException && it.getMessage() == "NOT_FOUND: Account void does not exist"
         })
     }
+
+    def "catch runtime exceptions"() {
+        given: "a state that throws an exception when used"
+        def state = Mock(ServerState)
+        state.registerOperation(_) >> { throw new RuntimeException("Unknown error") }
+        state.getAccountBalance(_) >> { throw new RuntimeException("Unknown error") }
+
+        and: "a service with the mocked state"
+        def service = new UserServiceImpl(state, active)
+
+        when: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method fails with RuntimeException"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
+        })
+
+        where: "method is any void function of UserServiceImpl"
+        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
+    }
 }
