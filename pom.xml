@@ -66,12 +66,14 @@
 			<groupId>org.grpcmock</groupId>
 			<artifactId>grpcmock-junit5</artifactId>
 			<version>${version.grpcmock}</version>
+			<scope>test</scope>
 		</dependency>
 		<!-- used to generate mock code -->
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
 			<version>${version.byte-buddy}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
