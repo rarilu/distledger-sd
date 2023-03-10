@@ -169,6 +169,14 @@ class ServerIT extends Specification {
         amount << [0, -1]
     }
 
+    def "transfer from an unknown account"() {
+        when: "the user transfers money from an unknown account"
+        runUser("transferTo A Alice broker 1000")
+
+        then: "the output is correct"
+        getOutput() == "> Error: Account Alice does not exist\n\n> "
+    }
+
     def "transfer to an unknown account"() {
         when: "the user transfers money to an unknown account"
         runUser("transferTo A broker Alice 1000")
@@ -186,6 +194,14 @@ class ServerIT extends Specification {
 
         then: "the output is correct"
         getOutput() == "> Error: Account Alice does not have enough balance to transfer 1001\n\n> "
+    }
+
+    def "transfer to same account"() {
+        when: "the user transfers money to the same account"
+        runUser("transferTo A broker broker 1000")
+
+        then: "the output is correct"
+        getOutput() == "> Error: Transfers from an account to itself are not allowed\n\n> "
     }
 
     def "transfer with inactive server"() {
