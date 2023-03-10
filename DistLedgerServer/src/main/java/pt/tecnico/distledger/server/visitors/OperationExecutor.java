@@ -96,18 +96,18 @@ public class OperationExecutor implements OperationVisitor {
       throw new NonPositiveTransferException();
     }
 
-    int order = op.getUserId().compareTo(op.getDestUserId());
+    final int order = op.getUserId().compareTo(op.getDestUserId());
     if (order == 0) {
       throw new NopTransferException();
     }
 
     // Get the accounts, and do an initial check to see if they exist
-    Account fromAccount = this.state.getAccounts().get(op.getUserId());
+    final Account fromAccount = this.state.getAccounts().get(op.getUserId());
     if (fromAccount == null) {
       throw new UnknownAccountException(op.getUserId());
     }
 
-    Account destAccount = this.state.getAccounts().get(op.getDestUserId());
+    final Account destAccount = this.state.getAccounts().get(op.getDestUserId());
     if (destAccount == null) {
       throw new UnknownAccountException(op.getDestUserId());
     }
