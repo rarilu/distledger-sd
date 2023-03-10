@@ -30,19 +30,6 @@ jobs:
           name: jacoco-site
           path: CoverageReport/target/site
 
-  report:
-    runs-on: ubuntu-latest
-    needs: verify
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/download-artifact@v3
-        id: download
-        with:
-          name: jacoco-site
-          path: CoverageReport/target/site
-
       - name: Generate JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
