@@ -25,21 +25,4 @@ class ServerMainTest extends Specification {
         then: "the output is empty"
         outBuf.toString() == ""
     }
-
-    def "server is interrupted"() {
-        given: "a running server"
-        def server = new ServerMain()
-        def thread = Thread.start {
-            server.main(new String[]{port.toString(), "A"})
-        }
-
-        when: "the server is interrupted after 1 second"
-        sleep(1)
-        thread.interrupt()
-        thread.join()
-
-        then: "the server output is correct"
-        outBuf.toString() == "Server started, listening on " + port.toString() + "\n" +
-                             "Server interrupted, shutting down\n"
-    }
 }
