@@ -35,6 +35,20 @@
 			<artifactId>Utils</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+		<!-- user client, for integration tests -->
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>User</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- admin client, for integration tests -->
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>Admin</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
