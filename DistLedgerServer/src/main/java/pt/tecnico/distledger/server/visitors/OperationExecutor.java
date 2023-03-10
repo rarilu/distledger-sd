@@ -41,6 +41,8 @@ public class OperationExecutor implements OperationVisitor {
     //
     // Liveness: it's impossible for a deadlock to occur because the account was just created, and
     // only this thread has access to it
+
+    // noinspection SynchronizationOnLocalVariableOrMethodParameter
     synchronized (account) {
       Account old = this.state.getAccounts().putIfAbsent(op.getUserId(), account);
       if (old != null) {
@@ -72,6 +74,8 @@ public class OperationExecutor implements OperationVisitor {
     // incoherent
     //
     // Liveness: only one synchronized block is needed, so this operation can never cause deadlocks
+
+    // noinspection SynchronizationOnLocalVariableOrMethodParameter
     synchronized (account) {
       // Now make sure that it wasn't deleted in the meantime
       if (!this.state.getAccounts().containsKey(op.getUserId())) {
