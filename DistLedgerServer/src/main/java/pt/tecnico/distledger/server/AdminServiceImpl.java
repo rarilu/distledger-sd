@@ -14,6 +14,7 @@ import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 import pt.tecnico.distledger.utils.Logger;
 
+/** Implements the Admin service, handling gRPC requests. */
 public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   private static final String ACTIVATE_FAILED = "Activate failed: ";
   private static final String DEACTIVATE_FAILED = "Deactivate failed: ";

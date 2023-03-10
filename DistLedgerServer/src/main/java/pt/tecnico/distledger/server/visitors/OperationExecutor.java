@@ -15,6 +15,10 @@ import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.utils.Logger;
 
+/**
+ * Represents an operation visitor that executes the operations, applying their associated effects
+ * to the server state.
+ */
 public class OperationExecutor implements OperationVisitor {
   private final ServerState state;
 

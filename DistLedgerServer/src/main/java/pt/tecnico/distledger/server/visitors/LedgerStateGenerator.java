@@ -7,6 +7,7 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 
+/** Generates a LedgerState by visiting operations. */
 public class LedgerStateGenerator implements OperationVisitor {
   private final LedgerState.Builder builder;
 

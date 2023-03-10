@@ -27,6 +27,7 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.utils.Logger;
 
+/** Implements the User service, handling gRPC requests. */
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   private static final String CREATE_ACCOUNT_FAILED = "Create account failed: ";
   private static final String DELETE_ACCOUNT_FAILED = "Delete account failed: ";

@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.utils.Logger;
 
+/** Main class for the DistLedger server. */
 public class ServerMain {
+  /** Main method. */
   public static void main(String[] args) throws IOException, InterruptedException {
     Logger.debug(ServerMain.class.getSimpleName());
 
