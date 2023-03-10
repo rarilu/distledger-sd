@@ -48,7 +48,6 @@ public class ServerMain {
         // Shutdown gracefully on interrupt
         System.out.println("Server interrupted, shutting down");
         server.shutdown();
-        Thread.currentThread().interrupt();
       }
     }
   }
