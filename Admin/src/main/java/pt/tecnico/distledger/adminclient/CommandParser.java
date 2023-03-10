@@ -5,6 +5,7 @@ import java.util.Scanner;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.utils.Logger;
 
+/** Parses the input from the user and executes the corresponding commands. */
 public class CommandParser {
   private static final String SPACE = " ";
   private static final String ACTIVATE = "activate";
@@ -20,6 +21,10 @@ public class CommandParser {
     this.adminService = adminService;
   }
 
+  /**
+   * Parses the input from the user and executes the corresponding commands, in a loop until an
+   * explicit exit instruction or the end of user input.
+   */
   public void parseInput() {
     boolean exit = false;
 

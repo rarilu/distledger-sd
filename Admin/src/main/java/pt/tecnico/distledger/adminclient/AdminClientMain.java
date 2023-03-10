@@ -3,7 +3,9 @@ package pt.tecnico.distledger.adminclient;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.utils.Logger;
 
+/** Main class for the Admin client. */
 public class AdminClientMain {
+  /** Main method. */
   public static void main(String[] args) {
     Logger.debug(AdminClientMain.class.getSimpleName());
 

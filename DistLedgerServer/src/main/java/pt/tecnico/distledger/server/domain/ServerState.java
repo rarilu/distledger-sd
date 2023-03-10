@@ -11,6 +11,7 @@ import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
+/** Represents the current state of the server. */
 public class ServerState {
   private final List<Operation> ledger = Collections.synchronizedList(new ArrayList<>());
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
@@ -22,12 +23,14 @@ public class ServerState {
   }
 
   public void addToLedger(Operation op) {
-    // Safety: synchronized list, it's okay to add to it without a synchronized block
+    // Safety: synchronized list, it's okay to add to it without a synchronized
+    // block
     this.ledger.add(op);
   }
 
   public void visitLedger(OperationVisitor visitor) {
-    // Safety: prevent operations from being added to the ledger while we are visiting it
+    // Safety: prevent operations from being added to the ledger while we are
+    // visiting it
     // Operations themselves are read-only, so that's not an issue
     synchronized (this.ledger) {
       this.ledger.forEach(op -> op.accept(visitor));
@@ -35,8 +38,10 @@ public class ServerState {
   }
 
   public int getAccountBalance(String userId) {
-    // Safety: if the account is deleted after the .get(), but before the .getBalance(), there is no
-    // problem because the account will still have the balance before it was removed from the map
+    // Safety: if the account is deleted after the .get(), but before the
+    // .getBalance(), there is no
+    // problem because the account will still have the balance before it was removed
+    // from the map
     return Optional.ofNullable(this.accounts.get(userId))
         .map(Account::getBalance)
         .orElseThrow(() -> new UnknownAccountException(userId));

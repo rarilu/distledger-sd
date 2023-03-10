@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.domain;
 
+/** Represents an account. */
 public class Account {
   private int balance;
 
