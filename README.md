@@ -81,7 +81,7 @@ To execute any of the modules in debug mode, add `-Ddebug` to the previous comma
 To test all modules, run:
 
 ```s
-mvn verify
+mvn clean verify
 ```
 
 This will fail before running the tests if there are formatting errors, see [Format](#format).
