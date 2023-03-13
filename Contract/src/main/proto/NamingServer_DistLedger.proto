@@ -27,7 +27,7 @@ message LookupResponse {
   repeated string targets = 1;
 }
 
-service NamingServerService {
+service NamingService {
   rpc register(RegisterRequest) returns (RegisterResponse);
   rpc delete(DeleteRequest) returns (DeleteResponse);
   rpc lookup(LookupRequest) returns (LookupResponse);
