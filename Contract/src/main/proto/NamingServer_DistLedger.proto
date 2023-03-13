@@ -1,0 +1,34 @@
+syntax = "proto3";
+package pt.tecnico.distledger.contract.namingserver;
+
+// Naming Server Interface of the DistLedger Service
+
+message RegisterRequest {
+  string service = 1;
+  string qualifier = 2;
+  string target = 3;
+}
+
+message RegisterResponse {}
+
+message DeleteRequest {
+  string service = 1;
+  string target = 2;
+}
+
+message DeleteResponse {}
+
+message LookupRequest {
+  string service = 1;
+  string qualifier = 2;
+}
+
+message LookupResponse {
+  repeated string targets = 1;
+}
+
+service NamingServerService {
+  rpc register(RegisterRequest) returns (RegisterResponse);
+  rpc delete(DeleteRequest) returns (DeleteResponse);
+  rpc lookup(LookupRequest) returns (LookupResponse);
+}
