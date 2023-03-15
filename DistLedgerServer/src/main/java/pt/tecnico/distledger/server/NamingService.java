@@ -1,0 +1,49 @@
+package pt.tecnico.distledger.server;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
+import pt.tecnico.distledger.utils.Logger;
+
+/**
+ * Handles name register, delete and lookup operations, making gRPC requests to the naming server's
+ * Naming Service.
+ */
+public class NamingService implements AutoCloseable {
+    /** Target host and port for the well-known naming server. */
+    private static final String WELL_KNOWN_TARGET = "localhost:2002";
+
+    private final ManagedChannel channel;
+    private final NamingServiceGrpc.NamingServiceBlockingStub stub;
+
+    /** Creates a new NamingService, connecting to the well-known host and port. */
+    public NamingService() {
+        Logger.debug("Connecting to naming service at " + WELL_KNOWN_TARGET);
+        this.channel = ManagedChannelBuilder.forTarget(WELL_KNOWN_TARGET).usePlaintext().build();
+        this.stub = NamingServiceGrpc.newBlockingStub(this.channel);
+    }
+
+    /** Executes a register request. */
+    public void register(String service, String qualifier, String target) {
+        // TODO
+    }
+
+    /** Executes a delete request. */
+    public void delete(String service, String target) {
+        // TODO
+    }
+
+    /** Executes a lookup request. */
+    public void lookup(String service, String qualifier) {
+        // TODO
+    }
+
+    /** Close channel immediately. */
+    @Override
+    public void close() {
+        this.channel.shutdownNow();
+    }
+}
