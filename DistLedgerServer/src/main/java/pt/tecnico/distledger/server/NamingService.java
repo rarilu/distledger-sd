@@ -28,7 +28,13 @@ public class NamingService implements AutoCloseable {
 
     /** Executes a register request. */
     public void register(String service, String qualifier, String target) {
-        // TODO
+        RegisterRequest request = RegisterRequest.newBuilder()
+            .setService(service)
+            .setQualifier(qualifier)
+            .setTarget(target)
+            .build();
+
+        this.stub.register(request);
     }
 
     /** Executes a delete request. */
