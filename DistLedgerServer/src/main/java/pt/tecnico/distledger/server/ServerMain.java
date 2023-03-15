@@ -5,6 +5,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.util.Objects;
+import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
@@ -53,14 +54,21 @@ public class ServerMain {
     server.start();
     System.out.println("Server started, listening on " + port);
 
-    // Wait until server is terminated
-    while (!server.isTerminated()) {
-      try {
-        server.awaitTermination();
-      } catch (InterruptedException e) {
-        // Shutdown gracefully on interrupt
-        System.out.println("Server interrupted, shutting down");
-        server.shutdown();
+    // Connect to naming server and register this server
+    try (NamingService namingService = new NamingService()) {
+      final String address = InetAddress.getLocalHost().getHostAddress().toString();
+      Logger.debug("Registering server at " + address + ":" + port);
+      namingService.register("distledger", qualifier, address + ":" + port);
+
+      // Wait until server is terminated
+      while (!server.isTerminated()) {
+        try {
+          server.awaitTermination();
+        } catch (InterruptedException e) {
+          // Shutdown gracefully on interrupt
+          System.out.println("Server interrupted, shutting down");
+          server.shutdown();
+        }
       }
     }
   }
