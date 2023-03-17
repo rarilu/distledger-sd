@@ -18,10 +18,8 @@
 		<module>User</module>
 		<module>Admin</module>
 		<module>DistLedgerServer</module>
+		<module>NamingServer</module>
 		<module>CoverageReport</module>
-
-		<!-- This one should only be used in phases 2 and 3
-		 <module>NamingServer</module>-->
 	</modules>
 
 	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
