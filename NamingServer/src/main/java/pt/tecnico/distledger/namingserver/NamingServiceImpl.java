@@ -22,6 +22,8 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
   public void register(RegisterRequest request, StreamObserver<RegisterResponse> responseObserver) {
     try {
       this.state.registerServer(request.getService(), request.getQualifier(), request.getTarget());
+      responseObserver.onNext(RegisterResponse.getDefaultInstance());
+      responseObserver.onCompleted();
     } catch (RuntimeException e) {
       Logger.debug(REGISTER_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
