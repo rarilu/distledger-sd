@@ -9,32 +9,38 @@
 	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 
-    <parent>
+	<parent>
 		<groupId>pt.tecnico.sdis.2023.A02</groupId>
 		<artifactId>DistLedger</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
 			<artifactId>Admin</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-            <scope>runtime</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
 			<artifactId>DistLedgerServer</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-            <scope>runtime</scope>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>NamingServer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
 			<artifactId>User</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-            <scope>runtime</scope>
+			<scope>runtime</scope>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
     <build>
         <plugins>
