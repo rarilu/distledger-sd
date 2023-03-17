@@ -1,15 +1,15 @@
 package pt.tecnico.distledger.namingserver.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
 
 /** Represents a service entry in the naming server. */
 public class ServiceEntry {
   String name;
-  Map<String, List<ServerEntry>> servers = new HashMap<>();
+  ConcurrentMap<String, List<ServerEntry>> servers = new ConcurrentHashMap<>();
 
   public ServiceEntry(String name) {
     this.name = name;
