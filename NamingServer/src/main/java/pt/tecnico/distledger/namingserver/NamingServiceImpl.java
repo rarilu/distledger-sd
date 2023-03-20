@@ -2,12 +2,12 @@ package pt.tecnico.distledger.namingserver;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 import pt.tecnico.distledger.namingserver.domain.NamingServerState;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Implements the Admin service, handling gRPC requests. */
 public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {

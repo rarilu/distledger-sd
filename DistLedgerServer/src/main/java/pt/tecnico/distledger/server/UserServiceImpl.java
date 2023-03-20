@@ -3,6 +3,7 @@ package pt.tecnico.distledger.server;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse;
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
@@ -26,7 +27,6 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Implements the User service, handling gRPC requests. */
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {

@@ -4,12 +4,12 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Handles User operations, making gRPC requests to the server's User service. */
 public class UserService implements AutoCloseable {

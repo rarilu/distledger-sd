@@ -3,6 +3,7 @@ package pt.tecnico.distledger.server;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
@@ -12,7 +13,6 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRespon
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Implements the Admin service, handling gRPC requests. */
 public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {

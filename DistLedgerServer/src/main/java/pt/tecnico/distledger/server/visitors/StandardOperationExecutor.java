@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.visitors;
 
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
@@ -12,7 +13,6 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
-import pt.tecnico.distledger.utils.Logger;
 
 /**
  * Represents an operation executor that executes the operations, applying their associated effects

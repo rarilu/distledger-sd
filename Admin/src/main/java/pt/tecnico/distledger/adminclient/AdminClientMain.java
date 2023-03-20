@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.adminclient;
 
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
-import pt.tecnico.distledger.utils.Logger;
+import pt.tecnico.distledger.common.Logger;
 
 /** Main class for the Admin client. */
 public class AdminClientMain {

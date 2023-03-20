@@ -4,14 +4,14 @@ import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
-import java.util.Objects;
 import java.net.InetAddress;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Main class for the DistLedger server. */
 public class ServerMain {

@@ -3,7 +3,7 @@ package pt.tecnico.distledger.adminclient;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
-import pt.tecnico.distledger.utils.Logger;
+import pt.tecnico.distledger.common.Logger;
 
 /** Parses the input from the user and executes the corresponding commands. */
 public class CommandParser {

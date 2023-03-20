@@ -4,11 +4,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.util.function.Function;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Handles Admin operations, making gRPC requests to the server's Admin service. */
 public class AdminService implements AutoCloseable {
