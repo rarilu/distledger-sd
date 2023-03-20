@@ -19,6 +19,7 @@
 		<module>Admin</module>
 		<module>DistLedgerServer</module>
 		<module>NamingServer</module>
+		<module>IntegrationTests</module>
 		<module>CoverageReport</module>
 	</modules>
 
@@ -109,19 +110,6 @@
 		  		<groupId>org.apache.maven.plugins</groupId>
 		  		<artifactId>maven-surefire-plugin</artifactId>
 		  		<version>${version.maven-surefire-plugin}</version>
-			</plugin>
-			<!-- The Failsafe plug-in runs integration tests. -->
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>${version.maven-failsafe-plugin}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<!-- The Jacoco plug-in creates coverage reports. -->
 			<plugin>
