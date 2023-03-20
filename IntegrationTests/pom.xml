@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
+
+	<artifactId>IntegrationTests</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+
+	<parent>
+		<groupId>pt.tecnico.sdis.2023.A02</groupId>
+		<artifactId>DistLedger</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+        <dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>DistLedgerServer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>User</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>Admin</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+    <build>
+        <plugins>
+			<!-- The Failsafe plug-in runs integration tests. -->
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${version.maven-failsafe-plugin}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+        </plugins>
+  </build>
+</project>
