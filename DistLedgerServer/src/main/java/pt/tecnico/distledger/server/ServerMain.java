@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.NamingService;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
