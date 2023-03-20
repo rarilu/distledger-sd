@@ -49,6 +49,13 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- naming server, for integration tests -->
+		<dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>NamingServer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
