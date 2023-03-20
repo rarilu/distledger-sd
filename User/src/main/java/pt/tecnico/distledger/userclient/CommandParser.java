@@ -2,8 +2,8 @@ package pt.tecnico.distledger.userclient;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.userclient.grpc.UserService;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Parses the input from the user and executes the corresponding commands. */
 public class CommandParser {

@@ -1,4 +1,4 @@
-package pt.tecnico.distledger.utils;
+package pt.tecnico.distledger.common;
 
 /** Helper class to print debug messages. */
 public final class Logger {

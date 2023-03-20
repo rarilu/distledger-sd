@@ -2,9 +2,9 @@ package pt.tecnico.distledger.server;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
-import pt.tecnico.distledger.utils.Logger;
 
 /**
  * Handles name register, delete and lookup operations, making gRPC requests to the naming server's

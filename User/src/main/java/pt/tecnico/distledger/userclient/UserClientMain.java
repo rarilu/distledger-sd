@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.userclient;
 
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.userclient.grpc.UserService;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Main class for the User client. */
 public class UserClientMain {

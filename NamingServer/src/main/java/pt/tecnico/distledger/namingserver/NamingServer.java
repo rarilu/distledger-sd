@@ -4,8 +4,8 @@ import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.namingserver.domain.NamingServerState;
-import pt.tecnico.distledger.utils.Logger;
 
 /** Main class for the Naming server. */
 public class NamingServer {

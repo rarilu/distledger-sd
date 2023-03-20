@@ -31,7 +31,7 @@
 		<!-- common utilities -->
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
-			<artifactId>Utils</artifactId>
+			<artifactId>Common</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
