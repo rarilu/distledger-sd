@@ -1,8 +1,7 @@
-package pt.tecnico.distledger.server;
+package pt.tecnico.distledger.common;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 
