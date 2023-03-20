@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server
 
 import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
+import pt.tecnico.distledger.namingserver.NamingServer
 
 import spock.lang.Specification
 import spock.lang.Timeout
@@ -13,6 +14,7 @@ class ServerIT extends Specification {
     def initialStdout
     def outBuf
 
+    def namingServerThread
     def serverThread
 
     @Timeout(5)
@@ -23,19 +25,31 @@ class ServerIT extends Specification {
         outBuf = new ByteArrayOutputStream()
         System.setOut(new PrintStream(outBuf))
 
+        namingServerThread = Thread.start {
+            NamingServer.main(new String[] {})
+        }
+
+        // hacky way to wait for the naming server to start
+        def namingServerStartupMsg = "Naming Server started, listening on " + NamingServer.PORT + "\n"
+        while (outBuf.size() != namingServerStartupMsg.length()) {}
+        outBuf.reset()
+
         serverThread = Thread.start {
             ServerMain.main(new String[] { port.toString(), "A" })
         }
 
         // hacky way to wait for the server to start
-        def startupMsg = "Server started, listening on " + port.toString() + "\n"
-        while (outBuf.size() != startupMsg.length()) {}
+        def serverStartupMsg = "Server started, listening on " + port.toString() + "\n"
+        while (outBuf.size() != serverStartupMsg.length()) {}
         outBuf.reset()
     }
 
     def cleanup() {
         serverThread.interrupt()
         serverThread.join()
+
+        namingServerThread.interrupt()
+        namingServerThread.join()
 
         System.setIn(initialStdin)
         System.setOut(initialStdout)
