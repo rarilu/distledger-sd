@@ -9,7 +9,7 @@ import pt.tecnico.distledger.utils.Logger;
 
 /** Main class for the Naming server. */
 public class NamingServer {
-  private static final int PORT = 5001;
+  public static final int PORT = 5001;
 
   /** Main method. */
   public static void main(String[] args) throws IOException {
