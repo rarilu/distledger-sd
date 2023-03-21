@@ -30,7 +30,7 @@ class ReadOnlyUserServiceImplTest extends Specification {
         then: "invocation fails with InvalidWriteOperationException"
         1 * observer.onError({
             it instanceof StatusRuntimeException && it.getMessage()
-                    == "UNIMPLEMENTED: Invalid write operation on read-only server"
+                    == "UNIMPLEMENTED: Unsupported operation on read-only server"
         })
         0 * observer.onNext(*_)
 
@@ -47,7 +47,7 @@ class ReadOnlyUserServiceImplTest extends Specification {
         then: "invocation does not fail with InvalidWriteOperationException"
         0 * observer.onError({
             it instanceof StatusRuntimeException && it.getMessage()
-                    == "UNIMPLEMENTED: Invalid write operation on read-only server"
+                    == "UNIMPLEMENTED: Unsupported operation on read-only server"
         })
         // might succeed or fail (for an unrelated reason); unknown
 

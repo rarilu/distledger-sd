@@ -1,6 +1,6 @@
 package pt.tecnico.distledger.server.visitors;
 
-import pt.tecnico.distledger.server.domain.exceptions.InvalidWriteOperationException;
+import pt.tecnico.distledger.server.domain.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
@@ -11,16 +11,16 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 public class DummyOperationExecutor implements OperationExecutor {
   @Override
   public void visit(CreateOp op) {
-    throw new InvalidWriteOperationException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void visit(DeleteOp op) {
-    throw new InvalidWriteOperationException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void visit(TransferOp op) {
-    throw new InvalidWriteOperationException();
+    throw new UnsupportedOperationException();
   }
 }
