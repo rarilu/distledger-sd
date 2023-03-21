@@ -36,7 +36,9 @@ public class ServerMain {
     // Init active flag
     final AtomicBoolean active = new AtomicBoolean(true);
 
-    // Init operation executor
+    // Init operation executor to use when applying operations to the server state:
+    //   - if this is the primary server (= has appropriate qualifier), use the standard executor
+    //   - otherwise, use the dummy executor (which only throws an exception for all operations)
     final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
     final OperationExecutor executor =
         isPrimary ? new StandardOperationExecutor(state) : new DummyOperationExecutor();
