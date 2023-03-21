@@ -37,4 +37,21 @@ class ReadOnlyUserServiceImplTest extends Specification {
         where:
         methodName << ["createAccount", "deleteAccount", "transferTo"]
     }
+
+    @Unroll
+    def "read operation '#methodName' on read-only server does not fail for invalid write operation"() {
+        when: "method is called"
+        def method = UserServiceImpl.class.getDeclaredMethods().find({ it.getName() == methodName })
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "invocation does not fail with InvalidWriteOperationException"
+        0 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage()
+                    == "UNIMPLEMENTED: Invalid write operation on read-only server"
+        })
+        // might succeed or fail (for an unrelated reason); unknown
+
+        where:
+        methodName << ["balance"]
+    }
 }
