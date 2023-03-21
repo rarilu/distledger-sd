@@ -2,12 +2,10 @@ package pt.tecnico.distledger.server
 
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
-import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
-import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
-import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -23,47 +21,20 @@ class ReadOnlyUserServiceImplTest extends Specification {
         observer = Mock(StreamObserver)
     }
 
-    def "create account on read-only server fails"() {
-        when: "create account is called"
-        service.createAccount(CreateAccountRequest.newBuilder()
-                .setUserId("Alice")
-                .build(),
-                observer)
+    @Unroll
+    def "write operation '#methodName' on read-only server fails"() {
+        when: "method is called"
+        def method = UserServiceImpl.class.getDeclaredMethods().find({ it.getName() == methodName })
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
 
         then: "invocation fails with InvalidWriteOperationException"
         1 * observer.onError({
             it instanceof StatusRuntimeException && it.getMessage()
                     == "UNIMPLEMENTED: Invalid write operation on read-only server"
         })
-    }
+        0 * observer.onNext(*_)
 
-    def "delete account on read-only server fails"() {
-        when: "delete account is called"
-        service.deleteAccount(DeleteAccountRequest.newBuilder()
-                .setUserId("Alice")
-                .build(),
-                observer)
-
-        then: "invocation fails with InvalidWriteOperationException"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage()
-                    == "UNIMPLEMENTED: Invalid write operation on read-only server"
-        })
-    }
-
-    def "transfer on read-only server fails"() {
-        when: "transfer to is called"
-        service.transferTo(TransferToRequest.newBuilder()
-                .setAccountFrom("broker")
-                .setAccountTo("void")
-                .setAmount(100)
-                .build(),
-                observer)
-
-        then: "invocation fails with InvalidWriteOperationException"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage()
-                    == "UNIMPLEMENTED: Invalid write operation on read-only server"
-        })
+        where:
+        methodName << ["createAccount", "deleteAccount", "transferTo"]
     }
 }
