@@ -1,10 +1,12 @@
 package pt.tecnico.distledger.namingserver.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
+import pt.tecnico.distledger.namingserver.domain.exceptions.ServerEntryNotFoundException;
 
 /** Represents a service entry in the naming server. */
 public class ServiceEntry {
@@ -23,7 +25,7 @@ public class ServiceEntry {
           ServerEntry newEntry = new ServerEntry(k, target);
 
           if (serverEntries == null) {
-            serverEntries = new ArrayList<>(List.of(newEntry));
+            serverEntries = Collections.synchronizedList(new ArrayList<>(List.of(newEntry)));
           } else if (serverEntries.contains(newEntry)) {
             throw new DuplicateServerEntryException(this.name, qualifier, target);
           } else {
@@ -32,5 +34,20 @@ public class ServiceEntry {
 
           return serverEntries;
         });
+  }
+
+  /** Deletes a server from the service entry. */
+  public void deleteServer(String target) {
+    // Safety: we need to synchronize on the servers map since we are iterating over it.
+    synchronized (this.servers) {
+      for (List<ServerEntry> serverEntries : this.servers.values()) {
+        if (serverEntries.removeIf(serverEntry -> serverEntry.target().equals(target))) {
+          return;
+        }
+      }
+
+      // If we reach this point, the server was not found.
+      throw new ServerEntryNotFoundException(this.name, target);
+    }
   }
 }
