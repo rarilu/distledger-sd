@@ -14,6 +14,7 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
+import pt.tecnico.distledger.server.domain.exceptions.InvalidWriteOperationException;
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
@@ -25,7 +26,6 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 import pt.tecnico.distledger.utils.Logger;
 
 /** Implements the User service, handling gRPC requests. */
@@ -44,11 +44,12 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
    *
    * @param state The server state
    * @param active This server's active flag
+   * @param executor The operation executor to use
    */
-  public UserServiceImpl(ServerState state, AtomicBoolean active) {
+  public UserServiceImpl(ServerState state, AtomicBoolean active, OperationExecutor executor) {
     this.state = state;
     this.active = active;
-    this.executor = new StandardOperationExecutor(state);
+    this.executor = executor;
   }
 
   @Override
@@ -61,6 +62,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.executor.execute(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (InvalidWriteOperationException e) {
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (ServerUnavailableException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
@@ -85,6 +90,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.executor.execute(new DeleteOp(request.getUserId()));
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (InvalidWriteOperationException e) {
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (ServerUnavailableException e) {
       Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
@@ -118,6 +127,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (InvalidWriteOperationException e) {
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(

@@ -4,12 +4,18 @@ import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
+import pt.tecnico.distledger.server.visitors.OperationExecutor;
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 import pt.tecnico.distledger.utils.Logger;
 
 /** Main class for the DistLedger server. */
 public class ServerMain {
+  private static final String PRIMARY_QUALIFIER = "A";
+
   /** Main method. */
   public static void main(String[] args) throws IOException {
     Logger.debug(ServerMain.class.getSimpleName());
@@ -30,8 +36,13 @@ public class ServerMain {
     // Init active flag
     final AtomicBoolean active = new AtomicBoolean(true);
 
+    // Init operation executor
+    final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
+    final OperationExecutor executor =
+        isPrimary ? new StandardOperationExecutor(state) : new DummyOperationExecutor();
+
     // Init services
-    final BindableService userService = new UserServiceImpl(state, active);
+    final BindableService userService = new UserServiceImpl(state, active, executor);
     final BindableService adminService = new AdminServiceImpl(state, active);
 
     // Launch server
