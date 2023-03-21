@@ -2,14 +2,17 @@ package pt.tecnico.distledger.server
 
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
-import java.lang.reflect.Field
+
 import java.util.concurrent.atomic.AtomicBoolean
+
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
+import pt.tecnico.distledger.server.visitors.OperationExecutor
 import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
+
 import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {
@@ -22,7 +25,7 @@ class UserServiceImplTest extends Specification {
         def state = new ServerState()
         executor = new StandardOperationExecutor(state)
         active = new AtomicBoolean(true)
-        service = new UserServiceImpl(state, active)
+        service = new UserServiceImpl(state, active, executor)
         observer = Mock(StreamObserver)
     }
 
@@ -76,14 +79,12 @@ class UserServiceImplTest extends Specification {
         def state = Mock(ServerState)
         state.getAccountBalance(_) >> { throw new RuntimeException("Unknown error") }
 
-        and: "a service with the mocked state"
-        def service = new UserServiceImpl(state, active)
-
         and: "a mocked executor that throws an exception when used"
-        Field field = service.class.getDeclaredField("executor")
-        field.setAccessible(true)
-        field.set(service, Mock(StandardOperationExecutor))
-        service.executor.execute(_) >> { throw new RuntimeException("Unknown error") }
+        def executor = Mock(OperationExecutor)
+        executor.execute(_) >> { throw new RuntimeException("Unknown error") }
+
+        and: "a service with the mocked state and executor"
+        def service = new UserServiceImpl(state, active, executor)
 
         when: "a method is called"
         method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
