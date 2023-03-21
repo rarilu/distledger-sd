@@ -10,4 +10,13 @@ public class NamingServerState {
   public void registerServer(String service, String qualifier, String target) {
     this.services.computeIfAbsent(service, ServiceEntry::new).registerServer(qualifier, target);
   }
+
+  public void deleteServer(String service, String target) {
+    this.services.computeIfPresent(
+        service,
+        (k, v) -> {
+          v.deleteServer(target);
+          return v;
+        });
+  }
 }
