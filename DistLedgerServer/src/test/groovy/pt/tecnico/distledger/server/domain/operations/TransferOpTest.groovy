@@ -10,7 +10,7 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException
-import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class TransferOpTest extends Specification {
     def state
@@ -18,7 +18,7 @@ class TransferOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new OperationExecutor(state)
+        executor = new StandardOperationExecutor(state)
     }
 
     def "transfer from broker to a new user"() {
@@ -119,7 +119,7 @@ class TransferOpTest extends Specification {
         state.getAccounts() >> accounts
 
         and: "an executor with the mock state"
-        def executor = new OperationExecutor(state)
+        def executor = new StandardOperationExecutor(state)
         
         and: "first calls to get return accounts"
         1 * accounts.get("Alice") >> new Account()

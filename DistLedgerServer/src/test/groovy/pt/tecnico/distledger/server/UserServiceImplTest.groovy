@@ -3,12 +3,11 @@ package pt.tecnico.distledger.server
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 import java.util.concurrent.atomic.AtomicBoolean
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
 import spock.lang.Specification
@@ -21,7 +20,7 @@ class UserServiceImplTest extends Specification {
 
     def setup() {
         def state = new ServerState()
-        executor = new OperationExecutor(state)
+        executor = new StandardOperationExecutor(state)
         active = new AtomicBoolean(true)
         service = new UserServiceImpl(state, active)
         observer = Mock(StreamObserver)
@@ -83,7 +82,7 @@ class UserServiceImplTest extends Specification {
         and: "a mocked executor that throws an exception when used"
         Field field = service.class.getDeclaredField("executor")
         field.setAccessible(true)
-        field.set(service, Mock(OperationExecutor))
+        field.set(service, Mock(StandardOperationExecutor))
         service.executor.execute(_) >> { throw new RuntimeException("Unknown error") }
 
         when: "a method is called"

@@ -9,7 +9,7 @@ import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException
-import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class DeleteOpTest extends Specification {
     def state
@@ -17,7 +17,7 @@ class DeleteOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new OperationExecutor(state)
+        executor = new StandardOperationExecutor(state)
     }
 
     def "delete an account"() {
@@ -75,7 +75,7 @@ class DeleteOpTest extends Specification {
         state.getAccounts() >> accounts
 
         and: "an executor with the mock state"
-        def executor = new OperationExecutor(state)
+        def executor = new StandardOperationExecutor(state)
         
         and: "first call to get returns an account"
         1 * accounts.get("Alice") >> new Account()
