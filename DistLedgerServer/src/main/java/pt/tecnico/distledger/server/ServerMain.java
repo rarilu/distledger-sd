@@ -57,9 +57,14 @@ public class ServerMain {
 
     // Connect to naming server and register this server
     try (NamingService namingService = new NamingService()) {
-      final String address = InetAddress.getLocalHost().getHostAddress().toString();
-      Logger.debug("Registering server at " + address + ":" + port);
-      namingService.register("distledger", qualifier, address + ":" + port);
+      try {
+        final String address = InetAddress.getLocalHost().getHostAddress().toString();
+        Logger.debug("Registering server at " + address + ":" + port);
+        namingService.register("distledger", qualifier, address + ":" + port);
+      } catch (RuntimeException e) {
+        Logger.error("Failed to register server: " + e.getMessage());
+        server.shutdown();
+      }
 
       // Wait until server is terminated
       while (!server.isTerminated()) {
