@@ -14,7 +14,6 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.domain.exceptions.InvalidWriteOperationException;
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
@@ -22,6 +21,7 @@ import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
+import pt.tecnico.distledger.server.domain.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
@@ -62,7 +62,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.executor.execute(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (InvalidWriteOperationException e) {
+    } catch (UnsupportedOperationException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
@@ -90,7 +90,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.executor.execute(new DeleteOp(request.getUserId()));
       responseObserver.onNext(DeleteAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (InvalidWriteOperationException e) {
+    } catch (UnsupportedOperationException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
@@ -127,7 +127,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (InvalidWriteOperationException e) {
+    } catch (UnsupportedOperationException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
