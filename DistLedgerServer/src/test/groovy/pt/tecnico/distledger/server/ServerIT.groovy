@@ -30,7 +30,7 @@ class ServerIT extends Specification {
         }
 
         // hacky way to wait for the naming server to start
-        def namingServerStartupMsg = "Naming Server started, listening on " + NamingServer.PORT + "\n"
+        def namingServerStartupMsg = "Naming Server started, listening on 5001\n"
         while (outBuf.size() != namingServerStartupMsg.length()) {}
         outBuf.reset()
 
