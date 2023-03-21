@@ -25,6 +25,7 @@ import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 import pt.tecnico.distledger.utils.Logger;
 
 /** Implements the User service, handling gRPC requests. */
@@ -47,7 +48,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
-    this.executor = new OperationExecutor(state);
+    this.executor = new StandardOperationExecutor(state);
   }
 
   @Override

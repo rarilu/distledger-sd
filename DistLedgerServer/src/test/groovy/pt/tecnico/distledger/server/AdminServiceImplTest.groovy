@@ -9,7 +9,7 @@ import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
@@ -28,7 +28,7 @@ class AdminServiceImplTest extends Specification {
 
     def setup() {
         def state = new ServerState()
-        executor = new OperationExecutor(state)
+        executor = new StandardOperationExecutor(state)
         active = new AtomicBoolean(true)
         service = new AdminServiceImpl(state, active)
         observer = Mock(StreamObserver)

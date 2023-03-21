@@ -5,7 +5,7 @@ import spock.lang.Specification
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException
-import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class CreateOpTest extends Specification {
     def state
@@ -13,7 +13,7 @@ class CreateOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new OperationExecutor(state)
+        executor = new StandardOperationExecutor(state)
     }
 
     def "create a new account"() {
