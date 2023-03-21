@@ -60,7 +60,7 @@ public class ServerMain {
       try {
         final String address = InetAddress.getLocalHost().getHostAddress().toString();
         Logger.debug("Registering server at " + address + ":" + port);
-        namingService.register("distledger", qualifier, address + ":" + port);
+        namingService.register("DistLedger", qualifier, address + ":" + port);
       } catch (RuntimeException e) {
         Logger.error("Failed to register server: " + e.getMessage());
         server.shutdown();
