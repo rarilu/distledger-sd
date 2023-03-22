@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.server;
 
-import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
@@ -47,12 +46,13 @@ public class ServerMain {
         isPrimary ? new StandardOperationExecutor(state) : new DummyOperationExecutor();
 
     // Init services
-    final BindableService userService = new UserServiceImpl(state, active, executor);
-    final BindableService adminService = new AdminServiceImpl(state, active);
+    final UserServiceImpl userService = new UserServiceImpl(state, active, executor);
+    final AdminServiceImpl adminService = new AdminServiceImpl(state, active);
 
     // Launch server
     final Server server =
         ServerBuilder.forPort(port).addService(userService).addService(adminService).build();
+    adminService.setServer(server);
     server.start();
     System.out.println("Server started, listening on " + port);
 
