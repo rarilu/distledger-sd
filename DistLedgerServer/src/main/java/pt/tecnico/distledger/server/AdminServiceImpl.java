@@ -84,13 +84,20 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
 
   @Override
   public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
+    if (this.server == null) {
+      Logger.debug(SHUTDOWN_FAILED + "Server cannot be shutdown");
+      responseObserver.onError(Status.UNIMPLEMENTED.withDescription("Server cannot be shutdown")
+          .asRuntimeException());
+      return;
+    }
+
     try {
       responseObserver.onNext(ShutdownResponse.getDefaultInstance());
       responseObserver.onCompleted();
 
       // Server is guaranteed to be non-null here, since .setServer() is called before the server
       // starts.
-      server.shutdown();
+      this.server.shutdown();
     } catch (RuntimeException e) {
       Logger.debug(SHUTDOWN_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
