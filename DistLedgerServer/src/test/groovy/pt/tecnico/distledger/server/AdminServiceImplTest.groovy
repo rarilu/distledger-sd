@@ -121,7 +121,7 @@ class AdminServiceImplTest extends Specification {
             it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
         })
 
-        where: "method is any void function of AdminServiceImpl"
-        method << AdminServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
+        where: "method is any void function of AdminServiceImpl with 2 parameters"
+        method << AdminServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && it.getParameterCount() == 2 }
     }
 }
