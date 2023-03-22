@@ -38,7 +38,7 @@ public class ServiceEntry {
 
   /** Deletes a server from the service entry. */
   public void deleteServer(String target) {
-    // Safety: we need to synchronize on the servers map since we are iterating over it.
+    // Safety: we need to synchronize on the servers map since we are iterating over it
     synchronized (this.servers) {
       for (List<ServerEntry> serverEntries : this.servers.values()) {
         if (serverEntries.removeIf(serverEntry -> serverEntry.target().equals(target))) {
@@ -46,7 +46,7 @@ public class ServiceEntry {
         }
       }
 
-      // If we reach this point, the server was not found.
+      // If we reach this point, the server was not found
       throw new ServerEntryNotFoundException(this.name, target);
     }
   }
