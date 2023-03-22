@@ -45,12 +45,18 @@ public class ServerMain {
     // Init active flag
     final AtomicBoolean active = new AtomicBoolean(true);
 
-    // Init operation executor to use when applying operations to the server state:
-    //   - if this is the primary server (= has appropriate qualifier), use the standard executor
-    //   - otherwise, use the dummy executor (which only throws an exception for all operations)
+    // Check if this server is the primary server and initialize the operation executor used by the
+    // user service to execute received operations
     final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
-    final OperationExecutor executor =
-        isPrimary ? new StandardOperationExecutor(state) : new DummyOperationExecutor();
+    OperationExecutor executor;
+    if (isPrimary) {
+      // TODO: when the replicating ledger manager is finished this should be replaced by it
+      final LedgerManager ledgerManager = new DirectLedgerManager(state);
+      executor = new StandardOperationExecutor(state, ledgerManager);
+    } else {
+      // Use a dummy executor which only throws an exception for any operation it receives
+      executor = new DummyOperationExecutor();
+    }
 
     // Init services
     final UserServiceImpl userService = new UserServiceImpl(state, active, executor);
