@@ -21,6 +21,7 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 public class DistLedgerCrossServerServiceImpl
     extends DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceImplBase {
   private static final String PROPAGATE_FAILED = "Prapagate State failed: ";
+  private static final String PARSE_FAILED = "Failed to create operation from request";
 
   private final ServerState state;
   private final AtomicBoolean active;
@@ -38,7 +39,7 @@ public class DistLedgerCrossServerServiceImpl
       case OP_DELETE_ACCOUNT -> new DeleteOp(operation.getUserId());
       case OP_TRANSFER_TO -> new TransferOp(
           operation.getUserId(), operation.getDestUserId(), operation.getAmount());
-      default -> throw Status.UNKNOWN.asRuntimeException();
+      default -> throw Status.UNKNOWN.withDescription(PARSE_FAILED).asRuntimeException();
     };
   }
 
