@@ -26,6 +26,11 @@ public class ServerState {
     this.ledger.add(op);
   }
 
+  /** Reset legder. */
+  public void resetLedger() {
+    this.ledger.clear();
+  }
+
   /** Visit all operations in the ledger, using the specified visitor. */
   public void visitLedger(OperationVisitor visitor) {
     // Safety: prevent operations from being added to the ledger while we are
