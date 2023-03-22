@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.server.visitors;
 
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.server.LedgerManager;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
@@ -20,9 +21,11 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
  */
 public class StandardOperationExecutor implements OperationExecutor {
   private final ServerState state;
+  private final LedgerManager ledgerManager;
 
-  public StandardOperationExecutor(ServerState state) {
+  public StandardOperationExecutor(ServerState state, LedgerManager ledgerManager) {
     this.state = state;
+    this.ledgerManager = ledgerManager;
   }
 
   @Override
@@ -44,7 +47,7 @@ public class StandardOperationExecutor implements OperationExecutor {
         throw new AccountAlreadyExistsException(op.getUserId());
       }
 
-      this.state.addToLedger(op);
+      this.ledgerManager.addToLedger(op);
     }
 
     Logger.debug("Created account for " + op.getUserId());
@@ -83,7 +86,7 @@ public class StandardOperationExecutor implements OperationExecutor {
         throw new NonEmptyAccountException(op.getUserId(), balance);
       }
 
-      this.state.addToLedger(op);
+      this.ledgerManager.addToLedger(op);
 
       // Now we can safely delete it since no other operation can access it
       this.state.getAccounts().remove(op.getUserId());
@@ -149,7 +152,7 @@ public class StandardOperationExecutor implements OperationExecutor {
         destAccount.setBalance(destAccount.getBalance() + op.getAmount());
 
         // Add the operation to the ledger
-        this.state.addToLedger(op);
+        this.ledgerManager.addToLedger(op);
       }
     }
 
