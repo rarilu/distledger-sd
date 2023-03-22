@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
 import java.util.concurrent.ConcurrentMap
+import pt.tecnico.distledger.server.LedgerManager
 import pt.tecnico.distledger.server.domain.Account
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -18,7 +19,8 @@ class TransferOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new StandardOperationExecutor(state)
+        def ledgerManager = Mock(LedgerManager)
+        executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
     def "transfer from broker to a new user"() {
@@ -118,8 +120,11 @@ class TransferOpTest extends Specification {
         def accounts = Mock(ConcurrentMap)
         state.getAccounts() >> accounts
 
+        and: "a mock ledger manager"
+        def ledgerManager = Mock(LedgerManager)
+
         and: "an executor with the mock state"
-        def executor = new StandardOperationExecutor(state)
+        def executor = new StandardOperationExecutor(state, ledgerManager)
         
         and: "first calls to get return accounts"
         1 * accounts.get("Alice") >> new Account()

@@ -23,7 +23,8 @@ class UserServiceImplTest extends Specification {
 
     def setup() {
         def state = new ServerState()
-        executor = new StandardOperationExecutor(state)
+        def ledgerManager = new DirectLedgerManager(state)
+        executor = new StandardOperationExecutor(state, ledgerManager)
         active = new AtomicBoolean(true)
         service = new UserServiceImpl(state, active, executor)
         observer = Mock(StreamObserver)
