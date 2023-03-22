@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.namingserver;
 
-import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
@@ -19,10 +18,11 @@ public class NamingServer {
     final NamingServerState state = new NamingServerState();
 
     // Init service
-    final BindableService namingService = new NamingServiceImpl(state);
+    final NamingServiceImpl namingService = new NamingServiceImpl(state);
 
     // Launch server
     final Server server = ServerBuilder.forPort(PORT).addService(namingService).build();
+    namingService.setServer(server);
     server.start();
     System.out.println("Naming Server started, listening on " + PORT);
 
