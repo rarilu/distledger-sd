@@ -52,7 +52,7 @@ public class ServerMain {
     // Launch server
     final Server server =
         ServerBuilder.forPort(port).addService(userService).addService(adminService).build();
-    adminService.setServer(server);
+    adminService.setServer(server); // Called so that the service can shutdown the server
     server.start();
     System.out.println("Server started, listening on " + port);
 
