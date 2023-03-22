@@ -4,6 +4,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 
 /**
@@ -47,6 +48,13 @@ public class NamingService implements AutoCloseable {
   /** Executes a lookup request. */
   public void lookup(String service, String qualifier) {
     // TODO
+  }
+
+  /** Executes a shutdown request. */
+  public void shutdown() {
+    ShutdownRequest request = ShutdownRequest.newBuilder().build();
+
+    this.stub.shutdown(request);
   }
 
   /** Close channel immediately. */
