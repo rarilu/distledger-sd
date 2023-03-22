@@ -94,9 +94,6 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
     try {
       responseObserver.onNext(ShutdownResponse.getDefaultInstance());
       responseObserver.onCompleted();
-
-      // Server is guaranteed to be non-null here, since .setServer() is called before the server
-      // starts.
       this.server.shutdown();
     } catch (RuntimeException e) {
       Logger.debug(SHUTDOWN_FAILED + e.getMessage());
