@@ -109,8 +109,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
     def "propagate state to deactivated server"() {
         given: "a state to propagate"
         def operations = [
-                Operation.newBuilder().setType(OperationType.OP_UNSPECIFIED)
-                        .build()
+                Operation.newBuilder().setType(OperationType.OP_UNSPECIFIED).build()
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
 
