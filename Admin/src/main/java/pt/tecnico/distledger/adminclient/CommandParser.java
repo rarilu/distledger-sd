@@ -14,6 +14,7 @@ public class CommandParser {
   private static final String GOSSIP = "gossip";
   private static final String HELP = "help";
   private static final String EXIT = "exit";
+  private static final String SHUTDOWN = "shutdown";
 
   private final AdminService adminService;
 
@@ -42,6 +43,7 @@ public class CommandParser {
             case GOSSIP -> this.gossip(line);
             case HELP -> this.printUsage();
             case EXIT -> exit = true;
+            case SHUTDOWN -> this.shutdown(line);
             default -> {
               Logger.debug("Unknown command: " + cmd);
               this.printUsage();
@@ -94,6 +96,18 @@ public class CommandParser {
   private void gossip(String line) {
     /* TODO Phase-3 */
     System.out.println("TODO: implement gossip command (only for Phase-3)");
+  }
+
+  private void shutdown(String line) {
+    String[] split = line.split(SPACE);
+    if (split.length != 2) {
+      this.printUsage();
+      return;
+    }
+
+    String server = split[1];
+
+    this.adminService.shutdown(server);
   }
 
   private void printUsage() {
