@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.namingserver;
 
+import io.grpc.Server;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import pt.tecnico.distledger.common.Logger;
@@ -7,6 +8,8 @@ import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.Delete
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterResponse;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownRequest;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 import pt.tecnico.distledger.namingserver.domain.NamingServerState;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
@@ -16,11 +19,19 @@ import pt.tecnico.distledger.namingserver.domain.exceptions.ServerEntryNotFoundE
 public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
   private static final String REGISTER_FAILED = "Register failed: ";
   private static final String DELETE_FAILED = "Delete failed: ";
+  private static final String SHUTDOWN_FAILED = "Shutdown failed: ";
 
+  private Server server;
   private final NamingServerState state;
 
   public NamingServiceImpl(NamingServerState state) {
+    this.server = null;
     this.state = state;
+  }
+
+  /** Sets the server using this service. Needed to implement the shutdown method. */
+  public void setServer(Server server) {
+    this.server = server;
   }
 
   @Override
@@ -51,6 +62,25 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
           Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(DELETE_FAILED + e.getMessage());
+      responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
+    if (this.server == null) {
+      Logger.debug(SHUTDOWN_FAILED + "Server cannot be shutdown");
+      responseObserver.onError(
+          Status.UNIMPLEMENTED.withDescription("Server cannot be shutdown").asRuntimeException());
+      return;
+    }
+
+    try {
+      responseObserver.onNext(ShutdownResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+      this.server.shutdown();
+    } catch (RuntimeException e) {
+      Logger.debug(SHUTDOWN_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
