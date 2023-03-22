@@ -8,6 +8,7 @@ import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownRequest;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 /** Handles Admin operations, making gRPC requests to the server's Admin service. */
@@ -55,6 +56,12 @@ public class AdminService implements AutoCloseable {
   public void getLedgerState(String server) {
     GetLedgerStateRequest request = GetLedgerStateRequest.getDefaultInstance();
     this.makeRequest(request, this.stub::getLedgerState);
+  }
+
+  /** Handle the Shutdown command. */
+  public void shutdown(String server) {
+    ShutdownRequest request = ShutdownRequest.getDefaultInstance();
+    this.makeRequest(request, this.stub::shutdown);
   }
 
   /** Close channel immediately. */
