@@ -13,8 +13,8 @@ public class CommandParser {
   private static final String GET_LEDGER_STATE = "getLedgerState";
   private static final String GOSSIP = "gossip";
   private static final String HELP = "help";
-  private static final String EXIT = "exit";
   private static final String SHUTDOWN = "shutdown";
+  private static final String EXIT = "exit";
 
   private final AdminService adminService;
 
@@ -42,8 +42,8 @@ public class CommandParser {
             case GET_LEDGER_STATE -> this.getLedgerState(line);
             case GOSSIP -> this.gossip(line);
             case HELP -> this.printUsage();
-            case EXIT -> exit = true;
             case SHUTDOWN -> this.shutdown(line);
+            case EXIT -> exit = true;
             default -> {
               Logger.debug("Unknown command: " + cmd);
               this.printUsage();
@@ -117,6 +117,7 @@ public class CommandParser {
             + "- deactivate <server>\n"
             + "- getLedgerState <server>\n"
             + "- gossip <server>\n"
+            + "- shutdown <server>\n"
             + "- exit\n");
   }
 }

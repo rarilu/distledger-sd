@@ -14,6 +14,7 @@ abstract class BaseTest extends Specification {
         "- deactivate <server>\n" +
         "- getLedgerState <server>\n" +
         "- gossip <server>\n" +
+        "- shutdown <server>\n" +
         "- exit\n"
 
     def setup() {
