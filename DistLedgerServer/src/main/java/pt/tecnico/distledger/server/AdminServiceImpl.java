@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server;
 
+import io.grpc.Server;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,6 +11,8 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownRequest;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
@@ -19,13 +22,22 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   private static final String ACTIVATE_FAILED = "Activate failed: ";
   private static final String DEACTIVATE_FAILED = "Deactivate failed: ";
   private static final String GET_LEDGER_STATE_FAILED = "Get Ledger State failed: ";
+  private static final String SHUTDOWN_FAILED = "Shutdown failed: ";
 
+  private Server server;
   private final ServerState state;
   private final AtomicBoolean active;
 
+  /** Creates a new Admin service. */
   public AdminServiceImpl(ServerState state, AtomicBoolean active) {
+    this.server = null;
     this.state = state;
     this.active = active;
+  }
+
+  /** Sets the server using this service. Needed to implement the shutdown method. */
+  public void setServer(Server server) {
+    this.server = server;
   }
 
   @Override
@@ -66,6 +78,21 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
       Logger.debug(GET_LEDGER_STATE_FAILED + e.getMessage());
+      responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
+    try {
+      responseObserver.onNext(ShutdownResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+
+      // Server is guaranteed to be non-null here, since .setServer() is called before the server
+      // starts.
+      server.shutdown();
+    } catch (RuntimeException e) {
+      Logger.debug(SHUTDOWN_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
