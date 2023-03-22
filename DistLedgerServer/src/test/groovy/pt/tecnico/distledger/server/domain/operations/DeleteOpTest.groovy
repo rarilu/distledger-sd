@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
 import java.util.concurrent.ConcurrentMap
+import pt.tecnico.distledger.server.LedgerManager
 import pt.tecnico.distledger.server.domain.Account
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -17,7 +18,8 @@ class DeleteOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new StandardOperationExecutor(state)
+        def ledgerManager = Mock(LedgerManager)
+        executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
     def "delete an account"() {
@@ -74,8 +76,11 @@ class DeleteOpTest extends Specification {
         def accounts = Mock(ConcurrentMap)
         state.getAccounts() >> accounts
 
+        and: "a mock ledger manager"
+        def ledgerManager = Mock(LedgerManager)
+
         and: "an executor with the mock state"
-        def executor = new StandardOperationExecutor(state)
+        def executor = new StandardOperationExecutor(state, ledgerManager)
         
         and: "first call to get returns an account"
         1 * accounts.get("Alice") >> new Account()

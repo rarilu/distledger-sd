@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
 
+import pt.tecnico.distledger.server.LedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException
@@ -13,7 +14,8 @@ class CreateOpTest extends Specification {
 
     def setup() {
         state = new ServerState()
-        executor = new StandardOperationExecutor(state)
+        def ledgerManager = Mock(LedgerManager)
+        executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
     def "create a new account"() {
