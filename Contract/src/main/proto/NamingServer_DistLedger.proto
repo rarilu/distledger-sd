@@ -27,8 +27,13 @@ message LookupResponse {
   repeated string targets = 1;
 }
 
+message ShutdownRequest {}
+
+message ShutdownResponse {}
+
 service NamingService {
   rpc register(RegisterRequest) returns (RegisterResponse);
   rpc delete(DeleteRequest) returns (DeleteResponse);
   rpc lookup(LookupRequest) returns (LookupResponse);
+  rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
 }
