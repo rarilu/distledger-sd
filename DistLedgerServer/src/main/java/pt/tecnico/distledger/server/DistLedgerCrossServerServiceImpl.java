@@ -45,7 +45,7 @@ public class DistLedgerCrossServerServiceImpl
       case OP_DELETE_ACCOUNT -> new DeleteOp(operation.getUserId());
       case OP_TRANSFER_TO -> new TransferOp(
           operation.getUserId(), operation.getDestUserId(), operation.getAmount());
-      default -> throw Status.UNKNOWN.withDescription(PARSE_FAILED).asRuntimeException();
+      default -> throw new IllegalArgumentException(PARSE_FAILED);
     };
   }
 
@@ -62,6 +62,14 @@ public class DistLedgerCrossServerServiceImpl
       }
       responseObserver.onNext(PropagateStateResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (ServerUnavailableException e) {
+      Logger.debug(PROPAGATE_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
+    } catch (IllegalArgumentException e) {
+      Logger.debug(PROPAGATE_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(PROPAGATE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
