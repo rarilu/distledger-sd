@@ -16,6 +16,7 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 
 /** Main class for the DistLedger server. */
 public class ServerMain {
+  private static final String SERVICE_NAME = "DistLedger";
   private static final String PRIMARY_QUALIFIER = "A";
 
   /** Main method. */
@@ -60,7 +61,7 @@ public class ServerMain {
       try {
         final String address = InetAddress.getLocalHost().getHostAddress().toString();
         Logger.debug("Registering server at " + address + ":" + port);
-        namingService.register("DistLedger", qualifier, address + ":" + port);
+        namingService.register(SERVICE_NAME, qualifier, address + ":" + port);
       } catch (RuntimeException e) {
         Logger.error("Failed to register server: " + e.getMessage());
         server.shutdown();
@@ -76,6 +77,9 @@ public class ServerMain {
           server.shutdown();
         }
       }
+
+      // Unregister server
+      namingService.delete(SERVICE_NAME, qualifier);
     }
   }
 }

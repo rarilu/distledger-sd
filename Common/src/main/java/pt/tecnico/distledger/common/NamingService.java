@@ -2,6 +2,7 @@ package pt.tecnico.distledger.common;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 
@@ -37,7 +38,10 @@ public class NamingService implements AutoCloseable {
 
   /** Executes a delete request. */
   public void delete(String service, String target) {
-    // TODO
+    DeleteRequest request =
+        DeleteRequest.newBuilder().setService(service).setTarget(target).build();
+
+    this.stub.delete(request);
   }
 
   /** Executes a lookup request. */
