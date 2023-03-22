@@ -86,8 +86,8 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
     if (this.server == null) {
       Logger.debug(SHUTDOWN_FAILED + "Server cannot be shutdown");
-      responseObserver.onError(Status.UNIMPLEMENTED.withDescription("Server cannot be shutdown")
-          .asRuntimeException());
+      responseObserver.onError(
+          Status.UNIMPLEMENTED.withDescription("Server cannot be shutdown").asRuntimeException());
       return;
     }
 
