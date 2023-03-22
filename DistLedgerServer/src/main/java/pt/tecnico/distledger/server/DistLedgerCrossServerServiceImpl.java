@@ -42,7 +42,7 @@ public class DistLedgerCrossServerServiceImpl
   public void propagateState(
       PropagateStateRequest request, StreamObserver<PropagateStateResponse> responseObserver) {
     try {
-      this.state.resetLedger();
+      this.state.reset();
       for (DistLedgerCommonDefinitions.Operation operation : request.getState().getLedgerList()) {
         this.executor.execute(parseOperation(operation));
       }

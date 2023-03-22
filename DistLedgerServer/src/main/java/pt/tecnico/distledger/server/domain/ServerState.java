@@ -16,6 +16,13 @@ public class ServerState {
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
 
   public ServerState() {
+    reset();
+  }
+
+  /** Reset server state. */
+  public void reset() {
+    this.ledger.clear();
+    this.accounts.clear();
     this.accounts.put("broker", new Account(1000));
   }
 
@@ -24,11 +31,6 @@ public class ServerState {
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
-  }
-
-  /** Reset legder. */
-  public void resetLedger() {
-    this.ledger.clear();
   }
 
   /** Visit all operations in the ledger, using the specified visitor. */
