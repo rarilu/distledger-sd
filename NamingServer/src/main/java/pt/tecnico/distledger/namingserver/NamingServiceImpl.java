@@ -29,7 +29,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
     this.state = state;
   }
 
-  /** Sets the server using this service. Needed to implement the shutdown method. */
+  /** Sets the server using this service. Must be called before the shutdown method is called. */
   public void setServer(Server server) {
     this.server = server;
   }
