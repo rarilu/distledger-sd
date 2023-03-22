@@ -52,7 +52,7 @@ public class NamingService implements AutoCloseable {
 
   /** Executes a shutdown request. */
   public void shutdown() {
-    ShutdownRequest request = ShutdownRequest.newBuilder().build();
+    ShutdownRequest request = ShutdownRequest.getDefaultInstance();
 
     this.stub.shutdown(request);
   }
