@@ -18,7 +18,6 @@
 	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
 	<properties>
 		<mainclass>pt.tecnico.distledger.namingserver.NamingServer</mainclass>
-		<server.port>5001</server.port>
 	</properties>
 
 	<dependencies>
@@ -52,9 +51,6 @@
 				</executions>
 				<configuration>
 					<mainClass>${mainclass}</mainClass>
-						<arguments>
-							<argument>${server.port}</argument>
-						</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
