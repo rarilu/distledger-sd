@@ -2,7 +2,9 @@ package pt.tecnico.distledger.server;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
@@ -57,9 +59,12 @@ public class DistLedgerCrossServerServiceImpl
         throw new ServerUnavailableException();
       }
       this.state.reset();
-      for (DistLedgerCommonDefinitions.Operation operation : request.getState().getLedgerList()) {
-        this.executor.execute(parseOperation(operation));
-      }
+      List<Operation> operations =
+          request.getState().getLedgerList().stream()
+              .map(this::parseOperation)
+              .collect(Collectors.toList());
+      operations.stream().forEach(op -> op.accept(executor));
+
       responseObserver.onNext(PropagateStateResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
