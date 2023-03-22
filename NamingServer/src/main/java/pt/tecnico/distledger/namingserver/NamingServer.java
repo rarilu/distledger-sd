@@ -22,7 +22,7 @@ public class NamingServer {
 
     // Launch server
     final Server server = ServerBuilder.forPort(PORT).addService(namingService).build();
-    namingService.setServer(server);
+    namingService.setServer(server); // Called so that the service can shutdown the server
     server.start();
     System.out.println("Naming Server started, listening on " + PORT);
 
