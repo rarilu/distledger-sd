@@ -27,6 +27,12 @@ public class DistLedgerCrossServerServiceImpl
   private final AtomicBoolean active;
   private final OperationExecutor executor;
 
+  /**
+   * Creates a new DistLedgerCrossServerServiceImpl.
+   *
+   * @param state The server state
+   * @param active This server's active flag
+   */
   public DistLedgerCrossServerServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
