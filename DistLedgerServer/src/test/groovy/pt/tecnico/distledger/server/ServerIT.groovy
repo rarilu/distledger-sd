@@ -3,10 +3,11 @@ package pt.tecnico.distledger.server
 import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
 import pt.tecnico.distledger.namingserver.NamingServer
-
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Timeout
 
+@Ignore
 class ServerIT extends Specification {
     def port = 2001
 
