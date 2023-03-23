@@ -37,6 +37,7 @@ public class ServiceEntry {
         });
   }
 
+  /** Looks up servers wiht the given qualifier in the service entry. */
   public List<String> lookupServer(String qualifier) {
     List<ServerEntry> serverEntries = this.servers.get(qualifier);
 
