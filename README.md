@@ -19,8 +19,8 @@ Distributed Systems Project 2022/2023
 ## Getting Started
 
 The overall system is made up of several modules. The main server is the _DistLedgerServer_. The clients are the _User_ 
-and the _Admin_. The definition of messages and services is in the _Contract_. The future naming server
-is the _NamingServer_.
+and the _Admin_. The definition of messages and services is in the _Contract_. The naming server is the _NamingServer_.
+Code common to more than one module is in the _Common_ module.
 
 See the [Project Statement](https://github.com/tecnico-distsys/DistLedger) for a complete domain and system description.
 
