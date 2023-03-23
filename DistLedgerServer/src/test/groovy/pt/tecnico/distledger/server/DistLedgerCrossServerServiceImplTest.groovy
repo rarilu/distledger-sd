@@ -3,6 +3,8 @@ package pt.tecnico.distledger.server
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.List;
 
@@ -91,35 +93,35 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         state.getAccountBalance("broker") == 900
     }
 
-    def "propagate state to deactivated server"() {
-        given: "a state to propagate"
-        def prop = LedgerState.newBuilder().addAllLedger([]).build()
+    def "catch runtime exceptions"() {
+        given: "a mocked observer that always throws"
+        observer.onNext(_) >> { throw new RuntimeException("Unknown error") }
 
+        when: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method fails with RuntimeException"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
+        })
+
+        where: "method is any void function of UserServiceImpl"
+        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers()) }
+    }
+
+    def "deactivate server"() {
         when: "server is deactivated"
         active.set(false)
 
-        and: "a state is propagated"
-        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer);
+        and: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
 
-        then: "propagation fails with ServerUnavailableException"
+        then: "method fails with ServerUnavailableException"
         1 * observer.onError({
             it instanceof StatusRuntimeException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
         })
-    }
 
-    def "propagate state to deactivated server"() {
-        given: "a state to propagate"
-        def operations = [
-                Operation.newBuilder().setType(OperationType.OP_UNSPECIFIED).build()
-        ]
-        def prop = LedgerState.newBuilder().addAllLedger(operations).build()
-
-        when: "a state is propagated"
-        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer)
-
-        then: "propagation fails with ServerUnavailableException"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Failed to create operation from request"
-        })
+        where: "method is any void function of UserServiceImpl"
+        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers()) }
     }
 }
