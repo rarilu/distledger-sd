@@ -12,7 +12,7 @@ public class NamingServer {
   private static final int PORT = 5001;
 
   /** Main method. */
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
     Logger.debug(NamingServer.class.getSimpleName());
 
     // Init naming server state
@@ -28,14 +28,6 @@ public class NamingServer {
     System.out.println("Naming Server started, listening on " + PORT);
 
     // Wait until server is terminated
-    while (!server.isTerminated()) {
-      try {
-        server.awaitTermination();
-      } catch (InterruptedException e) {
-        // Shutdown gracefully on interrupt
-        System.out.println("Naming Server interrupted, shutting down");
-        server.shutdown();
-      }
-    }
+    server.awaitTermination();
   }
 }

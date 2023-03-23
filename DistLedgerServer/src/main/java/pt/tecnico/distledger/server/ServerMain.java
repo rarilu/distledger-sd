@@ -23,7 +23,7 @@ public class ServerMain {
   private static final String PRIMARY_QUALIFIER = "A";
 
   /** Main method. */
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
     Logger.debug(ServerMain.class.getSimpleName());
 
     // Check arguments
@@ -83,15 +83,7 @@ public class ServerMain {
       }
 
       // Wait until server is terminated
-      while (!server.isTerminated()) {
-        try {
-          server.awaitTermination();
-        } catch (InterruptedException e) {
-          // Shutdown gracefully on interrupt
-          System.out.println("Server interrupted, shutting down");
-          server.shutdown();
-        }
-      }
+      server.awaitTermination();
 
       // Unregister server
       namingService.delete(SERVICE_NAME, target);

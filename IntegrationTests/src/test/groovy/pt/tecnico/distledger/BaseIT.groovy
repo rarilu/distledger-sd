@@ -4,6 +4,7 @@ import pt.tecnico.distledger.server.ServerMain
 import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
 import pt.tecnico.distledger.namingserver.NamingServer
+import pt.tecnico.distledger.common.NamingService;
 
 import spock.lang.Specification
 import spock.lang.Timeout
@@ -46,10 +47,10 @@ abstract class BaseIT extends Specification {
     }
 
     def cleanup() {
-        serverThread.interrupt()
+        runAdmin("shutdown A")
         serverThread.join()
 
-        namingServerThread.interrupt()
+        (new NamingService()).shutdown()
         namingServerThread.join()
 
         System.setIn(initialStdin)
