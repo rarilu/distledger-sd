@@ -37,6 +37,19 @@ public class ServiceEntry {
         });
   }
 
+  public List<String> lookupServer(String qualifier) {
+    List<ServerEntry> serverEntries = this.servers.get(qualifier);
+
+    if (serverEntries == null) {
+      return Collections.emptyList();
+    }
+
+    return serverEntries.stream()
+        .filter(entry -> entry.qualifier().equals(qualifier))
+        .map(ServerEntry::target)
+        .toList();
+  }
+
   /** Deletes a server from the service entry. */
   public void deleteServer(String target) {
     // Safety: we need to synchronize on the servers map since we are iterating over it
