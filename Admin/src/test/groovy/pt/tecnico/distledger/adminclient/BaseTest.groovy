@@ -1,10 +1,13 @@
 package pt.tecnico.distledger.adminclient
 
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger
+import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc
 import spock.lang.Specification
 
 import org.grpcmock.GrpcMock
 
 abstract class BaseTest extends Specification {
+    def mockServerTarget
     def initialStdin
     def initialStdout
     def outBuf
@@ -20,6 +23,14 @@ abstract class BaseTest extends Specification {
     def setup() {
         GrpcMock.configureFor(GrpcMock.grpcMock(0).build().start())
         // port 0 means that the OS will assign a random free port
+
+        mockServerTarget = "localhost:" + GrpcMock.getGlobalPort().toString()
+        GrpcMock.stubFor(
+                GrpcMock.unaryMethod(NamingServiceGrpc.getLookupMethod())
+                        .willReturn(GrpcMock.response(
+                                NamingServerDistLedger.LookupResponse.newBuilder()
+                                        .addTargets(mockServerTarget)
+                                        .build())))
 
         initialStdin = System.in
         initialStdout = System.out
@@ -39,6 +50,7 @@ abstract class BaseTest extends Specification {
     }
 
     def runMain() {
-        AdminClientMain.main(new String[]{"localhost", GrpcMock.getGlobalPort().toString()})
+        def adminClient = new AdminClientMain() // main is static, but this is needed to cover the constructor
+        adminClient.main(new String[]{mockServerTarget})
     }
 }
