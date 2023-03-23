@@ -37,6 +37,16 @@ public class ServerState {
     this.ledger.add(op);
   }
 
+  /** Registers a given operation in the ledger and visits the new ledger. */
+  public void addToLedgerAndVisit(Operation operation, OperationVisitor visitor) {
+    // Safety: we synchronize the ledger to prevent operations from being added to it
+    // between the .add() and the .forEach(), and during the .forEach() itself
+    synchronized (this.ledger) {
+      this.ledger.add(operation);
+      this.ledger.forEach(op -> op.accept(visitor));
+    }
+  }
+
   /** Visit all operations in the ledger, using the specified visitor. */
   public void visitLedger(OperationVisitor visitor) {
     // Safety: prevent operations from being added to the ledger while we are
