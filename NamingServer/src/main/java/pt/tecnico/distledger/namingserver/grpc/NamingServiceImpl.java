@@ -73,7 +73,14 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
   @Override
   public void lookup(LookupRequest request, StreamObserver<LookupResponse> responseObserver) {
     try {
-      List<String> targets = this.state.lookupServer(request.getService(), request.getQualifier());
+      // Lookup the target servers with the requested characteristics.
+      List<String> targets;
+      if (request.getQualifier() == null) {
+        targets = this.state.lookup(request.getService());
+      } else {
+        targets = this.state.lookup(request.getService(), request.getQualifier());
+      }
+
       responseObserver.onNext(LookupResponse.newBuilder().addAllTargets(targets).build());
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
