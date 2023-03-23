@@ -7,13 +7,11 @@ public class DuplicateServerEntryException extends RuntimeException {
    * Creates a new DuplicateServerEntryException given details of the server entry whose creation
    * was attempted.
    */
-  public DuplicateServerEntryException(String service, String qualifier, String target) {
+  public DuplicateServerEntryException(String service, String target) {
     super(
         "An entry for server with target "
             + target
-            + ", qualifier "
-            + qualifier
-            + ", and service "
+            + " and service "
             + service
             + " already exists");
   }
