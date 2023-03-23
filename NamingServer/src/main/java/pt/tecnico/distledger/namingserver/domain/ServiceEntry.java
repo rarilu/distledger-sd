@@ -3,7 +3,6 @@ package pt.tecnico.distledger.namingserver.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
@@ -46,7 +45,7 @@ public class ServiceEntry {
     }
 
     return serverEntries.stream()
-        .filter(entry -> entry.qualifier().equals(qualifier))
+        .filter(entry -> qualifier.equals(entry.qualifier()))
         .map(ServerEntry::target)
         .toList();
   }
@@ -56,7 +55,7 @@ public class ServiceEntry {
     // Safety: we need to synchronize on the servers map since we are iterating over it
     synchronized (this.servers) {
       for (List<ServerEntry> serverEntries : this.servers.values()) {
-        if (serverEntries.removeIf(serverEntry -> Objects.equals(serverEntry.target(), target))) {
+        if (serverEntries.removeIf(serverEntry -> target.equals(serverEntry.target()))) {
           return;
         }
       }
