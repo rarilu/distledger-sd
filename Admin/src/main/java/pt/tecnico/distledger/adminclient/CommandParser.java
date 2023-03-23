@@ -1,7 +1,9 @@
 package pt.tecnico.distledger.adminclient;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Supplier;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.common.Logger;
 
@@ -56,6 +58,21 @@ public class CommandParser {
     }
   }
 
+  private void handleServiceCallResponse(Supplier<Optional<String>> serviceCall) {
+    try {
+      // needs to be a supplier for lazy evaluation
+      // any exceptions must be thrown inside this try block
+
+      final String representation =
+          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable."));
+      System.out.println("OK");
+      System.out.println(representation);
+    } catch (RuntimeException e) {
+      System.out.println("Error: " + e.getMessage());
+      System.out.println();
+    }
+  }
+
   private void activate(String line) {
     String[] split = line.split(SPACE);
     if (split.length != 2) {
@@ -65,7 +82,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    this.adminService.activate(server);
+    this.handleServiceCallResponse(() -> this.adminService.activate(server));
   }
 
   private void deactivate(String line) {
@@ -77,7 +94,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    this.adminService.deactivate(server);
+    this.handleServiceCallResponse(() -> this.adminService.deactivate(server));
   }
 
   private void getLedgerState(String line) {
@@ -89,7 +106,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    this.adminService.getLedgerState(server);
+    this.handleServiceCallResponse(() -> this.adminService.getLedgerState(server));
   }
 
   @SuppressWarnings("unused")
@@ -107,7 +124,7 @@ public class CommandParser {
 
     String server = split[1];
 
-    this.adminService.shutdown(server);
+    this.handleServiceCallResponse(() -> this.adminService.shutdown(server));
   }
 
   private void printUsage() {
