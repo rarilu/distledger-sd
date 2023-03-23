@@ -105,7 +105,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
             it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
         })
 
-        where: "method is any void function of UserServiceImpl"
+        where: "method is any public void function of UserServiceImpl"
         method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers()) }
     }
 
