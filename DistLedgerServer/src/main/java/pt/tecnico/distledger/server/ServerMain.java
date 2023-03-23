@@ -75,18 +75,27 @@ public class ServerMain {
     try (final NamingService namingService =
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
       try {
-        Logger.debug("Registering server at " + target);
-        namingService.register(SERVICE_NAME, qualifier, target);
+        final String address = InetAddress.getLocalHost().getHostAddress().toString();
+        Logger.debug("Registering server at " + address + ":" + port);
+        namingService.register(SERVICE_NAME, qualifier, address + ":" + port);
+
+        // Wait for user input to shutdown server
+        System.out.println("Press enter to shutdown");
+        System.in.read();
       } catch (RuntimeException e) {
         Logger.error("Failed to register server: " + e.getMessage());
-        server.shutdown();
       }
 
       // Wait until server is terminated
+      server.shutdown();
       server.awaitTermination();
 
       // Unregister server
-      namingService.delete(SERVICE_NAME, target);
+      try {
+        namingService.delete(SERVICE_NAME, qualifier);
+      } catch (RuntimeException e) {
+        Logger.error("Failed to unregister server: " + e.getMessage());
+      }
     }
   }
 }
