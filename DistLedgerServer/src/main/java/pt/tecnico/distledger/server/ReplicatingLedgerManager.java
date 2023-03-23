@@ -22,8 +22,15 @@ public class ReplicatingLedgerManager implements LedgerManager {
 
   @Override
   public void addToLedger(Operation operation) {
+    // First replicate the operation to secondary servers
     LedgerStateGenerator generator = new LedgerStateGenerator();
-    this.state.addToLedgerAndVisit(operation, generator);
+    operation.accept(generator);
+
+    // propagateState() may throw a FailedPropagationException, and the caller should take that
+    // into account
     this.crossServerService.propagateState(SECONDARY_QUALIFIER, generator);
+
+    // Only then modify the server state
+    this.state.addToLedger(operation);
   }
 }
