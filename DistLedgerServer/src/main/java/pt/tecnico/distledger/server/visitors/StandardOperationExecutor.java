@@ -47,7 +47,14 @@ public class StandardOperationExecutor implements OperationExecutor {
         throw new AccountAlreadyExistsException(op.getUserId());
       }
 
-      this.ledgerManager.addToLedger(op);
+      try {
+        this.ledgerManager.addToLedger(op);
+      } catch (RuntimeException e) {
+        // If the operation failed to be added to the ledger, we need to remove the account from
+        // the map, otherwise it would be in an inconsistent state
+        this.state.getAccounts().remove(op.getUserId());
+        throw e;
+      }
     }
 
     Logger.debug("Created account for " + op.getUserId());
@@ -86,6 +93,9 @@ public class StandardOperationExecutor implements OperationExecutor {
         throw new NonEmptyAccountException(op.getUserId(), balance);
       }
 
+      // No need to catch and rethrow the exception here, because we haven't made any changes to
+      // the state yet, so if the operation fails to be added to the ledger, we can just let the
+      // exception bubble up
       this.ledgerManager.addToLedger(op);
 
       // Now we can safely delete it since no other operation can access it
@@ -147,12 +157,14 @@ public class StandardOperationExecutor implements OperationExecutor {
           throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());
         }
 
+        // No need to catch and rethrow the exception here, because we haven't made any changes to
+        // the state yet, so if the operation fails to be added to the ledger, we can just let the
+        // exception bubble up
+        this.ledgerManager.addToLedger(op);
+
         // Transfer the balance
         fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());
         destAccount.setBalance(destAccount.getBalance() + op.getAmount());
-
-        // Add the operation to the ledger
-        this.ledgerManager.addToLedger(op);
       }
     }
 
