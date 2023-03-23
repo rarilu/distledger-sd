@@ -4,7 +4,9 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.NamingService;
@@ -25,14 +27,17 @@ public class ServerMain {
     Logger.debug(ServerMain.class.getSimpleName());
 
     // Check arguments
-    if (args.length != 2) {
+    if (args.length != 2 && args.length != 3) {
       Logger.error("Argument(s) missing!");
-      Logger.error("Usage: mvn exec:java -Dexec.args=\"<port> <qual>\"");
+      Logger.error("Usage: mvn exec:java -Dexec.args=\"<port> <qual> [<naming_server_target>]\"");
       return;
     }
 
     final int port = Integer.parseInt(args[0]);
     final String qualifier = args[1];
+    // accepts naming server target as an optional argument
+    // if not provided, uses the well-known target
+    Optional<String> namingServerTarget = Arrays.stream(args).skip(2).findFirst();
 
     // Init server state
     final ServerState state = new ServerState();
@@ -59,7 +64,8 @@ public class ServerMain {
     System.out.println("Server started, listening on " + port);
 
     // Connect to naming server and register this server
-    try (NamingService namingService = new NamingService()) {
+    try (final NamingService namingService =
+        namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
       try {
         final String address = InetAddress.getLocalHost().getHostAddress().toString();
         Logger.debug("Registering server at " + address + ":" + port);
