@@ -2,7 +2,9 @@ package pt.tecnico.distledger.common;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import java.util.List;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
@@ -45,9 +47,26 @@ public class NamingService implements AutoCloseable {
     this.stub.delete(request);
   }
 
-  /** Executes a lookup request. */
-  public void lookup(String service, String qualifier) {
+  /**
+   * Executes a lookup request, searching by service and qualifier.
+   *
+   * @return a list of targets that match the given service and qualifier.
+   */
+  public List<String> lookup(String service, String qualifier) {
+    LookupRequest request =
+        LookupRequest.newBuilder().setService(service).setQualifier(qualifier).build();
+
+    return this.stub.lookup(request).getTargetsList();
+  }
+
+  /**
+   * Executes a lookup request, searching by service.
+   *
+   * @return a list of targets that match the given service.
+   */
+  public List<String> lookup(String service) {
     // TODO
+    throw new UnsupportedOperationException("Not implemented yet.");
   }
 
   /** Executes a shutdown request. */
