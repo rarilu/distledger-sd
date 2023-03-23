@@ -16,17 +16,6 @@ public class ServerState {
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
 
   public ServerState() {
-    this.reset();
-  }
-
-  /**
-   * Reset server state.
-   *
-   * @apiNote Unsafe, all safety assurances are the caller's responsibility.
-   */
-  public void reset() {
-    this.ledger.clear();
-    this.accounts.clear();
     this.accounts.put("broker", new Account(1000));
   }
 
@@ -35,16 +24,6 @@ public class ServerState {
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
-  }
-
-  /** Registers a given operation in the ledger and visits the new ledger. */
-  public void addToLedgerAndVisit(Operation operation, OperationVisitor visitor) {
-    // Safety: we synchronize the ledger to prevent operations from being added to it
-    // between the .add() and the .forEach(), and during the .forEach() itself
-    synchronized (this.ledger) {
-      this.ledger.add(operation);
-      this.ledger.forEach(op -> op.accept(visitor));
-    }
   }
 
   /** Visit all operations in the ledger, using the specified visitor. */
