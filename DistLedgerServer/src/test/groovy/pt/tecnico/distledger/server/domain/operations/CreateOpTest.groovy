@@ -10,11 +10,12 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class CreateOpTest extends Specification {
     def state
+    def ledgerManager
     def executor
 
     def setup() {
         state = new ServerState()
-        def ledgerManager = Mock(LedgerManager)
+        ledgerManager = Mock(LedgerManager)
         executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
@@ -41,5 +42,19 @@ class CreateOpTest extends Specification {
 
         and: "the number of accounts is still 2"
         state.getAccounts().size() == 2
+    }
+
+    def "create account but fail on addToLedger"() {
+        given: "that the ledger manager fails on addToLedger"
+        ledgerManager.addToLedger(_) >> { throw new RuntimeException() }
+
+        when: "an account is created"
+        executor.execute(new CreateOp("Alice"))
+
+        then: "an exception is thrown"
+        thrown(RuntimeException)
+        
+        and: "the number of accounts is still 1"
+        state.getAccounts().size() == 1
     }
 }

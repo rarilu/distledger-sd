@@ -15,11 +15,12 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class TransferOpTest extends Specification {
     def state
+    def ledgerManager
     def executor
 
     def setup() {
         state = new ServerState()
-        def ledgerManager = Mock(LedgerManager)
+        ledgerManager = Mock(LedgerManager)
         executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
@@ -146,5 +147,23 @@ class TransferOpTest extends Specification {
 
         where:
         failing << ["Alice", "Bob"]
+    }
+
+    def "transfer but fail on addToLedger"() {
+        given: "an account already created"
+        executor.execute(new CreateOp("Alice"))
+
+        and: "a ledger manager that fails on addToLedger"
+        ledgerManager.addToLedger(_) >> { throw new RuntimeException() }
+
+        when: "a transfer is made from the broker to the new user"
+        executor.execute(new TransferOp("broker", "Alice", 100))
+
+        then: "an exception is thrown"
+        thrown(RuntimeException)
+
+        and: "the accounts have the correct balance"
+        state.getAccounts().get("broker").getBalance() == 1000
+        state.getAccounts().get("Alice").getBalance() == 0
     }
 }
