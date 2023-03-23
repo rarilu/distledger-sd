@@ -36,6 +36,8 @@ public class NamingService implements AutoCloseable {
             .setTarget(target)
             .build();
 
+    Logger.debug("Register request: " + request);
+
     this.stub.register(request);
   }
 
@@ -43,6 +45,8 @@ public class NamingService implements AutoCloseable {
   public void delete(String service, String target) {
     DeleteRequest request =
         DeleteRequest.newBuilder().setService(service).setTarget(target).build();
+
+    Logger.debug("Delete request: " + request);
 
     this.stub.delete(request);
   }
@@ -55,6 +59,8 @@ public class NamingService implements AutoCloseable {
   public List<String> lookup(String service, String qualifier) {
     LookupRequest request =
         LookupRequest.newBuilder().setService(service).setQualifier(qualifier).build();
+
+    Logger.debug("Lookup request: " + request);
 
     return this.stub.lookup(request).getTargetsList();
   }
