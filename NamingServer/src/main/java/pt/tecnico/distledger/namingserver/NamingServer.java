@@ -27,7 +27,12 @@ public class NamingServer {
     server.start();
     System.out.println("Naming Server started, listening on " + PORT);
 
+    // Wait for user input to shutdown server
+    System.out.println("Press enter to shutdown");
+    System.in.read();
+
     // Wait until server is terminated
+    server.shutdown();
     server.awaitTermination();
   }
 }
