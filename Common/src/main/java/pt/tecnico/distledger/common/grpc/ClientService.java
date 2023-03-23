@@ -3,6 +3,7 @@ package pt.tecnico.distledger.common.grpc;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import pt.tecnico.distledger.common.Logger;
@@ -30,33 +31,29 @@ public abstract class ClientService<S> implements AutoCloseable {
    *     and the request, and returns the response.
    * @param <Q> the request type.
    * @param <R> the response type.
-   * @return false if the server is unavailable (to allow retrying), true otherwise.
+   * @return the response, or an empty if the server is unavailable.
+   * @throws RuntimeException if the request fails or no server with the specified qualifier is
+   *     found.
    */
-  protected <Q, R> boolean makeRequest(
+  @SuppressWarnings("java:S112") // see below
+  protected <Q, R> Optional<R> makeRequest(
       String qualifier, Q request, BiFunction<S, Q, R> dispatcher) {
     try {
       S stub = this.stubCache.getStub(qualifier);
 
       Logger.debug("Sending request: " + request.toString());
-      R response = dispatcher.apply(stub, request);
-      String representation = response.toString();
-
-      System.out.println("OK");
-      System.out.println(representation);
+      return Optional.of(dispatcher.apply(stub, request));
     } catch (StatusRuntimeException e) {
       if (Objects.equals(e.getStatus().getCode(), io.grpc.Status.Code.UNAVAILABLE)) {
-        return false;
+        return Optional.empty();
       }
 
-      System.out.println("Error: " + e.getStatus().getDescription());
-      System.out.println();
-    } catch (RuntimeException e) {
-      // This happens when no server is found with the specified qualifier
-      System.out.println("Error: " + e.getMessage());
-      System.out.println();
+      // java:S112 does not apply: conversion is necessary to avoid loss of status in propagated
+      // upcast exception
+      throw new RuntimeException(e.getStatus().getDescription(), e);
     }
-
-    return true;
+    // purposely not catching RuntimeException, thrown when no server is found
+    // with the specified qualifier
   }
 
   /**
@@ -70,19 +67,22 @@ public abstract class ClientService<S> implements AutoCloseable {
    * @param maxTries the maximum number of tries to be performed.
    * @param <Q> the request type.
    * @param <R> the response type.
+   * @return the response, or an empty if the server is unavailable after maxTries.
+   * @throws RuntimeException if a request fails or no server with the specified qualifier is found.
    */
-  protected <Q, R> void makeRequestWithRetryInvalidatingStubCache(
+  protected <Q, R> Optional<R> makeRequestWithRetryInvalidatingStubCache(
       String qualifier, Q request, BiFunction<S, Q, R> dispatcher, int maxTries) {
     for (int i = 0; i < maxTries; i++) {
-      if (this.makeRequest(qualifier, request, dispatcher)) {
-        return;
-      }
+      final Optional<R> response = this.makeRequest(qualifier, request, dispatcher);
 
-      this.stubCache.invalidateCachedStub(qualifier);
+      if (response.isPresent()) {
+        return response;
+      } else {
+        this.stubCache.invalidateCachedStub(qualifier);
+      }
     }
 
-    System.out.println("Error: Server is unavailable.");
-    System.out.println();
+    return Optional.empty();
   }
 
   /** Close underlying stubCache. */
