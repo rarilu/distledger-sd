@@ -14,11 +14,12 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 
 class DeleteOpTest extends Specification {
     def state
+    def ledgerManager
     def executor
 
     def setup() {
         state = new ServerState()
-        def ledgerManager = Mock(LedgerManager)
+        ledgerManager = Mock(LedgerManager)
         executor = new StandardOperationExecutor(state, ledgerManager)
     }
 
@@ -93,5 +94,22 @@ class DeleteOpTest extends Specification {
 
         then: "an exception is thrown"
         thrown(UnknownAccountException)
+    }
+
+    def "delete account but fail on addToLedger"() {
+        given: "an account already created"
+        executor.execute(new CreateOp("Alice"))
+
+        and: "a ledger manager that fails on addToLedger"
+        ledgerManager.addToLedger(_) >> { throw new RuntimeException() }
+
+        when: "the account is deleted"
+        executor.execute(new DeleteOp("Alice"))
+
+        then: "an exception is thrown"
+        thrown(RuntimeException)
+
+        and: "the account still exists"
+        state.getAccounts().containsKey("Alice")
     }
 }
