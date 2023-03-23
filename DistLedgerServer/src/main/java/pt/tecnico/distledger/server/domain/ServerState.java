@@ -16,7 +16,7 @@ public class ServerState {
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
 
   public ServerState() {
-    reset();
+    this.reset();
   }
 
   /** Reset server state. */
