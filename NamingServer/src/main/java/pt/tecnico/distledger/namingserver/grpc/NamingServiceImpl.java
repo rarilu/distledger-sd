@@ -3,9 +3,12 @@ package pt.tecnico.distledger.namingserver.grpc;
 import io.grpc.Server;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteResponse;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownRequest;
@@ -55,6 +58,22 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
     try {
       this.state.deleteServer(request.getService(), request.getTarget());
       responseObserver.onNext(DeleteResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (ServerEntryNotFoundException e) {
+      Logger.debug(DELETE_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
+    } catch (RuntimeException e) {
+      Logger.debug(DELETE_FAILED + e.getMessage());
+      responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void lookup(LookupRequest request, StreamObserver<LookupResponse> responseObserver) {
+    try {
+      List<String> targets = this.state.lookupServer(request.getService(), request.getQualifier());
+      responseObserver.onNext(LookupResponse.newBuilder().addAllTargets(targets).build());
       responseObserver.onCompleted();
     } catch (ServerEntryNotFoundException e) {
       Logger.debug(DELETE_FAILED + e.getMessage());
