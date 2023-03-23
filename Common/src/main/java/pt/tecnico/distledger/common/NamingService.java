@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.common;
 
+import java.util.List;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.List;
@@ -80,8 +81,11 @@ public class NamingService implements AutoCloseable {
    * @return a list of targets that match the given service.
    */
   public List<String> lookup(String service) {
-    // TODO
-    throw new UnsupportedOperationException("Not implemented yet.");
+    LookupRequest request = LookupRequest.newBuilder().setService(service).build();
+
+    Logger.debug("Lookup request: " + request);
+
+    return this.stub.lookup(request).getTargetsList();
   }
 
   /** Executes a shutdown request. */
