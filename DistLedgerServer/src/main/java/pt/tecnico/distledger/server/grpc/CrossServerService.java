@@ -7,6 +7,7 @@ import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 
 /** Handles CrossServer operations, making gRPC requests to the server's CrossServer service. */
@@ -26,7 +27,7 @@ public class CrossServerService implements AutoCloseable {
   }
 
   /** Handle the PropagateState command. */
-  public void propagateState(String server) {
+  public void propagateState(String server) throws FailedPropagationException {
     LedgerStateGenerator generator = new LedgerStateGenerator();
     this.state.visitLedger(generator);
     PropagateStateRequest request =
@@ -35,8 +36,7 @@ public class CrossServerService implements AutoCloseable {
       Logger.debug("Sending request: " + request.toString());
       this.stub.propagateState(request);
     } catch (StatusRuntimeException e) {
-      System.out.println("Error: " + e.getStatus().getDescription());
-      System.out.println();
+      throw new FailedPropagationException();
     }
   }
 
