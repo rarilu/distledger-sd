@@ -58,12 +58,18 @@ public class DistLedgerCrossServerServiceImpl
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.state.reset();
       List<Operation> operations =
           request.getState().getLedgerList().stream()
               .map(this::parseOperation)
               .collect(Collectors.toList());
-      operations.stream().forEach(op -> op.accept(executor));
+
+      // Safety: Secondary servers only execute operations given by the primary server on
+      // propagateStateRequests.
+      // As such, there are no concurency issues if the state is locked here.
+      synchronized (this.state) {
+        this.state.reset();
+        operations.stream().forEach(op -> op.accept(executor));
+      }
 
       responseObserver.onNext(PropagateStateResponse.getDefaultInstance());
       responseObserver.onCompleted();
