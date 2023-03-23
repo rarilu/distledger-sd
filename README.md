@@ -51,18 +51,14 @@ To execute a module, from the root directory of the project, run:
 #### User
 
 ```s
-mvn exec:java -pl User -Dexec.args="<host> <port>"
+mvn exec:java -pl User
 ```
-
-Ommiting `-Dexec.args` will run with the default arguments `"localhost 2001"`
 
 #### Admin
 
 ```s
-mvn exec:java -pl Admin -Dexec.args="<host> <port>"
+mvn exec:java -pl Admin
 ```
-
-Ommiting `-Dexec.args` will run with the default arguments `"localhost 2001"`
 
 #### DistLedgerServer
 
@@ -71,6 +67,12 @@ mvn exec:java -pl DistLedgerServer -Dexec.args="<port> <qual>"
 ```
 
 Ommiting `-Dexec.args` will run with the default arguments `"2001 A"`
+
+#### NamingServer
+
+```s
+mvn exec:java -pl NamingServer
+```
 
 #### Running in Debug Mode
 
