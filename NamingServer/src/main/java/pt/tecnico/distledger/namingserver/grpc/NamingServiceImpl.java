@@ -22,6 +22,7 @@ import pt.tecnico.distledger.namingserver.domain.exceptions.ServerEntryNotFoundE
 public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
   private static final String REGISTER_FAILED = "Register failed: ";
   private static final String DELETE_FAILED = "Delete failed: ";
+  private static final String LOOKUP_FAILED = "Lookup failed: ";
   private static final String SHUTDOWN_FAILED = "Shutdown failed: ";
 
   private Server server;
@@ -76,7 +77,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
       responseObserver.onNext(LookupResponse.newBuilder().addAllTargets(targets).build());
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
-      Logger.debug(DELETE_FAILED + e.getMessage());
+      Logger.debug(LOOKUP_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }
