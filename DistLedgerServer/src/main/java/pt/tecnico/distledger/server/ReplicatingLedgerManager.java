@@ -26,11 +26,13 @@ public class ReplicatingLedgerManager implements LedgerManager {
     LedgerStateGenerator generator = new LedgerStateGenerator();
     operation.accept(generator);
 
-    // propagateState() may throw a FailedPropagationException, and the caller should take that
-    // into account
-    this.crossServerService.propagateState(SECONDARY_QUALIFIER, generator);
+    synchronized (this) {
+      // propagateState() may throw a FailedPropagationException, and the caller should take that
+      // into account
+      this.crossServerService.propagateState(SECONDARY_QUALIFIER, generator);
 
-    // Only then modify the server state
-    this.state.addToLedger(operation);
+      // Only then modify the server state
+      this.state.addToLedger(operation);
+    }
   }
 }
