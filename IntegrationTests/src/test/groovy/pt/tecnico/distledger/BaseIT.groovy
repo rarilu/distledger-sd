@@ -3,6 +3,7 @@ package pt.tecnico.distledger
 import pt.tecnico.distledger.server.ServerMain
 import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
+import pt.tecnico.distledger.namingserver.NamingServer
 
 import spock.lang.Specification
 import spock.lang.Timeout

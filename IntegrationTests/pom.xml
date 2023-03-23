@@ -22,6 +22,12 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>test</scope>
         </dependency>
+        <dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>NamingServer</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
 			<artifactId>User</artifactId>
