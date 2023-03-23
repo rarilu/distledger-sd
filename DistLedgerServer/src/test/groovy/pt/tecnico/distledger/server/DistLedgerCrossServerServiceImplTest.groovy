@@ -88,6 +88,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         and: "the account balances are correct"
         state.getAccounts().size() == 2
         state.getAccountBalance("Alice") == 100
+        state.getAccountBalance("broker") == 900
     }
 
     def "propagate state to deactivated server"() {
