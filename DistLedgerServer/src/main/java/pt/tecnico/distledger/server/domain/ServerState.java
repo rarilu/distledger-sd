@@ -19,10 +19,11 @@ public class ServerState {
     this.reset();
   }
 
-  /** Reset server state.
-   * 
+  /**
+   * Reset server state.
+   *
    * @apiNote Unsafe, all safety assurances are the caller's responsibility.
-  */
+   */
   public void reset() {
     this.ledger.clear();
     this.accounts.clear();
