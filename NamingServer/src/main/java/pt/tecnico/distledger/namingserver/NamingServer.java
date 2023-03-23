@@ -5,6 +5,7 @@ import io.grpc.ServerBuilder;
 import java.io.IOException;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.namingserver.domain.NamingServerState;
+import pt.tecnico.distledger.namingserver.grpc.NamingServiceImpl;
 
 /** Main class for the Naming server. */
 public class NamingServer {

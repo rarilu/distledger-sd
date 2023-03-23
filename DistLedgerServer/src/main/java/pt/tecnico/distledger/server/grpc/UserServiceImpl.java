@@ -1,4 +1,4 @@
-package pt.tecnico.distledger.server;
+package pt.tecnico.distledger.server.grpc;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;

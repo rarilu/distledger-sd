@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.NamingService;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
+import pt.tecnico.distledger.server.grpc.UserServiceImpl;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;

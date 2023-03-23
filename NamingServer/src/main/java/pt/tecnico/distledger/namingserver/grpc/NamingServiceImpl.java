@@ -1,4 +1,4 @@
-package pt.tecnico.distledger.namingserver;
+package pt.tecnico.distledger.namingserver.grpc;
 
 import io.grpc.Server;
 import io.grpc.Status;
