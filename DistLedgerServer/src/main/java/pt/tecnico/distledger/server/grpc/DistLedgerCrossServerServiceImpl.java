@@ -10,6 +10,8 @@ import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateResponse;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
+import pt.tecnico.distledger.server.DirectLedgerManager;
+import pt.tecnico.distledger.server.LedgerManager;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
@@ -25,7 +27,6 @@ public class DistLedgerCrossServerServiceImpl
   private static final String PROPAGATE_FAILED = "Prapagate State failed: ";
   private static final String PARSE_FAILED = "Failed to create operation from request";
 
-  private final ServerState state;
   private final AtomicBoolean active;
   private final OperationExecutor executor;
 
@@ -36,9 +37,10 @@ public class DistLedgerCrossServerServiceImpl
    * @param active This server's active flag
    */
   public DistLedgerCrossServerServiceImpl(ServerState state, AtomicBoolean active) {
-    this.state = state;
     this.active = active;
-    this.executor = new StandardOperationExecutor(state);
+
+    final LedgerManager ledgerManager = new DirectLedgerManager(state);
+    this.executor = new StandardOperationExecutor(state, ledgerManager);
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
@@ -58,18 +60,17 @@ public class DistLedgerCrossServerServiceImpl
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
+      // First we parse the operations from the request, to ensure we don't modify the state if
+      // the request is invalid.
       List<Operation> operations =
           request.getState().getLedgerList().stream()
               .map(this::parseOperation)
               .collect(Collectors.toList());
 
-      // Safety: Secondary servers only execute operations given by the primary server on
-      // propagateStateRequests.
-      // As such, there are no concurency issues if the state is locked here.
-      synchronized (this.state) {
-        this.state.reset();
-        operations.stream().forEach(op -> op.accept(executor));
-      }
+      // Safety: the operations are executed and stored in the ledger in the same order they were
+      // received. Since the primary server always waits for a response before continuing, we don't
+      // need to worry about concurrent calls to propagateState.
+      operations.stream().forEach(op -> op.accept(executor));
 
       responseObserver.onNext(PropagateStateResponse.getDefaultInstance());
       responseObserver.onCompleted();
