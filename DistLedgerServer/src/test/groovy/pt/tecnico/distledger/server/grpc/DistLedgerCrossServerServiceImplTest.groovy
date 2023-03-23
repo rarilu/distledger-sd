@@ -77,10 +77,6 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
 
-        and: "a state with accounts"
-        state.getAccounts().put("Alice", 200)
-        state.getAccounts().put("Bob", 100)
-
         when: "the state is propagated"
         service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer);
 
