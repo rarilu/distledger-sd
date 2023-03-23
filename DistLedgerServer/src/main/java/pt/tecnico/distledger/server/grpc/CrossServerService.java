@@ -6,7 +6,6 @@ import io.grpc.StatusRuntimeException;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
-import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 
@@ -14,22 +13,22 @@ import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 public class CrossServerService implements AutoCloseable {
   private final ManagedChannel channel;
   private final DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceBlockingStub stub;
-  private final ServerState state;
 
   /** Creates a new CrossServerService, connecting to the given host and port. */
-  public CrossServerService(String host, int port, ServerState state) {
+  public CrossServerService(String host, int port) {
     final String target = host + ":" + port;
     Logger.debug("Connecting to " + target);
 
     this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
     this.stub = DistLedgerCrossServerServiceGrpc.newBlockingStub(this.channel);
-    this.state = state;
   }
 
-  /** Handle the PropagateState command. */
-  public void propagateState(String server) throws FailedPropagationException {
-    LedgerStateGenerator generator = new LedgerStateGenerator();
-    this.state.visitLedger(generator);
+  /**
+   * Handle the PropagateState request. Uses the filled LedgerStateGenerator to build the
+   * LedgerState proto and send it to the server.
+   */
+  public void propagateState(String server, LedgerStateGenerator generator)
+      throws FailedPropagationException {
     PropagateStateRequest request =
         PropagateStateRequest.newBuilder().setState(generator.build()).build();
     try {
