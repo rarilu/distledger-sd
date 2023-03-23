@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.common;
 
-import java.util.List;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.List;
