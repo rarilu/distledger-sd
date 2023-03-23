@@ -75,10 +75,6 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
       List<String> targets = this.state.lookupServer(request.getService(), request.getQualifier());
       responseObserver.onNext(LookupResponse.newBuilder().addAllTargets(targets).build());
       responseObserver.onCompleted();
-    } catch (ServerEntryNotFoundException e) {
-      Logger.debug(DELETE_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(DELETE_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
