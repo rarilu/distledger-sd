@@ -36,7 +36,7 @@ public class CrossServerService implements AutoCloseable {
       Logger.debug("Sending request: " + request.toString());
       this.stub.propagateState(request);
     } catch (StatusRuntimeException e) {
-      throw new FailedPropagationException();
+      throw new FailedPropagationException(e);
     }
   }
 
