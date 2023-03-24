@@ -64,7 +64,7 @@ class CreateAccountTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: Account already exists\n\n> "
+        outBuf.toString() == "> Error: ALREADY_EXISTS: Account already exists\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(

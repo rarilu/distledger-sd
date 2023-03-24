@@ -77,7 +77,7 @@ class TransferToTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: Source account does not have sufficient balance\n\n> "
+        outBuf.toString() == "> Error: FAILED_PRECONDITION: Source account does not have sufficient balance\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(

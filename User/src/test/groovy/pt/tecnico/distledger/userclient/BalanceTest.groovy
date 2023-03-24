@@ -71,7 +71,7 @@ class BalanceTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: Account Alice not found\n\n> "
+        outBuf.toString() == "> Error: NOT_FOUND: Account Alice not found\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
