@@ -17,17 +17,14 @@ public class NamingService implements AutoCloseable {
   /** Target host and port for the well-known naming server. */
   private static final String WELL_KNOWN_TARGET = "localhost:5001";
 
-  private final String target;
   private final ManagedChannel channel;
   private final NamingServiceGrpc.NamingServiceBlockingStub stub;
 
   /** Creates a new NamingService, connecting to the given target. */
   public NamingService(String target) {
-    this.target = target;
+    Logger.debug("Connecting to naming service at " + target);
 
-    Logger.debug("Connecting to naming service at " + this.target);
-
-    this.channel = ManagedChannelBuilder.forTarget(this.target).usePlaintext().build();
+    this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
     this.stub = NamingServiceGrpc.newBlockingStub(this.channel);
   }
 
