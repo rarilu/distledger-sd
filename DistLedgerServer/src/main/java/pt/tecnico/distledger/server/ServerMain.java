@@ -69,14 +69,14 @@ public class ServerMain {
     server.start();
     System.out.println("Server started, listening on " + port);
 
-    final String address = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
+    final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
 
     // Connect to naming server and register this server
     try (final NamingService namingService =
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
       try {
-        Logger.debug("Registering server at " + address);
-        namingService.register(SERVICE_NAME, qualifier, address);
+        Logger.debug("Registering server at " + target);
+        namingService.register(SERVICE_NAME, qualifier, target);
       } catch (RuntimeException e) {
         Logger.error("Failed to register server: " + e.getMessage());
         server.shutdown();
@@ -94,7 +94,7 @@ public class ServerMain {
       }
 
       // Unregister server
-      namingService.delete(SERVICE_NAME, address);
+      namingService.delete(SERVICE_NAME, target);
     }
   }
 }
