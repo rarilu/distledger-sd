@@ -1,8 +1,8 @@
 package pt.tecnico.distledger.common.grpc
 
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc
-import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest;
-import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupResponse;
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest
+import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupResponse
 import spock.lang.Specification
 
 import org.grpcmock.GrpcMock

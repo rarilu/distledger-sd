@@ -83,11 +83,11 @@ class RegisterAndUnregisterIT extends Specification {
         startServer(true)
 
         and: "the naming server is stopped"
-        writeNamingServerStdin.write("\n".getBytes());
+        writeNamingServerStdin.write("\n".getBytes())
         namingServerThread.join()
 
         when: "the server tries to unregister"
-        writeServerStdin.write("\n".getBytes());
+        writeServerStdin.write("\n".getBytes())
 
         and: "the server is stopped"
         serverThread.join()
@@ -98,7 +98,7 @@ class RegisterAndUnregisterIT extends Specification {
 
     def "register and unregister a server"() {
         given: "the naming server is stopped"
-        writeNamingServerStdin.write("\n".getBytes());
+        writeNamingServerStdin.write("\n".getBytes())
         namingServerThread.join()
 
         when: "a server is started"
