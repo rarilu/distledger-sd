@@ -15,7 +15,7 @@ public final class Logger {
   /**
    * Sets the debug flag.
    *
-   * @param debugFlag the new value of the debug flag
+   * @param flag the new value of the debug flag
    */
   public static void setDebugFlag(boolean flag) {
     debugFlag.set(flag);
