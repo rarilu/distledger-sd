@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import pt.tecnico.distledger.server.DirectLedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
-import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
+import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor

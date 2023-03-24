@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.common.grpc
 
-import pt.tecnico.distledger.common.grpc.exceptions.DuplicateQualifierException;
-import pt.tecnico.distledger.common.grpc.exceptions.ServerNotFoundException;
+import pt.tecnico.distledger.common.grpc.exceptions.DuplicateQualifierException
+import pt.tecnico.distledger.common.grpc.exceptions.ServerNotFoundException
 
 import spock.lang.Specification
 

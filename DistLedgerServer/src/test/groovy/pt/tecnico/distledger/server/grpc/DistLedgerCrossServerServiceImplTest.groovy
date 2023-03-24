@@ -49,7 +49,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
 
         when: "the state is propagated"
-        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer);
+        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer)
 
         then: "the response is received"
         1 * observer.onNext(PropagateStateResponse.getDefaultInstance())
@@ -68,7 +68,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
 
         when: "the state is propagated"
-        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer);
+        service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
