@@ -31,6 +31,9 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
 
   @Override
   public void activate(ActivateRequest request, StreamObserver<ActivateResponse> responseObserver) {
+    Logger.debug("Received Activate request");
+    Logger.debug(request + "\n");
+
     try {
       this.active.set(true);
       responseObserver.onNext(ActivateResponse.getDefaultInstance());
@@ -44,6 +47,9 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   @Override
   public void deactivate(
       DeactivateRequest request, StreamObserver<DeactivateResponse> responseObserver) {
+    Logger.debug("Received Deactivate request");
+    Logger.debug(request + "\n");
+    
     try {
       this.active.set(false);
       responseObserver.onNext(DeactivateResponse.getDefaultInstance());
@@ -57,6 +63,9 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   @Override
   public void getLedgerState(
       GetLedgerStateRequest request, StreamObserver<GetLedgerStateResponse> responseObserver) {
+    Logger.debug("Received GetLedgerState request");
+    Logger.debug(request + "\n");
+
     try {
       LedgerStateGenerator generator = new LedgerStateGenerator();
       this.state.visitLedger(generator);
