@@ -1,9 +1,9 @@
 package pt.tecnico.distledger.server.visitors;
 
-import pt.tecnico.distledger.server.domain.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
+import pt.tecnico.distledger.server.grpc.exceptions.UnsupportedOperationException;
 
 /**
  * Represents an operation executor that throws an exception when a write operation is attempted.

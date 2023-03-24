@@ -15,7 +15,6 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
@@ -23,10 +22,11 @@ import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
-import pt.tecnico.distledger.server.domain.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
+import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
+import pt.tecnico.distledger.server.grpc.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 /** Implements the User service, handling gRPC requests. */
