@@ -12,7 +12,7 @@ class StubCacheTest extends Specification {
         namingService.lookup(*_) >> ["localhost:5001", "localhost:5002"]
 
         and: "a StubCache using the mocked naming service"
-        def cache = new StubCache<Boolean>(namingService, x -> True)
+        def cache = new StubCache<Boolean>(namingService, (x) -> true)
 
         when: "getStub is called"
         cache.getStub("A")
@@ -27,7 +27,7 @@ class StubCacheTest extends Specification {
         namingService.lookup(*_) >> []
 
         and: "a StubCache using the mocked naming service"
-        def cache = new StubCache<Boolean>(namingService, x -> True)
+        def cache = new StubCache<Boolean>(namingService, (x) -> true)
 
         when: "getStub is called"
         cache.getStub("A")
