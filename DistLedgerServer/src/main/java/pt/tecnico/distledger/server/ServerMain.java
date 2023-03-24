@@ -79,6 +79,18 @@ public class ServerMain {
         Logger.debug("Registering server at " + address + ":" + port);
         namingService.register(SERVICE_NAME, qualifier, address + ":" + port);
 
+        // Add a shutdown hook to unregister the server
+        Runtime.getRuntime()
+            .addShutdownHook(
+                new Thread(
+                    () -> {
+                      try {
+                        namingService.delete(SERVICE_NAME, qualifier);
+                      } catch (RuntimeException e) {
+                        Logger.error("Failed to unregister server: " + e.getMessage());
+                      }
+                    }));
+
         // Wait for user input to shutdown server
         System.out.println("Press enter to shutdown");
         System.in.read();
@@ -89,13 +101,6 @@ public class ServerMain {
       // Wait until server is terminated
       server.shutdown();
       server.awaitTermination();
-
-      // Unregister server
-      try {
-        namingService.delete(SERVICE_NAME, qualifier);
-      } catch (RuntimeException e) {
-        Logger.error("Failed to unregister server: " + e.getMessage());
-      }
     }
 
     Logger.debug("Server terminated");
