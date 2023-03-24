@@ -61,7 +61,7 @@ class ActivateTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: The server raised an exception\n\n> "
+        outBuf.toString() == "> Error: UNKNOWN: The server raised an exception\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
