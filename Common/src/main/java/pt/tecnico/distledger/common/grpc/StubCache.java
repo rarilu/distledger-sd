@@ -1,4 +1,4 @@
-package pt.tecnico.distledger.common;
+package pt.tecnico.distledger.common.grpc;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -9,7 +9,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
-import pt.tecnico.distledger.common.grpc.NamingService;
+import pt.tecnico.distledger.common.grpc.exceptions.DuplicateQualifierException;
+import pt.tecnico.distledger.common.grpc.exceptions.ServerNotFoundException;
 
 /** Abstracts the creation and caching of gRPC stubs. */
 public class StubCache<T> implements AutoCloseable {
@@ -38,7 +39,8 @@ public class StubCache<T> implements AutoCloseable {
    * @param qualifier the qualifier of the server to connect to.
    * @return a stub to communicate with the server.
    * @throws StatusRuntimeException if the lookup operation fails.
-   * @throws RuntimeException if no server with specified qualifier is found.
+   * @throws DuplicateQualifierException if there is more than one server with the same qualifier.
+   * @throws ServerNotFoundException if no server with specified qualifier is found.
    */
   public T getStub(String qualifier) {
     this.cachedStubs.computeIfAbsent(
@@ -46,8 +48,7 @@ public class StubCache<T> implements AutoCloseable {
         qual -> {
           List<String> targets = this.namingService.lookup(SERVICE_NAME, qual);
           if (targets.size() > 1) {
-            throw new RuntimeException(
-                "Many servers with the same qualifier are not in the present consistency model");
+            throw new DuplicateQualifierException(qual);
           }
 
           return targets.stream()
@@ -66,7 +67,7 @@ public class StubCache<T> implements AutoCloseable {
 
     return Optional.ofNullable(this.cachedStubs.get(qualifier))
         .map(CachedStub::stub)
-        .orElseThrow(() -> new RuntimeException("Could not find server with specified qualifier"));
+        .orElseThrow(() -> new ServerNotFoundException(qualifier));
   }
 
   /** Invalidates the stub cache's entry for the specified qualifier, if one exists. */
