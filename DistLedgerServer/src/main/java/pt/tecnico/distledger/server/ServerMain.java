@@ -30,7 +30,7 @@ public class ServerMain {
     Logger.debug(ServerMain.class.getSimpleName());
 
     // Check arguments
-    if (args.length != 2 && args.length != 3) {
+    if (args.length < 2) {
       Logger.error("Argument(s) missing!");
       Logger.error("Usage: mvn exec:java -Dexec.args=\"<port> <qual> [<naming_server_target>]\"");
       return;
@@ -90,33 +90,35 @@ public class ServerMain {
         System.out.println("Server started, listening on " + port);
 
         // Register this server on the naming service
+        final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
+        boolean registered = false;
+
         try {
-          final String target = InetAddress.getLocalHost().getHostAddress().toString();
-          Logger.debug("Registering server at " + target + ":" + port);
-          namingService.register(SERVICE_NAME, qualifier, target + ":" + port);
+          try {
+            Logger.debug("Registering server at " + target);
+            namingService.register(SERVICE_NAME, qualifier, target);
+            registered = true;
 
-          // Add a shutdown hook to unregister the server
-          Runtime.getRuntime()
-              .addShutdownHook(
-                  new Thread(
-                      () -> {
-                        try {
-                          namingService.delete(SERVICE_NAME, target);
-                        } catch (RuntimeException e) {
-                          Logger.error("Failed to unregister server: " + e.getMessage());
-                        }
-                      }));
+            // Wait for user input to shutdown server
+            System.out.println("Press enter to shutdown");
+            System.in.read();
+          } catch (RuntimeException e) {
+            // If the server fails to register, it immediately shuts down
+            Logger.error("Failed to register server: " + e.getMessage());
+          }
 
-          // Wait for user input to shutdown server
-          System.out.println("Press enter to shutdown");
-          System.in.read();
-        } catch (RuntimeException e) {
-          Logger.error("Failed to register server: " + e.getMessage());
+          // Wait until server is terminated
+          server.shutdown();
+          server.awaitTermination();
+        } finally {
+          if (registered) {
+            try {
+              namingService.delete(SERVICE_NAME, target);
+            } catch (RuntimeException e) {
+              Logger.error("Failed to unregister server: " + e.getMessage());
+            }
+          }
         }
-
-        // Wait until server is terminated
-        server.shutdown();
-        server.awaitTermination();
       }
     }
 
