@@ -46,74 +46,78 @@ public class ServerMain {
     // Connect to the naming server
     try (final NamingService namingService =
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
+      // Init the cross server service
+      // Currently the cross-server service is not used by the secondary server but there is no
+      // harm in initializing it anyway - it will be useful in the future and conditionally
+      // initializing would disproportionately harm code readability
+      try (final CrossServerService crossServerService = new CrossServerService(namingService)) {
+        // Init server state
+        final ServerState state = new ServerState();
 
-      // Init server state
-      final ServerState state = new ServerState();
+        // Init active flag
+        final AtomicBoolean active = new AtomicBoolean(true);
 
-      // Init active flag
-      final AtomicBoolean active = new AtomicBoolean(true);
+        // Check if the server is a primary server, and init the operation executor accordingly
+        final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
+        OperationExecutor executor;
+        if (isPrimary) {
+          // Use a standard operation executor which replicates operations to the other servers
+          final LedgerManager ledgerManager =
+              new ReplicatingLedgerManager(crossServerService, state);
+          executor = new StandardOperationExecutor(state, ledgerManager);
+        } else {
+          // Use a dummy executor which only throws an exception for any operation it receives
+          executor = new DummyOperationExecutor();
+        }
 
-      // Check if the server is a primary server, and init the operation executor accordingly
-      // If the server is a secondary server,
-      final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
-      OperationExecutor executor;
-      if (isPrimary) {
-        // Use a standard operation executor which replicates operations to the other servers
-        final CrossServerService crossServerService = new CrossServerService(namingService);
-        final LedgerManager ledgerManager = new ReplicatingLedgerManager(crossServerService, state);
-        executor = new StandardOperationExecutor(state, ledgerManager);
-      } else {
-        // Use a dummy executor which only throws an exception for any operation it receives
-        executor = new DummyOperationExecutor();
+        // Init service implementations
+        // Currently the cross-server service implementation is not used by the primary server
+        // but there is no harm in initializing it anyway - it will be useful in the future
+        // and conditionally initializing would disproportionately harm code readability
+        final BindableService userServiceImpl = new UserServiceImpl(state, active, executor);
+        final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
+        final BindableService crossServerServiceImpl =
+            new DistLedgerCrossServerServiceImpl(state, active);
+
+        // Launch server
+        final Server server =
+            ServerBuilder.forPort(port)
+                .addService(userServiceImpl)
+                .addService(adminServiceImpl)
+                .addService(crossServerServiceImpl)
+                .build();
+        server.start();
+        System.out.println("Server started, listening on " + port);
+
+        // Register this server on the naming service
+        try {
+          final String target = InetAddress.getLocalHost().getHostAddress().toString();
+          Logger.debug("Registering server at " + target + ":" + port);
+          namingService.register(SERVICE_NAME, qualifier, target + ":" + port);
+
+          // Add a shutdown hook to unregister the server
+          Runtime.getRuntime()
+              .addShutdownHook(
+                  new Thread(
+                      () -> {
+                        try {
+                          namingService.delete(SERVICE_NAME, target);
+                        } catch (RuntimeException e) {
+                          Logger.error("Failed to unregister server: " + e.getMessage());
+                        }
+                      }));
+
+          // Wait for user input to shutdown server
+          System.out.println("Press enter to shutdown");
+          System.in.read();
+        } catch (RuntimeException e) {
+          Logger.error("Failed to register server: " + e.getMessage());
+        }
+
+        // Wait until server is terminated
+        server.shutdown();
+        server.awaitTermination();
       }
-
-      // Init services
-      // Currently the cross-server service implementation is not used by the primary server
-      // but there is no harm in initializing it anyway - it will be useful in the future
-      // and conditionally initializing would disproportionately harm code readability
-      final BindableService userService = new UserServiceImpl(state, active, executor);
-      final BindableService adminService = new AdminServiceImpl(state, active);
-      final BindableService crossServerService =
-          new DistLedgerCrossServerServiceImpl(state, active);
-
-      // Launch server
-      final Server server =
-          ServerBuilder.forPort(port)
-              .addService(userService)
-              .addService(adminService)
-              .addService(crossServerService)
-              .build();
-      server.start();
-      System.out.println("Server started, listening on " + port);
-
-      // Register this server on the naming service
-      try {
-        final String target = InetAddress.getLocalHost().getHostAddress().toString();
-        Logger.debug("Registering server at " + target + ":" + port);
-        namingService.register(SERVICE_NAME, qualifier, target + ":" + port);
-
-        // Add a shutdown hook to unregister the server
-        Runtime.getRuntime()
-            .addShutdownHook(
-                new Thread(
-                    () -> {
-                      try {
-                        namingService.delete(SERVICE_NAME, target);
-                      } catch (RuntimeException e) {
-                        Logger.error("Failed to unregister server: " + e.getMessage());
-                      }
-                    }));
-
-        // Wait for user input to shutdown server
-        System.out.println("Press enter to shutdown");
-        System.in.read();
-      } catch (RuntimeException e) {
-        Logger.error("Failed to register server: " + e.getMessage());
-      }
-
-      // Wait until server is terminated
-      server.shutdown();
-      server.awaitTermination();
     }
 
     Logger.debug("Server terminated");
