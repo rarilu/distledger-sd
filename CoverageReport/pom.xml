@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>pt.tecnico.sdis.2023.A02</groupId>
+			<artifactId>Common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency><dependency>
+			<groupId>pt.tecnico.sdis.2023.A02</groupId>
 			<artifactId>DistLedgerServer</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>runtime</scope>
