@@ -32,7 +32,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         observer = Mock(StreamObserver)
     }
 
-    def "propagate state to clean state"() {
+    def "propagate state"() {
         given: "a state to propagate"
         def operations = [
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
@@ -61,32 +61,23 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         and: "the account balances are correct"
         state.getAccounts().size() == 2
         state.getAccountBalance("Alice") == 100
+        state.getAccountBalance("broker") == 900
     }
 
-    def "propagate state"() {
+    def "propagate state with invalid operation"() {
         given: "a state to propagate"
         def operations = [
-                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
-                        .setUserId("Alice")
-                        .build(),
-                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
-                        .setUserId("broker")
-                        .setDestUserId("Alice")
-                        .setAmount(100)
-                        .build()
+                Operation.newBuilder().setType(OperationType.OP_UNSPECIFIED).build()
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
 
         when: "the state is propagated"
         service.propagateState(PropagateStateRequest.newBuilder().setState(prop).build(), observer);
 
-        then: "the response is received"
-        1 * observer.onNext(PropagateStateResponse.getDefaultInstance())
-
-        and: "the account balances are correct"
-        state.getAccounts().size() == 2
-        state.getAccountBalance("Alice") == 100
-        state.getAccountBalance("broker") == 900
+        then: "an exception is thrown"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Failed to create operation from request"
+        })
     }
 
     def "catch runtime exceptions"() {
