@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
-import pt.tecnico.distledger.common.NamingService;
+import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
 import pt.tecnico.distledger.server.grpc.UserServiceImpl;

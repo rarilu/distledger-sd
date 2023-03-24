@@ -1,8 +1,9 @@
-package pt.tecnico.distledger.common;
+package pt.tecnico.distledger.common.grpc;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.List;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;

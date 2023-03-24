@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import pt.tecnico.distledger.common.grpc.NamingService;
 
 /** Abstracts the creation and caching of gRPC stubs. */
 public class StubCache<T> implements AutoCloseable {

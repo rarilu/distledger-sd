@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.common.Logger;
-import pt.tecnico.distledger.common.NamingService;
+import pt.tecnico.distledger.common.grpc.NamingService;
 
 /** Main class for the Admin client. */
 public class AdminClientMain {

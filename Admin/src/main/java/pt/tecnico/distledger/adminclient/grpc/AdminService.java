@@ -1,8 +1,8 @@
 package pt.tecnico.distledger.adminclient.grpc;
 
 import java.util.Optional;
-import pt.tecnico.distledger.common.NamingService;
 import pt.tecnico.distledger.common.grpc.BaseService;
+import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
