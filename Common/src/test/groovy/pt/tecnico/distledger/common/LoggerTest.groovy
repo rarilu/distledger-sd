@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.common
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class LoggerTest extends Specification {
     def initialStderr
