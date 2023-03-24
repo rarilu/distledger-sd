@@ -1,8 +1,5 @@
 package pt.tecnico.distledger
 
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import pt.tecnico.distledger.server.ServerMain
 import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
