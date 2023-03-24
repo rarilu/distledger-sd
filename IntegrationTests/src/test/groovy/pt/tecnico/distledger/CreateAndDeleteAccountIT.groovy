@@ -20,7 +20,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("createAccount A broker")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account for user broker already exists\n\n> "
+        getOutput() == "> Error: ALREADY_EXISTS: Account for user broker already exists\n\n> "
     }
 
     def "create account with inactive server, reactivate and try again"() {
@@ -54,7 +54,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account Alice does not exist\n\n> "
+        getOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
     }
 
     def "delete protected account"() {
@@ -62,7 +62,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A broker")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account for user broker is protected\n\n> "
+        getOutput() == "> Error: INVALID_ARGUMENT: Account for user broker is protected\n\n> "
     }
 
     def "delete non-empty account"() {
@@ -73,7 +73,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account for user Alice has 1000 left, needs to be empty\n\n> "
+        getOutput() == "> Error: FAILED_PRECONDITION: Account for user Alice has 1000 left, needs to be empty\n\n> "
     }
 
     def "delete account with inactive server"() {

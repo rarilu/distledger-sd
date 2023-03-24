@@ -13,7 +13,8 @@ import spock.lang.Specification
 import spock.lang.Timeout
 
 abstract class BaseIT extends Specification {
-    def port = 2001
+    def primaryPort = 2001
+    def secondaryPort = 2002
 
     def initialStdin
     def initialStdout
@@ -21,10 +22,12 @@ abstract class BaseIT extends Specification {
 
     def mockStdin
     def writeNamingServerStdin
-    def writeServerStdin
+    def writePrimaryServerStdin
+    def writeSecondaryServerStdin
 
     def namingServerThread
-    def serverThread
+    def primaryServerThread
+    def secondaryServerThread
 
     @Timeout(5)
     def setup() {
@@ -47,8 +50,10 @@ abstract class BaseIT extends Specification {
         // Prepare the server input streams
         def readNamingServerStdin = new PipedInputStream()
         writeNamingServerStdin = new PipedOutputStream(readNamingServerStdin)
-        def readServerStdin = new PipedInputStream()
-        writeServerStdin = new PipedOutputStream(readServerStdin)
+        def readPrimaryServerStdin = new PipedInputStream()
+        writePrimaryServerStdin = new PipedOutputStream(readPrimaryServerStdin)
+        def readSecondaryServerStdin = new PipedInputStream()
+        writeSecondaryServerStdin = new PipedOutputStream(readSecondaryServerStdin)
 
         // Start the naming server and set the input stream
         namingServerThread = Thread.start {
@@ -61,22 +66,35 @@ abstract class BaseIT extends Specification {
         while (outBuf.size() != namingServerStartupMsg.length()) {}
         outBuf.reset()
 
-        // Start the server and set the input stream
-        serverThread = Thread.start {
-            mockStdin.setStream(readServerStdin)
-            ServerMain.main(new String[] { port.toString(), "A" })
+        // Start the primary server and set the input stream
+        primaryServerThread = Thread.start {
+            mockStdin.setStream(readPrimaryServerStdin)
+            ServerMain.main(new String[] { primaryPort.toString(), "A" })
         }
 
-        // Hacky way to wait for the server to start
-        def serverStartupMsg = "Server started, listening on " + port.toString() + "\nPress enter to shutdown\n"
-        while (outBuf.size() != serverStartupMsg.length()) {}
+        // Hacky way to wait for the primary server to start
+        def primaryServerStartupMsg = "Server started, listening on " + primaryPort.toString() + "\nPress enter to shutdown\n"
+        while (outBuf.size() != primaryServerStartupMsg.length()) {}
+        outBuf.reset()
+
+        // Start the secondary server and set the input stream
+        secondaryServerThread = Thread.start {
+            mockStdin.setStream(readSecondaryServerStdin)
+            ServerMain.main(new String[] { secondaryPort.toString(), "B" })
+        }
+
+        // Hacky way to wait for the secondary server to start
+        def secondaryServerStartupMsg = "Server started, listening on " + secondaryPort.toString() + "\nPress enter to shutdown\n"
+        while (outBuf.size() != secondaryServerStartupMsg.length()) {}
         outBuf.reset()
     }
 
     def cleanup() {
-        // Send input to the server to shutdown
-        writeServerStdin.write("\n".getBytes())
-        serverThread.join()
+        // Send input to the servers to shutdown
+        writePrimaryServerStdin.write("\n".getBytes())
+        writeSecondaryServerStdin.write("\n".getBytes())
+        primaryServerThread.join()
+        secondaryServerThread.join()
 
         // Send input to the naming server to shutdown
         writeNamingServerStdin.write("\n".getBytes())
@@ -98,12 +116,12 @@ abstract class BaseIT extends Specification {
 
     def runUser(String input) {
         provideInput(input)
-        UserClientMain.main(new String[]{"localhost", port.toString()})
+        UserClientMain.main(new String[]{})
     }
 
     def runAdmin(String input) {
         provideInput(input)
-        AdminClientMain.main(new String[]{"localhost", port.toString()})
+        AdminClientMain.main(new String[]{})
     }
 
     def provideInput(String input) {
