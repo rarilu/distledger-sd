@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.grpc.CrossServerService;
+import pt.tecnico.distledger.server.grpc.DistLedgerCrossServerServiceImpl;
 import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
 import pt.tecnico.distledger.server.grpc.UserServiceImpl;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
@@ -36,44 +38,50 @@ public class ServerMain {
 
     final int port = Integer.parseInt(args[0]);
     final String qualifier = args[1];
-    // accepts naming server target as an optional argument
-    // if not provided, uses the well-known target
+
+    // Accepts naming server target as an optional argument
+    // If not provided, uses the well-known target
     Optional<String> namingServerTarget = Arrays.stream(args).skip(2).findFirst();
 
-    // Init server state
-    final ServerState state = new ServerState();
-
-    // Init active flag
-    final AtomicBoolean active = new AtomicBoolean(true);
-
-    // Check if this server is the primary server and initialize the operation executor used by the
-    // user service to execute received operations
-    final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
-    OperationExecutor executor;
-    if (isPrimary) {
-      // TODO: when the replicating ledger manager is finished this should be replaced by it
-      final LedgerManager ledgerManager = new DirectLedgerManager(state);
-      executor = new StandardOperationExecutor(state, ledgerManager);
-    } else {
-      // Use a dummy executor which only throws an exception for any operation it receives
-      executor = new DummyOperationExecutor();
-    }
-
-    // Init services
-    final BindableService userService = new UserServiceImpl(state, active, executor);
-    final BindableService adminService = new AdminServiceImpl(state, active);
-
-    // Launch server
-    final Server server =
-        ServerBuilder.forPort(port).addService(userService).addService(adminService).build();
-    server.start();
-    System.out.println("Server started, listening on " + port);
-
-    final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
-
-    // Connect to naming server and register this server
+    // Connect to the naming server
     try (final NamingService namingService =
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
+
+      // Init server state
+      final ServerState state = new ServerState();
+
+      // Init active flag
+      final AtomicBoolean active = new AtomicBoolean(true);
+
+      // Check if the server is a primary server, and init the operation executor accordingly
+      // If the server is a secondary server,
+      final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
+      OperationExecutor executor;
+      if (isPrimary) {
+        // Use a standard operation executor which replicates operations to the other servers
+        final CrossServerService crossServerService = new CrossServerService(namingService);
+        final LedgerManager ledgerManager = new ReplicatingLedgerManager(crossServerService, state);
+        executor = new StandardOperationExecutor(state, ledgerManager);
+      } else {
+        // Use a dummy executor which only throws an exception for any operation it receives
+        executor = new DummyOperationExecutor();
+      }
+
+      // Init services
+      // Currently the cross-server service implementation is not used by the primary server
+      // but there is no harm in initializing it anyway - it will be useful in the future
+      final BindableService userService = new UserServiceImpl(state, active, executor);
+      final BindableService adminService = new AdminServiceImpl(state, active);
+      final BindableService crossServerService = new DistLedgerCrossServerServiceImpl(state, active);
+
+      // Launch server
+      final Server server =
+          ServerBuilder.forPort(port).addService(userService).addService(adminService).addService(crossServerService).build();
+      server.start();
+      System.out.println("Server started, listening on " + port);
+
+      // Register this server on the naming service
+      final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
       try {
         final String address = InetAddress.getLocalHost().getHostAddress().toString();
         Logger.debug("Registering server at " + address + ":" + port);
