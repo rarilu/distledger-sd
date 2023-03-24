@@ -16,6 +16,11 @@ class LoggerTest extends Specification {
         System.setErr(initialStderr)
     }
 
+    static {
+        // Magic: gives us 100% coverage :)
+        System.setProperty("debug", "true")
+    }
+
     def "error prints to stderr when debug flag is clear"() {
         given: "the debug flag is clear"
         Logger.setDebugFlag(false)
