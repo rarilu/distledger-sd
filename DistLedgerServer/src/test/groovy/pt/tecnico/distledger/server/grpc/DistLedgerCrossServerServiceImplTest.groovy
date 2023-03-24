@@ -3,14 +3,10 @@ package pt.tecnico.distledger.server.grpc
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 
-import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.List;
 
 import pt.tecnico.distledger.server.domain.ServerState
-import pt.tecnico.distledger.server.domain.operation.CreateOp
-import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
