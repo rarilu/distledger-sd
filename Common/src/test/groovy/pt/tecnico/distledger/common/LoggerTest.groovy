@@ -33,7 +33,7 @@ class LoggerTest extends Specification {
         then: "the error is printed to stderr"
         errBuf.toString() == "test\n"
 
-        when:
+        where:
         flag << [true, false]
     }
 
