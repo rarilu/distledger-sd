@@ -79,18 +79,18 @@ class ReplicationIT extends BaseIT {
         runUser("createAccount A Bob")
 
         then: "the output is correct"
-        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable\n\n> "
+        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable; only read operations are allowed\n\n> "
     
         when: "the user transfers money on the primary server"
         runUser("transferTo A broker Alice 1000")
 
         then: "the output is correct"
-        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable\n\n> "
+        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable; only read operations are allowed\n\n> "
 
         when: "the user deletes an account on the primary server"
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable\n\n> "
+        extractOutput() == "> Error: ABORTED: pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException: Secondary server is unavailable; only read operations are allowed\n\n> "
     }
 }

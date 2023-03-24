@@ -36,7 +36,10 @@ public class CrossServerService
               DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceBlockingStub
                   ::propagateState,
               MAX_TRIES)
-          .orElseThrow(() -> new FailedPropagationException("Secondary server is unavailable"));
+          .orElseThrow(
+              () ->
+                  new FailedPropagationException(
+                      "Secondary server is unavailable; only read operations are allowed"));
     } catch (RuntimeException e) {
       throw new FailedPropagationException(e);
     }
