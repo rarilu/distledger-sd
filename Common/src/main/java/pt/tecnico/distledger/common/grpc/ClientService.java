@@ -35,7 +35,6 @@ public abstract class ClientService<S> implements AutoCloseable {
    * @throws RuntimeException if the request fails or no server with the specified qualifier is
    *     found.
    */
-  @SuppressWarnings("java:S112") // see below
   protected <Q, R> Optional<R> makeRequest(
       String qualifier, Q request, BiFunction<S, Q, R> dispatcher) {
     try {
@@ -48,9 +47,7 @@ public abstract class ClientService<S> implements AutoCloseable {
         return Optional.empty();
       }
 
-      // java:S112 does not apply: conversion is necessary to avoid loss of status in propagated
-      // upcast exception
-      throw new RuntimeException(e.getStatus().getDescription(), e);
+      throw e;
     }
     // purposely not catching RuntimeException, thrown when no server is found
     // with the specified qualifier
