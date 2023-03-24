@@ -4,6 +4,7 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,19 +43,26 @@ public class StubCache<T> implements AutoCloseable {
   public T getStub(String qualifier) {
     this.cachedStubs.computeIfAbsent(
         qualifier,
-        qual ->
-            this.namingService.lookup(SERVICE_NAME, qual).stream()
-                .findFirst()
-                .map(
-                    target -> {
-                      Logger.debug("Connecting to " + target);
-                      final ManagedChannel channel =
-                          ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-                      final T stub = this.stubFactory.apply(channel);
+        qual -> {
+          List<String> targets = this.namingService.lookup(SERVICE_NAME, qual);
+          if (targets.size() > 1) {
+            throw new RuntimeException(
+                "Multiple servers with the same qualifier are not supported yet");
+          }
 
-                      return new CachedStub<T>(channel, stub);
-                    })
-                .orElse(null)); // if lookup result is empty list
+          return targets.stream()
+              .findFirst()
+              .map(
+                  target -> {
+                    Logger.debug("Connecting to " + target);
+                    final ManagedChannel channel =
+                        ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+                    final T stub = this.stubFactory.apply(channel);
+
+                    return new CachedStub<T>(channel, stub);
+                  })
+              .orElse(null); // if lookup result is empty list
+        });
 
     return Optional.ofNullable(this.cachedStubs.get(qualifier))
         .map(CachedStub::stub)
