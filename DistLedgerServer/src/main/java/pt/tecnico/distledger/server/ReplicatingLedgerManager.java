@@ -8,6 +8,9 @@ import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 /**
  * Implementation of LedgerManager that first replicates the operation to secondary servers and only
  * then modifies the server state.
+ *
+ * <p>Guarantees that as long as all operations added to the ledger pass through this ledger
+ * manager, the order of operations will be consistent between servers.
  */
 public class ReplicatingLedgerManager implements LedgerManager {
   private static final String SECONDARY_QUALIFIER = "B";
@@ -26,6 +29,8 @@ public class ReplicatingLedgerManager implements LedgerManager {
     LedgerStateGenerator generator = new LedgerStateGenerator();
     operation.accept(generator);
 
+    // Safety: guarantees consistency in the order of operations between servers, as long as this
+    // is the only ledger manager propagating state to the secondary server
     synchronized (this) {
       // propagateState() may throw a FailedPropagationException, and the caller should take that
       // into account

@@ -45,19 +45,17 @@ public class ServiceEntry {
 
   /** Deletes a server from the service entry. */
   public void deleteServer(String target) {
-    // Safety: we need to synchronize on the servers map since we are iterating over it
-    synchronized (this.servers) {
-      for (List<ServerEntry> serverEntries : this.servers.values()) {
-        if (serverEntries.removeIf(serverEntry -> target.equals(serverEntry.target()))) {
-          // Remove the target from the set of registered targets
-          this.targets.remove(target);
-          return;
-        }
+    // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
+    for (List<ServerEntry> serverEntries : this.servers.values()) {
+      if (serverEntries.removeIf(serverEntry -> target.equals(serverEntry.target()))) {
+        // Remove the target from the set of registered targets
+        this.targets.remove(target);
+        return;
       }
-
-      // If we reach this point, the server was not found
-      throw new ServerEntryNotFoundException(this.name, target);
     }
+
+    // If we reach this point, the server was not found
+    throw new ServerEntryNotFoundException(this.name, target);
   }
 
   /** Looks up servers with the given qualifier in the service entry. */
@@ -77,6 +75,7 @@ public class ServiceEntry {
   public List<String> lookup() {
     List<String> targets = new ArrayList<>();
 
+    // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       // Safety: we need to synchronize on the server entries list since we are iterating over it
       synchronized (serverEntries) {
