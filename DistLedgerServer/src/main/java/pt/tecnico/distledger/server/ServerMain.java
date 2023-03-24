@@ -91,17 +91,34 @@ public class ServerMain {
 
         // Register this server on the naming service
         final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
-        boolean registered = false;
+        AtomicBoolean registered = new AtomicBoolean(false);
+
+        // 'Thread' used to unregister the server from the naming service
+        Thread autoUnregister =
+            new Thread(
+                () -> {
+                  if (registered.getAndSet(false)) {
+                    try {
+                      namingService.delete(SERVICE_NAME, target);
+                    } catch (RuntimeException e) {
+                      Logger.error("Failed to unregister server: " + e.getMessage());
+                    }
+
+                    namingService.close();
+                  }
+                });
 
         try {
           try {
             Logger.debug("Registering server at " + target);
             namingService.register(SERVICE_NAME, qualifier, target);
-            registered = true;
+            registered.set(true);
+            Runtime.getRuntime().addShutdownHook(autoUnregister);
 
             // Wait for user input to shutdown server
             System.out.println("Press enter to shutdown");
             System.in.read();
+
           } catch (RuntimeException e) {
             // If the server fails to register, it immediately shuts down
             Logger.error("Failed to register server: " + e.getMessage());
@@ -111,13 +128,7 @@ public class ServerMain {
           server.shutdown();
           server.awaitTermination();
         } finally {
-          if (registered) {
-            try {
-              namingService.delete(SERVICE_NAME, target);
-            } catch (RuntimeException e) {
-              Logger.error("Failed to unregister server: " + e.getMessage());
-            }
-          }
+          autoUnregister.run();
         }
       }
     }
