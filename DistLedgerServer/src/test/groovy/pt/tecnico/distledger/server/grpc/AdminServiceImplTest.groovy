@@ -124,6 +124,8 @@ class AdminServiceImplTest extends Specification {
         })
 
         where: "method is any void function of AdminServiceImpl with 2 parameters"
-        method << AdminServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && it.getParameterCount() == 2 }
+        method << AdminServiceImpl.class.getDeclaredMethods().findAll{
+            it.getReturnType() == void.class && it.getParameterCount() == 2
+        }
     }
 }

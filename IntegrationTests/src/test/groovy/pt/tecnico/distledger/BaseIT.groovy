@@ -84,7 +84,9 @@ abstract class BaseIT extends Specification {
         }
 
         // Hacky way to wait for the secondary server to start
-        def secondaryServerStartupMsg = "Server started, listening on " + secondaryPort.toString() + "\nPress enter to shutdown\n"
+        def secondaryServerStartupMsg = "Server started, listening on " +
+                secondaryPort.toString() +
+                "\nPress enter to shutdown\n"
         while (outBuf.size() != secondaryServerStartupMsg.length()) {}
         outBuf.reset()
     }
