@@ -18,7 +18,7 @@ public class StubCache<T> implements AutoCloseable {
   private record CachedStub<T>(ManagedChannel channel, T stub) implements AutoCloseable {
     @Override
     public void close() {
-      this.channel.shutdownNow();
+      this.channel().shutdownNow();
     }
   }
 
