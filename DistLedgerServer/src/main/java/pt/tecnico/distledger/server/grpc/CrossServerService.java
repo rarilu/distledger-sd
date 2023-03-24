@@ -26,9 +26,10 @@ public class CrossServerService implements AutoCloseable {
   /**
    * Handle the PropagateState request. Uses the filled LedgerStateGenerator to build the
    * LedgerState proto and send it to the server.
+   *
+   * @throws FailedPropagationException if the gRPC call fails
    */
-  public void propagateState(String server, LedgerStateGenerator generator)
-      throws FailedPropagationException {
+  public void propagateState(String server, LedgerStateGenerator generator) {
     PropagateStateRequest request =
         PropagateStateRequest.newBuilder().setState(generator.build()).build();
     try {
