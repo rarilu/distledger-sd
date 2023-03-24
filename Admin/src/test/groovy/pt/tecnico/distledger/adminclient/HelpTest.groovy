@@ -6,7 +6,6 @@ class HelpTest extends BaseTest {
         "- deactivate <server>\n" +
         "- getLedgerState <server>\n" +
         "- gossip <server>\n" +
-        "- shutdown <server>\n" +
         "- exit\n"
 
     def "help output is correct"() {

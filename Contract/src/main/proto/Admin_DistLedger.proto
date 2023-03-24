@@ -23,14 +23,9 @@ message GetLedgerStateResponse {
   LedgerState ledgerState = 1;
 }
 
-message ShutdownRequest {}
-
-message ShutdownResponse {}
-
 service AdminService {
   rpc activate(ActivateRequest) returns (ActivateResponse);
   rpc deactivate(DeactivateRequest) returns (DeactivateResponse);
   rpc gossip(GossipRequest) returns (GossipResponse);
   rpc getLedgerState(GetLedgerStateRequest) returns (GetLedgerStateResponse);
-  rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
 }
