@@ -64,7 +64,7 @@ class DeleteAccountTest extends BaseTest {
         runMain()
 
         then: "the output is correct"
-        outBuf.toString() == "> Error: Account not found\n\n> "
+        outBuf.toString() == "> Error: NOT_FOUND: Account not found\n\n> "
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(

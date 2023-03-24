@@ -18,4 +18,15 @@ class HelpTest extends BaseTest {
         then: "the output is correct"
         outBuf.toString() == ("> " + EXPECTED_HELP_STRING + "\n> ")
     }
+
+    def "user provides an unknown command"() {
+        given: "an unknown command input"
+        provideInput("thisCommandDoesNotExist wrong arguments\nexit\n")
+
+        when: "the user client is run"
+        runMain()
+
+        then: "the output is correct"
+        outBuf.toString() == ("> " + EXPECTED_USAGE_STRING + "\n> ")
+    }
 }
