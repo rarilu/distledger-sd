@@ -9,7 +9,7 @@ import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
  * Implementation of LedgerManager that first replicates the operation to secondary servers and only
  * then modifies the server state.
  *
- * Guarantees that as long as all operations added to the ledger pass through this ledger
+ * <p>Guarantees that as long as all operations added to the ledger pass through this ledger
  * manager, the order of operations will be consistent between servers.
  */
 public class ReplicatingLedgerManager implements LedgerManager {
