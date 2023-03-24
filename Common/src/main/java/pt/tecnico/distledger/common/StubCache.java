@@ -63,6 +63,8 @@ public class StubCache<T> implements AutoCloseable {
 
   /** Invalidates the stub cache's entry for the specified qualifier, if one exists. */
   public void invalidateCachedStub(String qualifier) {
+    Logger.debug("Invalidated cached stub for " + qualifier);
+
     this.cachedStubs.computeIfPresent(
         qualifier,
         (k, v) -> {
