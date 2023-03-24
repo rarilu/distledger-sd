@@ -128,7 +128,7 @@ abstract class BaseIT extends Specification {
         mockStdin.setStream(new ByteArrayInputStream(input.getBytes()))
     }
 
-    def getOutput() {
+    def extractOutput() {
         def str = outBuf.toString()
         outBuf.reset()
         return str
