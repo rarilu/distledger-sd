@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.grpc.exceptions.DuplicateQualifierException;
 import pt.tecnico.distledger.common.grpc.exceptions.ServerNotFoundException;
 
