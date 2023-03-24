@@ -8,7 +8,8 @@ public final class Logger {
    * Set flag to true to print debug messages. The flag can be set by passing Maven the -Ddebug
    * command line option.
    */
-  private static AtomicBoolean debugFlag = new AtomicBoolean(System.getProperty("debug") != null);
+  private static final AtomicBoolean debugFlag =
+      new AtomicBoolean(System.getProperty("debug") != null);
 
   private Logger() {}
 
