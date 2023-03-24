@@ -21,7 +21,7 @@ abstract class BaseTest extends Specification {
 
     def setup() {
         GrpcMock.configureFor(GrpcMock.grpcMock(0).build().start())
-        // port 0 means that the OS will assign a random free port
+        // Port 0 means that the OS will assign a random free port
 
         mockServerTarget = "localhost:" + GrpcMock.getGlobalPort().toString()
         GrpcMock.stubFor(GrpcMock.unaryMethod(NamingServiceGrpc.getLookupMethod()).willReturn(
@@ -46,7 +46,7 @@ abstract class BaseTest extends Specification {
     }
 
     def runMain() {
-        def userClient = new UserClientMain() // main is static, but this is needed to cover the constructor
+        def userClient = new UserClientMain() // Main is static, but this is needed to cover the constructor
         userClient.main(new String[] {mockServerTarget})
     }
 }

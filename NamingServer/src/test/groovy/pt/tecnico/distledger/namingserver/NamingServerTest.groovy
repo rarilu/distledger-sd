@@ -18,7 +18,7 @@ class NamingServerTest extends Specification {
 
     def "main is called with no arguments"() {
         when: "the naming server is run with no arguments"
-        def namingServer = new NamingServer() // main is static, but this is needed to cover the constructor
+        def namingServer = new NamingServer() // Main is static, but this is needed to cover the constructor
         namingServer.main(new String[]{})
 
         then: "the output is empty"

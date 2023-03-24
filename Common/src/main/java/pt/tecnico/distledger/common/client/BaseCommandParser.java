@@ -43,8 +43,8 @@ public abstract class BaseCommandParser {
 
   protected void handleServiceCallResponse(Supplier<Optional<String>> serviceCall) {
     try {
-      // needs to be a supplier for lazy evaluation
-      // any exceptions must be thrown inside this try block
+      // Needs to be a supplier for lazy evaluation
+      // Any exceptions must be thrown inside this try block
 
       final String representation =
           serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable"));

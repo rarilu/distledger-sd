@@ -12,8 +12,8 @@ public class UserClientMain {
   public static void main(String[] args) {
     Logger.debug(UserClientMain.class.getSimpleName());
 
-    // accepts naming server target as an optional argument
-    // if not provided, uses the well-known target
+    // Accepts naming server target as an optional argument
+    // If not provided, uses the well-known target
     Optional<String> namingServerTarget = Arrays.stream(args).findFirst();
 
     try (final NamingService namingService =
