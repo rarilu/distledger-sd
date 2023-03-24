@@ -29,7 +29,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
 
   @Override
   public void register(RegisterRequest request, StreamObserver<RegisterResponse> responseObserver) {
-    Logger.debug("Received Register request");
+    Logger.debug("Received Register request:");
     Logger.debug(request + "\n");
 
     try {
@@ -48,7 +48,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
 
   @Override
   public void delete(DeleteRequest request, StreamObserver<DeleteResponse> responseObserver) {
-    Logger.debug("Received Delete request");
+    Logger.debug("Received Delete request:");
     Logger.debug(request + "\n");
 
     try {
@@ -67,7 +67,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
 
   @Override
   public void lookup(LookupRequest request, StreamObserver<LookupResponse> responseObserver) {
-    Logger.debug("Received Lookup request");
+    Logger.debug("Received Lookup request:");
     Logger.debug(request + "\n");
 
     try {
