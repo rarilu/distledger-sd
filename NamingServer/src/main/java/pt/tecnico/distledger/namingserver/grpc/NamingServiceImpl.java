@@ -75,7 +75,7 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
     try {
       // Lookup the target servers with the requested characteristics.
       List<String> targets;
-      if (request.getQualifier() == null) {
+      if (request.getQualifier() == null || request.getQualifier().isEmpty()) {
         targets = this.state.lookup(request.getService());
       } else {
         targets = this.state.lookup(request.getService(), request.getQualifier());
