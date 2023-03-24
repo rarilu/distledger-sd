@@ -47,7 +47,7 @@ public abstract class BaseCommandParser {
       // any exceptions must be thrown inside this try block
 
       final String representation =
-          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable."));
+          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable"));
       System.out.println("OK");
       System.out.println(representation);
     } catch (RuntimeException e) {

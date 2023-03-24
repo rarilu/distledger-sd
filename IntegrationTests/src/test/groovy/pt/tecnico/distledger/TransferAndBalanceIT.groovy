@@ -9,7 +9,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker Alice " + amount)
 
         then: "the output is correct"
-        getOutput() == "> Error: Transfers with non-positive amount are not allowed\n\n> "
+        getOutput() == "> Error: INVALID_ARGUMENT: Transfers with non-positive amount are not allowed\n\n> "
 
         where:
         amount << [0, -1]
@@ -20,7 +20,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A Alice broker 1000")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account Alice does not exist\n\n> "
+        getOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
     }
 
     def "transfer to an unknown account"() {
@@ -28,7 +28,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker Alice 1000")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account Alice does not exist\n\n> "
+        getOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
     }
 
     def "transfer without enough balance"() {
@@ -39,7 +39,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A Alice broker 1001")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account Alice does not have enough balance to transfer 1001\n\n> "
+        getOutput() == "> Error: FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 1001\n\n> "
     }
 
     def "transfer to same account"() {
@@ -47,7 +47,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker broker 1000")
 
         then: "the output is correct"
-        getOutput() == "> Error: Transfers from an account to itself are not allowed\n\n> "
+        getOutput() == "> Error: INVALID_ARGUMENT: Transfers from an account to itself are not allowed\n\n> "
     }
 
     def "transfer with inactive server"() {
@@ -74,7 +74,7 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("balance A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: Account Alice does not exist\n\n> "
+        getOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
     }
 
     def "balance of an account with inactive server"() {
