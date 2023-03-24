@@ -12,9 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
 import pt.tecnico.distledger.server.grpc.CrossServerService;
 import pt.tecnico.distledger.server.grpc.DistLedgerCrossServerServiceImpl;
-import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
 import pt.tecnico.distledger.server.grpc.UserServiceImpl;
 import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
@@ -72,11 +72,16 @@ public class ServerMain {
       // but there is no harm in initializing it anyway - it will be useful in the future
       final BindableService userService = new UserServiceImpl(state, active, executor);
       final BindableService adminService = new AdminServiceImpl(state, active);
-      final BindableService crossServerService = new DistLedgerCrossServerServiceImpl(state, active);
+      final BindableService crossServerService =
+          new DistLedgerCrossServerServiceImpl(state, active);
 
       // Launch server
       final Server server =
-          ServerBuilder.forPort(port).addService(userService).addService(adminService).addService(crossServerService).build();
+          ServerBuilder.forPort(port)
+              .addService(userService)
+              .addService(adminService)
+              .addService(crossServerService)
+              .build();
       server.start();
       System.out.println("Server started, listening on " + port);
 

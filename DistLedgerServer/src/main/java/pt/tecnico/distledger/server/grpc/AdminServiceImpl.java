@@ -49,7 +49,7 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       DeactivateRequest request, StreamObserver<DeactivateResponse> responseObserver) {
     Logger.debug("Received Deactivate request");
     Logger.debug(request + "\n");
-    
+
     try {
       this.active.set(false);
       responseObserver.onNext(DeactivateResponse.getDefaultInstance());
