@@ -56,7 +56,8 @@ class UserServiceImplTest extends Specification {
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "ALREADY_EXISTS: Account for user Alice already exists"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "ALREADY_EXISTS: Account for user Alice already exists"
         })
     }
 
@@ -87,7 +88,8 @@ class UserServiceImplTest extends Specification {
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Account for user broker is protected"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Account for user broker is protected"
         })
     }
 
@@ -103,7 +105,8 @@ class UserServiceImplTest extends Specification {
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "FAILED_PRECONDITION: Account for user Alice has 100 left, needs to be empty"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "FAILED_PRECONDITION: Account for user Alice has 100 left, needs to be empty"
         })
     }
 
@@ -112,7 +115,12 @@ class UserServiceImplTest extends Specification {
         executor.execute(new CreateOp("Alice"))
 
         when: "transfer between accounts"
-        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("broker").setAccountTo("Alice").setAmount(100).build(), observer)
+        service.transferTo(TransferToRequest.newBuilder()
+                .setAccountFrom("broker")
+                .setAccountTo("Alice")
+                .setAmount(100)
+                .build(),
+                observer)
 
         then: "the correct response is received"
         1 * observer.onNext(TransferToResponse.getDefaultInstance())
@@ -123,17 +131,29 @@ class UserServiceImplTest extends Specification {
         executor.execute(new CreateOp("Alice"))
 
         when: "transfer between accounts"
-        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("Alice").setAccountTo("broker").setAmount(100).build(), observer)
+        service.transferTo(TransferToRequest.newBuilder()
+                .setAccountFrom("Alice")
+                .setAccountTo("broker")
+                .setAmount(100)
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 100"
+            it instanceof StatusRuntimeException
+                    && it.getMessage()
+                    == "FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 100"
         })
     }
 
     def "transfer to non-existing account"() {
         when: "transfer to non-existing account"
-        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("broker").setAccountTo("void").setAmount(100).build(), observer)
+        service.transferTo(TransferToRequest.newBuilder()
+                .setAccountFrom("broker")
+                .setAccountTo("void")
+                .setAmount(100)
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
@@ -146,11 +166,17 @@ class UserServiceImplTest extends Specification {
         executor.execute(new CreateOp("Alice"))
 
         when: "transfer non-positive amount"
-        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("broker").setAccountTo("Alice").setAmount(amount).build(), observer)
+        service.transferTo(TransferToRequest.newBuilder()
+                .setAccountFrom("broker")
+                .setAccountTo("Alice")
+                .setAmount(amount)
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Transfers with non-positive amount are not allowed"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Transfers with non-positive amount are not allowed"
         })
 
         where:
@@ -159,11 +185,17 @@ class UserServiceImplTest extends Specification {
 
     def "transfer to the same account"() {
         when: "transfer to the same account"
-        service.transferTo(TransferToRequest.newBuilder().setAccountFrom("broker").setAccountTo("broker").setAmount(100).build(), observer)
+        service.transferTo(TransferToRequest.newBuilder()
+                .setAccountFrom("broker")
+                .setAccountTo("broker")
+                .setAmount(100)
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Transfers from an account to itself are not allowed"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Transfers from an account to itself are not allowed"
         })
     }
 
@@ -229,7 +261,9 @@ class UserServiceImplTest extends Specification {
         })
 
         where: "method is any void function of UserServiceImpl not in thhe ignore list"
-        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && ![ "balance" ].contains(it.getName()) }
+        method << UserServiceImpl.class.getDeclaredMethods().findAll {
+            it.getReturnType() == void.class && ![ "balance" ].contains(it.getName())
+        }
     }
 
     def "catch runtime exceptions"() {

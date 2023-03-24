@@ -76,7 +76,8 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "INVALID_ARGUMENT: Failed to create operation from request"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Failed to create operation from request"
         })
     }
 
@@ -93,7 +94,9 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         })
 
         where: "method is any public void function of UserServiceImpl"
-        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers()) }
+        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll {
+            it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers())
+        }
     }
 
     def "deactivate server"() {
@@ -109,6 +112,8 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         })
 
         where: "method is any void function of UserServiceImpl"
-        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers()) }
+        method << DistLedgerCrossServerServiceImpl.class.getDeclaredMethods().findAll {
+            it.getReturnType() == void.class && Modifier.isPublic(it.getModifiers())
+        }
     }
 }

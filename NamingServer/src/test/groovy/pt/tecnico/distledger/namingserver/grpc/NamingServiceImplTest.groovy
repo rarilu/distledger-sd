@@ -25,7 +25,12 @@ class NamingServiceImplTest extends Specification {
 
     def "register a server"() {
         when: "a server is registered"
-        service.register(RegisterRequest.newBuilder().setService("DistLedger").setQualifier("A").setTarget("localhost:2000").build(), observer)
+        service.register(RegisterRequest.newBuilder()
+                .setService("DistLedger")
+                .setQualifier("A")
+                .setTarget("localhost:2000")
+                .build(),
+                observer)
 
         then: "the correct response is received"
         1 * observer.onNext(RegisterResponse.getDefaultInstance())
@@ -36,11 +41,19 @@ class NamingServiceImplTest extends Specification {
         state.registerServer("DistLedger", "A", "localhost:2000")
 
         when: "the server is registered again"
-        service.register(RegisterRequest.newBuilder().setService("DistLedger").setQualifier("A").setTarget("localhost:2000").build(), observer)
+        service.register(RegisterRequest.newBuilder()
+                .setService("DistLedger")
+                .setQualifier("A")
+                .setTarget("localhost:2000")
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "ALREADY_EXISTS: An entry for server with target localhost:2000 and service DistLedger already exists"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() ==
+                    "ALREADY_EXISTS: " +
+                    "An entry for server with target localhost:2000 and service DistLedger already exists"
         })
     }
 
@@ -49,7 +62,11 @@ class NamingServiceImplTest extends Specification {
         state.registerServer("DistLedger", "A", "localhost:2000")
 
         when: "the server is deleted"
-        service.delete(DeleteRequest.newBuilder().setService("DistLedger").setTarget("localhost:2000").build(), observer)
+        service.delete(DeleteRequest.newBuilder()
+                .setService("DistLedger")
+                .setTarget("localhost:2000")
+                .build(),
+                observer)
 
         then: "the correct response is received"
         1 * observer.onNext(DeleteResponse.getDefaultInstance())
@@ -57,11 +74,17 @@ class NamingServiceImplTest extends Specification {
 
     def "delete a non-existent server"() {
         when: "a server is deleted"
-        service.delete(DeleteRequest.newBuilder().setService("DistLedger").setTarget("localhost:2000").build(), observer)
+        service.delete(DeleteRequest.newBuilder()
+                .setService("DistLedger")
+                .setTarget("localhost:2000")
+                .build(),
+                observer)
 
         then: "an exception is thrown"
         1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "NOT_FOUND: An entry for server with target localhost:2000 and service DistLedger was not found"
+            it instanceof StatusRuntimeException
+                    && it.getMessage() ==
+                    "NOT_FOUND: An entry for server with target localhost:2000 and service DistLedger was not found"
         })
     }
 
@@ -95,7 +118,8 @@ class NamingServiceImplTest extends Specification {
 
         then: "the correct response is received"
         1 * observer.onNext({
-            it instanceof LookupResponse && it.getTargetsList() == ["localhost:2000", "localhost:2001", "localhost:2002"]
+            it instanceof LookupResponse
+                    && it.getTargetsList() == ["localhost:2000", "localhost:2001", "localhost:2002"]
         })
     }
 

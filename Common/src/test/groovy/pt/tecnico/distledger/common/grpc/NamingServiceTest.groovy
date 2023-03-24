@@ -20,7 +20,8 @@ class NamingServiceTest extends Specification {
         given: "a mock server that returns a response with a list of targets for a given service"
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(NamingServiceGrpc.getLookupMethod())
-                        .willReturn(GrpcMock.response(LookupResponse.newBuilder().addAllTargets(["localhost:5001", "localhost:5002", "localhost:5003"]).build())))
+                        .willReturn(GrpcMock.response(LookupResponse.newBuilder()
+                                .addAllTargets(["localhost:5001", "localhost:5002", "localhost:5003"]).build())))
 
         when: "a lookup of a service is requested"
         def result = service.lookup("DistLedger")

@@ -39,7 +39,8 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A Alice broker 1001")
 
         then: "the output is correct"
-        extractOutput() == "> Error: FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 1001\n\n> "
+        extractOutput() ==
+                "> Error: FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 1001\n\n> "
     }
 
     def "transfer to same account"() {
