@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import pt.tecnico.distledger.common.Logger;
-import pt.tecnico.distledger.common.NamingService;
 import pt.tecnico.distledger.common.StubCache;
 
 /**
