@@ -63,7 +63,7 @@ public class StubCache<T> implements AutoCloseable {
 
                     return new CachedStub<>(channel, stub);
                   })
-              .orElse(null); // if lookup result is empty list
+              .orElse(null); // If lookup result is empty list
         });
 
     return Optional.ofNullable(this.cachedStubs.get(qualifier))

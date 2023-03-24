@@ -47,7 +47,7 @@ public abstract class BaseService<S> implements AutoCloseable {
 
       throw e;
     }
-    // purposely not catching RuntimeException, thrown when no server is found
+    // Purposely not catching RuntimeException, thrown when no server is found
     // with the specified qualifier
   }
 
