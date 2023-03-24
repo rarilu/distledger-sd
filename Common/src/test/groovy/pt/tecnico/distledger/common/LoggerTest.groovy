@@ -21,26 +21,19 @@ class LoggerTest extends Specification {
         System.setProperty("debug", "true")
     }
 
-    def "error prints to stderr when debug flag is clear"() {
+    @Unroll
+    def "error prints to stderr independently of debug flag"() {
         given: "the debug flag is clear"
-        Logger.setDebugFlag(false)
+        Logger.setDebugFlag(flag)
 
         when: "an error is logged"
         Logger.error("test")
 
         then: "the error is printed to stderr"
         errBuf.toString() == "test\n"
-    }
 
-    def "error prints to stderr when debug flag is set"() {
-        given: "the debug flag is set"
-        Logger.setDebugFlag(true)
-
-        when: "an error is logged"
-        Logger.error("test")
-
-        then: "the error is printed to stderr"
-        errBuf.toString() == "test\n"
+        when:
+        flag << [true, false]
     }
 
     def "debug does not print to stderr when debug flag is clear"() {
