@@ -15,6 +15,7 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
+import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
@@ -77,6 +78,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
+    } catch (FailedPropagationException e) {
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(Status.ABORTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
@@ -116,6 +120,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
+    } catch (FailedPropagationException e) {
+      Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(Status.ABORTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(DELETE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
@@ -156,6 +163,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
+    } catch (FailedPropagationException e) {
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
+      responseObserver.onError(Status.ABORTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
