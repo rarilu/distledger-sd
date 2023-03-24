@@ -3,7 +3,6 @@ package pt.tecnico.distledger.server
 import spock.lang.Specification
 
 class ServerMainTest extends Specification {
-    def port = 2001
     def outBuf
     def initialStdout
 
