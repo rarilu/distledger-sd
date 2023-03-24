@@ -48,7 +48,7 @@ class NamingServiceImplTest extends Specification {
         def state = Mock(NamingServerState)
         state.registerServer(_) >> { throw new RuntimeException("Unknown error") }
         state.deleteServer(_) >> { throw new RuntimeException("Unknown error") }
-        state.lookup(_, _) >> { throw new RuntimeException("Unknown error") }
+        state.lookup(*_) >> { throw new RuntimeException("Unknown error") }
 
         and: "an observer that throws an exception when onNext is called"
         observer.onNext(_) >> { throw new RuntimeException("Unknown error") }
