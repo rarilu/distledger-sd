@@ -38,6 +38,7 @@ class NamingServiceImplTest extends Specification {
         })
 
         where: "method is any void function of NamingServiceImpl that takes 2 arguments"
-        method << NamingServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && it.getParameterTypes().size() == 2 }
+        method << NamingServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class
+                && it.getParameterTypes().size() == 2 }
     }
 }
