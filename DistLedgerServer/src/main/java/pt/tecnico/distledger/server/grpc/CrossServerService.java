@@ -28,7 +28,7 @@ public class CrossServerService
     PropagateStateRequest request =
         PropagateStateRequest.newBuilder().setState(generator.build()).build();
     try {
-      Logger.debug("Sending request: " + request.toString());
+      Logger.debug("Sending request: " + request);
 
       this.makeRequestWithRetryInvalidatingStubCache(
               server,

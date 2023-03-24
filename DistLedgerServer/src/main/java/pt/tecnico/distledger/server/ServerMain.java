@@ -90,7 +90,7 @@ public class ServerMain {
         System.out.println("Server started, listening on " + port);
 
         // Register this server on the naming service
-        final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
+        final String target = InetAddress.getLocalHost().getHostAddress() + ":" + port;
         AtomicBoolean registered = new AtomicBoolean(false);
 
         // 'Thread' used to unregister the server from the naming service
