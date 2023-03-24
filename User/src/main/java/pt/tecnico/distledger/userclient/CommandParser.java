@@ -1,21 +1,15 @@
 package pt.tecnico.distledger.userclient;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.function.Supplier;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.client.BaseCommandParser;
 import pt.tecnico.distledger.userclient.grpc.UserService;
 
 /** Parses the input from the user and executes the corresponding commands. */
-public class CommandParser {
-  private static final String SPACE = " ";
+public class CommandParser extends BaseCommandParser {
   private static final String CREATE_ACCOUNT = "createAccount";
   private static final String DELETE_ACCOUNT = "deleteAccount";
   private static final String TRANSFER_TO = "transferTo";
   private static final String BALANCE = "balance";
-  private static final String HELP = "help";
-  private static final String EXIT = "exit";
 
   private final UserService userService;
 
@@ -23,54 +17,17 @@ public class CommandParser {
     this.userService = userService;
   }
 
-  /**
-   * Parses the input from the user and executes the corresponding commands, in a loop until an
-   * explicit exit instruction or the end of user input.
-   */
-  public void parseInput() {
-    boolean exit = false;
-
-    try (final Scanner scanner = new Scanner(System.in)) {
-      while (!exit) {
-        try {
-          System.out.print("> ");
-          String line = scanner.nextLine().trim();
-          String cmd = line.split(SPACE)[0];
-
-          switch (cmd) {
-            case CREATE_ACCOUNT -> this.createAccount(line);
-            case DELETE_ACCOUNT -> this.deleteAccount(line);
-            case TRANSFER_TO -> this.transferTo(line);
-            case BALANCE -> this.balance(line);
-            case HELP -> this.printUsage();
-            case EXIT -> exit = true;
-            default -> {
-              Logger.debug("Unknown command: " + cmd);
-              this.printUsage();
-            }
-          }
-        } catch (NumberFormatException e) {
-          Logger.debug(e.getMessage());
-          System.out.println("Error: Invalid number provided");
-        } catch (NoSuchElementException e) {
-          exit = true;
-        }
+  @Override
+  protected void dispatchCommand(String cmd, String line) {
+    switch (cmd) {
+      case CREATE_ACCOUNT -> this.createAccount(line);
+      case DELETE_ACCOUNT -> this.deleteAccount(line);
+      case TRANSFER_TO -> this.transferTo(line);
+      case BALANCE -> this.balance(line);
+      default -> {
+        Logger.debug("Unknown command: " + cmd);
+        this.printUsage();
       }
-    }
-  }
-
-  private void handleServiceCallResponse(Supplier<Optional<String>> serviceCall) {
-    try {
-      // needs to be a supplier for lazy evaluation
-      // any exceptions must be thrown inside this try block
-
-      final String representation =
-          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable."));
-      System.out.println("OK");
-      System.out.println(representation);
-    } catch (RuntimeException e) {
-      System.out.println("Error: " + e.getMessage());
-      System.out.println();
     }
   }
 
@@ -120,15 +77,21 @@ public class CommandParser {
       return;
     }
 
-    String server = split[1];
-    String from = split[2];
-    String dest = split[3];
-    int amount = Integer.parseInt(split[4]);
+    try {
+      String server = split[1];
+      String from = split[2];
+      String dest = split[3];
+      int amount = Integer.parseInt(split[4]);
 
-    this.handleServiceCallResponse(() -> this.userService.transferTo(server, from, dest, amount));
+      this.handleServiceCallResponse(() -> this.userService.transferTo(server, from, dest, amount));
+    } catch (NumberFormatException e) {
+      Logger.debug(e.getMessage());
+      System.out.println("Error: Invalid number provided");
+    }
   }
 
-  private void printUsage() {
+  @Override
+  protected void printUsage() {
     System.out.println(
         "Usage:\n"
             + "- createAccount <server> <username>\n"

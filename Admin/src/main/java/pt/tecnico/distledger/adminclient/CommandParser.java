@@ -1,22 +1,16 @@
 package pt.tecnico.distledger.adminclient;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.function.Supplier;
 import pt.tecnico.distledger.adminclient.grpc.AdminService;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.client.BaseCommandParser;
 
 /** Parses the input from the user and executes the corresponding commands. */
-public class CommandParser {
-  private static final String SPACE = " ";
+public class CommandParser extends BaseCommandParser {
   private static final String ACTIVATE = "activate";
   private static final String DEACTIVATE = "deactivate";
   private static final String GET_LEDGER_STATE = "getLedgerState";
   private static final String GOSSIP = "gossip";
-  private static final String HELP = "help";
   private static final String SHUTDOWN = "shutdown";
-  private static final String EXIT = "exit";
 
   private final AdminService adminService;
 
@@ -24,52 +18,18 @@ public class CommandParser {
     this.adminService = adminService;
   }
 
-  /**
-   * Parses the input from the user and executes the corresponding commands, in a loop until an
-   * explicit exit instruction or the end of user input.
-   */
-  public void parseInput() {
-    boolean exit = false;
-
-    try (final Scanner scanner = new Scanner(System.in)) {
-      while (!exit) {
-        try {
-          System.out.print("> ");
-          String line = scanner.nextLine().trim();
-          String cmd = line.split(SPACE)[0];
-
-          switch (cmd) {
-            case ACTIVATE -> this.activate(line);
-            case DEACTIVATE -> this.deactivate(line);
-            case GET_LEDGER_STATE -> this.getLedgerState(line);
-            case GOSSIP -> this.gossip(line);
-            case HELP -> this.printUsage();
-            case SHUTDOWN -> this.shutdown(line);
-            case EXIT -> exit = true;
-            default -> {
-              Logger.debug("Unknown command: " + cmd);
-              this.printUsage();
-            }
-          }
-        } catch (NoSuchElementException e) {
-          exit = true;
-        }
+  @Override
+  protected void dispatchCommand(String cmd, String line) {
+    switch (cmd) {
+      case ACTIVATE -> this.activate(line);
+      case DEACTIVATE -> this.deactivate(line);
+      case GET_LEDGER_STATE -> this.getLedgerState(line);
+      case GOSSIP -> this.gossip(line);
+      case SHUTDOWN -> this.shutdown(line);
+      default -> {
+        Logger.debug("Unknown command: " + cmd);
+        this.printUsage();
       }
-    }
-  }
-
-  private void handleServiceCallResponse(Supplier<Optional<String>> serviceCall) {
-    try {
-      // needs to be a supplier for lazy evaluation
-      // any exceptions must be thrown inside this try block
-
-      final String representation =
-          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable."));
-      System.out.println("OK");
-      System.out.println(representation);
-    } catch (RuntimeException e) {
-      System.out.println("Error: " + e.getMessage());
-      System.out.println();
     }
   }
 
@@ -127,7 +87,8 @@ public class CommandParser {
     this.handleServiceCallResponse(() -> this.adminService.shutdown(server));
   }
 
-  private void printUsage() {
+  @Override
+  protected void printUsage() {
     System.out.println(
         "Usage:\n"
             + "- activate <server>\n"
