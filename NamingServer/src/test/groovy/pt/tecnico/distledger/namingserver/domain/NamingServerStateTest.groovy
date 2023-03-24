@@ -67,19 +67,19 @@ class NamingServerStateTest extends Specification {
         other == ["localhost:8000"]
     }
 
-    def "delete a server with a non-existant service"() {
-        when: "a non-existant server is deleted"
+    def "delete a server with a non-existent service"() {
+        when: "a non-existent server is deleted"
         namingServerState.deleteServer("DistLedger", "localhost:8000")
 
         then: "an exception is thrown"
         thrown(ServerEntryNotFoundException)
     }
 
-    def "delete a non-existant server"() {
+    def "delete a non-existent server"() {
         given: "a server already registered"
         namingServerState.registerServer("DistLedger", "A", "localhost:8000")
 
-        when: "a non-existant server with the same service is deleted"
+        when: "a non-existent server with the same service is deleted"
         namingServerState.deleteServer("DistLedger", "localhost:8001")
 
         then: "an exception is thrown"

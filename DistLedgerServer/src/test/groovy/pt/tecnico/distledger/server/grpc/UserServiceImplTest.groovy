@@ -260,7 +260,7 @@ class UserServiceImplTest extends Specification {
             it instanceof StatusRuntimeException && it.getMessage() == "ABORTED: Failed propagation"
         })
 
-        where: "method is any void function of UserServiceImpl not in thhe ignore list"
+        where: "method is any void function of UserServiceImpl not in the ignore list"
         method << UserServiceImpl.class.getDeclaredMethods().findAll {
             it.getReturnType() == void.class && ![ "balance" ].contains(it.getName())
         }

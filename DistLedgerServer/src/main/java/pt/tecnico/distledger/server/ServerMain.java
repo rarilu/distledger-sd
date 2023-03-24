@@ -115,7 +115,7 @@ public class ServerMain {
             registered.set(true);
             Runtime.getRuntime().addShutdownHook(autoUnregister);
 
-            // Wait for user input to shutdown server
+            // Wait for user input to shut down server
             System.out.println("Press enter to shutdown");
             System.in.read();
 

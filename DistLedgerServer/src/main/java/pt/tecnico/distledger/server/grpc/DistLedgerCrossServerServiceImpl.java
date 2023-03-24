@@ -23,7 +23,7 @@ import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 /** Implements the CrossServer service, handling gRPC requests. */
 public class DistLedgerCrossServerServiceImpl
     extends DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceImplBase {
-  private static final String PROPAGATE_FAILED = "Prapagate State failed: ";
+  private static final String PROPAGATE_FAILED = "Propagate State failed: ";
   private static final String PARSE_FAILED = "Failed to create operation from request";
 
   private final AtomicBoolean active;

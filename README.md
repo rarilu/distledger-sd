@@ -66,7 +66,7 @@ mvn exec:java -pl Admin
 mvn exec:java -pl DistLedgerServer -Dexec.args="<port> <qual>"
 ```
 
-Ommiting `-Dexec.args` will run with the default arguments `"2001 A"`
+Omitting `-Dexec.args` will run with the default arguments `"2001 A"`
 
 #### NamingServer
 
@@ -95,7 +95,7 @@ For each module, 3 JaCoCo coverage reports will be generated and saved on `<modu
 - `target/site/jacoco-it` will have the coverage report of only Integration Tests (only created when there are Integration Tests).
 - `target/site/jacoco-merged` will have the previous two reports merged.
 
-Additionaly, aggregated versions of each report (with the coverage of all the modules) will be generated and saved on `CoverageReport/target/site`.
+Additionally, aggregated versions of each report (with the coverage of all the modules) will be generated and saved on `CoverageReport/target/site`.
 
 To open a coverage report, open it directly with your browser, or run:
 
