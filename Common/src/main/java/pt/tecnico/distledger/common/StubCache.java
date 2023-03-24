@@ -47,7 +47,7 @@ public class StubCache<T> implements AutoCloseable {
           List<String> targets = this.namingService.lookup(SERVICE_NAME, qual);
           if (targets.size() > 1) {
             throw new RuntimeException(
-                "Multiple servers with the same qualifier are not supported yet");
+                "Many servers with the same qualifier are not in the present consistency model");
           }
 
           return targets.stream()
