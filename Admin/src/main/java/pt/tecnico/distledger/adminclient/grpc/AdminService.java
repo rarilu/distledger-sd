@@ -2,7 +2,7 @@ package pt.tecnico.distledger.adminclient.grpc;
 
 import java.util.Optional;
 import pt.tecnico.distledger.common.NamingService;
-import pt.tecnico.distledger.common.grpc.ClientService;
+import pt.tecnico.distledger.common.grpc.BaseService;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
@@ -14,7 +14,7 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 /** Handles Admin operations, making gRPC requests to the server's Admin service. */
-public class AdminService extends ClientService<AdminServiceGrpc.AdminServiceBlockingStub> {
+public class AdminService extends BaseService<AdminServiceGrpc.AdminServiceBlockingStub> {
   private static final int MAX_TRIES = 2;
 
   public AdminService(NamingService namingService) {
