@@ -7,6 +7,6 @@ public class FailedPropagationException extends RuntimeException {
   }
 
   public FailedPropagationException(Exception cause) {
-    super(cause);
+    super(cause.getMessage(), cause);
   }
 }
