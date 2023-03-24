@@ -21,7 +21,8 @@ public class ServiceEntry {
 
   /** Registers a server in the service entry. */
   public void registerServer(String qualifier, String target) {
-    // Add the target to the set of registered targets, and throw an exception if it already was
+    // Add the target to the set of registered targets, and throw an exception if it was already 
+    // present
     if (!this.targets.add(target)) {
       throw new DuplicateServerEntryException(this.name, target);
     }
