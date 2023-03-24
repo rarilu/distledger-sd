@@ -17,7 +17,6 @@ import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 public class UserService extends BaseService<UserServiceGrpc.UserServiceBlockingStub> {
   private static final int MAX_TRIES = 2;
 
-  /** Creates a new UserService, connecting to the given host and port. */
   public UserService(NamingService namingService) {
     super(namingService, UserServiceGrpc::newBlockingStub);
   }
