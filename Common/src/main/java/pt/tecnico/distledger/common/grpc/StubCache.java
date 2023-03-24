@@ -61,7 +61,7 @@ public class StubCache<T> implements AutoCloseable {
                         ManagedChannelBuilder.forTarget(target).usePlaintext().build();
                     final T stub = this.stubFactory.apply(channel);
 
-                    return new CachedStub<T>(channel, stub);
+                    return new CachedStub<>(channel, stub);
                   })
               .orElse(null); // if lookup result is empty list
         });
