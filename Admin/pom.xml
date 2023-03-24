@@ -18,8 +18,6 @@
 	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
 	<properties>
 		<mainclass>pt.tecnico.distledger.adminclient.AdminClientMain</mainclass>
-		<server.host>localhost</server.host>
-		<server.port>2001</server.port>
 	</properties>
 
 	<!-- Dependencies are code archives - JARs - 
@@ -59,10 +57,6 @@
 				</executions>
 				<configuration>
 					<mainClass>${mainclass}</mainClass>
-					<arguments>
-						<argument>${server.host}</argument>
-						<argument>${server.port}</argument>
-					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
