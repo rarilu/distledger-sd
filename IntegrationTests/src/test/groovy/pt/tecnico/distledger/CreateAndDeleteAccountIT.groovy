@@ -6,13 +6,13 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("createAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> OK\n\n> "
+        extractOutput() == "> OK\n\n> "
 
         when: "the user deletes the account"
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> OK\n\n> "
+        extractOutput() == "> OK\n\n> "
     }
 
     def "create duplicate account"() {
@@ -20,7 +20,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("createAccount A broker")
 
         then: "the output is correct"
-        getOutput() == "> Error: ALREADY_EXISTS: Account for user broker already exists\n\n> "
+        extractOutput() == "> Error: ALREADY_EXISTS: Account for user broker already exists\n\n> "
     }
 
     def "create account with inactive server, reactivate and try again"() {
@@ -28,25 +28,25 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runAdmin("deactivate A")
 
         then: "the output is correct"
-        getOutput() == "> OK\n\n> "
+        extractOutput() == "> OK\n\n> "
 
         when: "the user creates an account"
         runUser("createAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: Server is unavailable\n\n> "
+        extractOutput() == "> Error: Server is unavailable\n\n> "
 
         when: "the server is reactivated"
         runAdmin("activate A")
 
         then: "the output is correct"
-        getOutput() == "> OK\n\n> "
+        extractOutput() == "> OK\n\n> "
 
         when: "the user creates an account"
         runUser("createAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> OK\n\n> "
+        extractOutput() == "> OK\n\n> "
     }
 
     def "delete non-existing account"() {
@@ -54,7 +54,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
+        extractOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
     }
 
     def "delete protected account"() {
@@ -62,7 +62,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A broker")
 
         then: "the output is correct"
-        getOutput() == "> Error: INVALID_ARGUMENT: Account for user broker is protected\n\n> "
+        extractOutput() == "> Error: INVALID_ARGUMENT: Account for user broker is protected\n\n> "
     }
 
     def "delete non-empty account"() {
@@ -73,7 +73,7 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A Alice")
 
         then: "the output is correct"
-        getOutput() == "> Error: FAILED_PRECONDITION: Account for user Alice has 1000 left, needs to be empty\n\n> "
+        extractOutput() == "> Error: FAILED_PRECONDITION: Account for user Alice has 1000 left, needs to be empty\n\n> "
     }
 
     def "delete account with inactive server"() {
@@ -84,6 +84,6 @@ class CreateAndDeleteAccountIT extends BaseIT {
         runUser("deleteAccount A broker")
 
         then: "the output is correct"
-        getOutput() == "> Error: Server is unavailable\n\n> "
+        extractOutput() == "> Error: Server is unavailable\n\n> "
     }
 }

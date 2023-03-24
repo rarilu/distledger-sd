@@ -6,7 +6,7 @@ class AdminIT extends BaseIT {
         runAdmin("getLedgerState A")
 
         then: "the output is correct"
-        getOutput() == "> OK\nledgerState {\n}\n\n> "
+        extractOutput() == "> OK\nledgerState {\n}\n\n> "
     }
 
     def "admin checks a non-empty ledger state"() {
@@ -18,7 +18,7 @@ class AdminIT extends BaseIT {
         runAdmin("getLedgerState A")
 
         then: "the output is correct"
-        getOutput() == "> OK\n" +
+        extractOutput() == "> OK\n" +
                 "ledgerState {\n" +
                 "  ledger {\n" +
                 "    type: OP_CREATE_ACCOUNT\n" +
