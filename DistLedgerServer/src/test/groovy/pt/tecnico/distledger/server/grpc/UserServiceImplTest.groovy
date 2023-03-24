@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import pt.tecnico.distledger.server.DirectLedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
+import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor
@@ -23,13 +24,14 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
 import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {
+    def state
     def executor
     def active
     def service
     def observer
 
     def setup() {
-        def state = new ServerState()
+        state = new ServerState()
         def ledgerManager = new DirectLedgerManager(state)
         executor = new StandardOperationExecutor(state, ledgerManager)
         active = new AtomicBoolean(true)
@@ -208,6 +210,26 @@ class UserServiceImplTest extends Specification {
 
         where: "method is any void function of UserServiceImpl"
         method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
+    }
+
+    def "catch failed propagations"() {
+        given: "a mocked executor that throws an FailedPropagationException when used"
+        def executor = Mock(OperationExecutor)
+        executor.execute(_) >> { throw new FailedPropagationException("Failed propagation") }
+
+        and: "a service with the mocked state and executor"
+        def service = new UserServiceImpl(state, active, executor)
+
+        when: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method fails with RuntimeException"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "ABORTED: Failed propagation"
+        })
+
+        where: "method is any void function of UserServiceImpl not in thhe ignore list"
+        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class && ![ "balance" ].contains(it.getName()) }
     }
 
     def "catch runtime exceptions"() {
