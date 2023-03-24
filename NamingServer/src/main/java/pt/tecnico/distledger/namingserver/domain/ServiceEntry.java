@@ -45,7 +45,7 @@ public class ServiceEntry {
 
   /** Deletes a server from the service entry. */
   public void deleteServer(String target) {
-    // Safety: no need to synchronize while iterating the concurrent map, standard says its safe
+    // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       if (serverEntries.removeIf(serverEntry -> target.equals(serverEntry.target()))) {
         // Remove the target from the set of registered targets
@@ -75,7 +75,7 @@ public class ServiceEntry {
   public List<String> lookup() {
     List<String> targets = new ArrayList<>();
 
-    // Safety: no need to synchronize while iterating the concurrent map, standard says its safe
+    // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       // Safety: we need to synchronize on the server entries list since we are iterating over it
       synchronized (serverEntries) {
