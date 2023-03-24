@@ -20,8 +20,6 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateReques
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownRequest
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownResponse
 
 class AdminServiceImplTest extends Specification {
     def executor
@@ -113,37 +111,9 @@ class AdminServiceImplTest extends Specification {
         1 * observer.onNext(GetLedgerStateResponse.newBuilder().setLedgerState(ledgerState).build())
     }
 
-    def "try to shutdown without passing the server"() {
-        when: "shutdown is called"
-        service.shutdown(ShutdownRequest.getDefaultInstance(), observer)
-
-        then: "method fails with UNIMPLEMENTED"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "UNIMPLEMENTED: Server cannot be shutdown"
-        })
-    }
-
-    def "shutdown successfully"() {
-        given: "a mock server which is passed to the service"
-        def server = Mock(io.grpc.Server)
-        service.setServer(server)
-
-        when: "shutdown is called"
-        service.shutdown(ShutdownRequest.getDefaultInstance(), observer)
-
-        then: "server is shutdown"
-        1 * server.shutdown()
-
-        and: "response is sent"
-        1 * observer.onNext(ShutdownResponse.getDefaultInstance())
-    }
-
     def "catch runtime exceptions"() {
         given: "an observer that throws an exception when onNext is called"
         observer.onNext(_) >> { throw new RuntimeException("Unknown error") }
-
-        and: "a mock server which is passed to the service"
-        service.setServer(Mock(io.grpc.Server))
 
         when: "a method is called"
         method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)

@@ -10,7 +10,6 @@ public class CommandParser extends BaseCommandParser {
   private static final String DEACTIVATE = "deactivate";
   private static final String GET_LEDGER_STATE = "getLedgerState";
   private static final String GOSSIP = "gossip";
-  private static final String SHUTDOWN = "shutdown";
 
   private final AdminService adminService;
 
@@ -25,7 +24,6 @@ public class CommandParser extends BaseCommandParser {
       case DEACTIVATE -> this.deactivate(line);
       case GET_LEDGER_STATE -> this.getLedgerState(line);
       case GOSSIP -> this.gossip(line);
-      case SHUTDOWN -> this.shutdown(line);
       default -> {
         Logger.debug("Unknown command: " + cmd);
         this.printUsage();
@@ -75,18 +73,6 @@ public class CommandParser extends BaseCommandParser {
     System.out.println("TODO: implement gossip command (only for Phase-3)");
   }
 
-  private void shutdown(String line) {
-    String[] split = line.split(SPACE);
-    if (split.length != 2) {
-      this.printUsage();
-      return;
-    }
-
-    String server = split[1];
-
-    this.handleServiceCallResponse(() -> this.adminService.shutdown(server));
-  }
-
   @Override
   protected void printUsage() {
     System.out.println(
@@ -95,7 +81,6 @@ public class CommandParser extends BaseCommandParser {
             + "- deactivate <server>\n"
             + "- getLedgerState <server>\n"
             + "- gossip <server>\n"
-            + "- shutdown <server>\n"
             + "- exit\n");
   }
 }

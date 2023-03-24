@@ -9,8 +9,6 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse;
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownRequest;
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.ShutdownResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 /** Handles Admin operations, making gRPC requests to the server's Admin service. */
@@ -43,13 +41,5 @@ public class AdminService extends BaseService<AdminServiceGrpc.AdminServiceBlock
     return this.makeRequestWithRetryInvalidatingStubCache(
             server, request, AdminServiceGrpc.AdminServiceBlockingStub::getLedgerState, MAX_TRIES)
         .map(GetLedgerStateResponse::toString);
-  }
-
-  /** Handle the Shutdown command. */
-  public Optional<String> shutdown(String server) {
-    ShutdownRequest request = ShutdownRequest.getDefaultInstance();
-    return this.makeRequestWithRetryInvalidatingStubCache(
-            server, request, AdminServiceGrpc.AdminServiceBlockingStub::shutdown, MAX_TRIES)
-        .map(ShutdownResponse::toString);
   }
 }

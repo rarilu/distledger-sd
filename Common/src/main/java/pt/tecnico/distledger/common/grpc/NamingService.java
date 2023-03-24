@@ -7,7 +7,6 @@ import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.DeleteRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.LookupRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterRequest;
-import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.ShutdownRequest;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 
 /**
@@ -86,13 +85,6 @@ public class NamingService implements AutoCloseable {
     Logger.debug("Lookup request: " + request);
 
     return this.stub.lookup(request).getTargetsList();
-  }
-
-  /** Executes a shutdown request. */
-  public void shutdown() {
-    ShutdownRequest request = ShutdownRequest.getDefaultInstance();
-
-    this.stub.shutdown(request);
   }
 
   /** Close channel immediately. */
