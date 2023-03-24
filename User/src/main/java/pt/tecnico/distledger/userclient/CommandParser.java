@@ -1,7 +1,9 @@
 package pt.tecnico.distledger.userclient;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Supplier;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.userclient.grpc.UserService;
 
@@ -57,6 +59,21 @@ public class CommandParser {
     }
   }
 
+  private void handleServiceCallResponse(Supplier<Optional<String>> serviceCall) {
+    try {
+      // needs to be a supplier for lazy evaluation
+      // any exceptions must be thrown inside this try block
+
+      final String representation =
+          serviceCall.get().orElseThrow(() -> new RuntimeException("Server is unavailable."));
+      System.out.println("OK");
+      System.out.println(representation);
+    } catch (RuntimeException e) {
+      System.out.println("Error: " + e.getMessage());
+      System.out.println();
+    }
+  }
+
   private void createAccount(String line) {
     String[] split = line.split(SPACE);
     if (split.length != 3) {
@@ -67,7 +84,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    this.userService.createAccount(server, username);
+    this.handleServiceCallResponse(() -> this.userService.createAccount(server, username));
   }
 
   private void deleteAccount(String line) {
@@ -80,7 +97,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    this.userService.deleteAccount(server, username);
+    this.handleServiceCallResponse(() -> this.userService.deleteAccount(server, username));
   }
 
   private void balance(String line) {
@@ -93,7 +110,7 @@ public class CommandParser {
     String server = split[1];
     String username = split[2];
 
-    this.userService.balance(server, username);
+    this.handleServiceCallResponse(() -> this.userService.balance(server, username));
   }
 
   private void transferTo(String line) throws NumberFormatException {
@@ -108,7 +125,7 @@ public class CommandParser {
     String dest = split[3];
     int amount = Integer.parseInt(split[4]);
 
-    userService.transferTo(server, from, dest, amount);
+    this.handleServiceCallResponse(() -> this.userService.transferTo(server, from, dest, amount));
   }
 
   private void printUsage() {

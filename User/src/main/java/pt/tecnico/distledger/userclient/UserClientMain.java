@@ -1,6 +1,9 @@
 package pt.tecnico.distledger.userclient;
 
+import java.util.Arrays;
+import java.util.Optional;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.userclient.grpc.UserService;
 
 /** Main class for the User client. */
@@ -9,19 +12,16 @@ public class UserClientMain {
   public static void main(String[] args) {
     Logger.debug(UserClientMain.class.getSimpleName());
 
-    // check arguments
-    if (args.length != 2) {
-      Logger.error("Argument(s) missing!");
-      Logger.error("Usage: mvn exec:java -Dexec.args=\"<host> <port>\"");
-      return;
-    }
+    // accepts naming server target as an optional argument
+    // if not provided, uses the well-known target
+    Optional<String> namingServerTarget = Arrays.stream(args).findFirst();
 
-    final String host = args[0];
-    final int port = Integer.parseInt(args[1]);
-
-    try (final UserService userService = new UserService(host, port)) {
-      CommandParser parser = new CommandParser(userService);
-      parser.parseInput();
+    try (final NamingService namingService =
+        namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
+      try (final UserService userService = new UserService(namingService)) {
+        CommandParser parser = new CommandParser(userService);
+        parser.parseInput();
+      }
     }
   }
 }
