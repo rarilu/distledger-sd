@@ -70,6 +70,7 @@ public class ServerMain {
       // Init services
       // Currently the cross-server service implementation is not used by the primary server
       // but there is no harm in initializing it anyway - it will be useful in the future
+      // and conditionally initializing would disproportionately harm code readability
       final BindableService userService = new UserServiceImpl(state, active, executor);
       final BindableService adminService = new AdminServiceImpl(state, active);
       final BindableService crossServerService =
