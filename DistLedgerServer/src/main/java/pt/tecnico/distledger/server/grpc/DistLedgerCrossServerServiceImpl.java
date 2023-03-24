@@ -58,7 +58,7 @@ public class DistLedgerCrossServerServiceImpl
       PropagateStateRequest request, StreamObserver<PropagateStateResponse> responseObserver) {
     Logger.debug("Received PropagateState request");
     Logger.debug(request + "\n");
-    
+
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();
