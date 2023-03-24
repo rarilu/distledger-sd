@@ -87,11 +87,10 @@ public class ServerMain {
       System.out.println("Server started, listening on " + port);
 
       // Register this server on the naming service
-      final String target = InetAddress.getLocalHost().getHostAddress().toString() + ":" + port;
       try {
-        final String address = InetAddress.getLocalHost().getHostAddress().toString();
-        Logger.debug("Registering server at " + address + ":" + port);
-        namingService.register(SERVICE_NAME, qualifier, address + ":" + port);
+        final String target = InetAddress.getLocalHost().getHostAddress().toString();
+        Logger.debug("Registering server at " + target + ":" + port);
+        namingService.register(SERVICE_NAME, qualifier, target + ":" + port);
 
         // Add a shutdown hook to unregister the server
         Runtime.getRuntime()
@@ -99,7 +98,7 @@ public class ServerMain {
                 new Thread(
                     () -> {
                       try {
-                        namingService.delete(SERVICE_NAME, qualifier);
+                        namingService.delete(SERVICE_NAME, target);
                       } catch (RuntimeException e) {
                         Logger.error("Failed to unregister server: " + e.getMessage());
                       }
