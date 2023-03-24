@@ -55,6 +55,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   @Override
   public void createAccount(
       CreateAccountRequest request, StreamObserver<CreateAccountResponse> responseObserver) {
+    Logger.debug("Received CreateAccount request");
+    Logger.debug(request + "\n");
+
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();
@@ -83,6 +86,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   @Override
   public void deleteAccount(
       DeleteAccountRequest request, StreamObserver<DeleteAccountResponse> responseObserver) {
+    Logger.debug("Received DeleteAccount request");
+    Logger.debug(request + "\n");
+
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();
@@ -119,6 +125,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   @Override
   public void transferTo(
       TransferToRequest request, StreamObserver<TransferToResponse> responseObserver) {
+    Logger.debug("Received TransferTo request");
+    Logger.debug(request + "\n");
+
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();
@@ -155,6 +164,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
 
   @Override
   public void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
+    Logger.debug("Received Balance request");
+    Logger.debug(request + "\n");
+
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();

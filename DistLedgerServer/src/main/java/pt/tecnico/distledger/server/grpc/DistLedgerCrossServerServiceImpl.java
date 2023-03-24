@@ -56,10 +56,14 @@ public class DistLedgerCrossServerServiceImpl
   @Override
   public void propagateState(
       PropagateStateRequest request, StreamObserver<PropagateStateResponse> responseObserver) {
+    Logger.debug("Received PropagateState request");
+    Logger.debug(request + "\n");
+    
     try {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
+
       // First we parse the operations from the request, to ensure we don't modify the state if
       // the request is invalid.
       List<Operation> operations =
