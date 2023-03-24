@@ -5,7 +5,7 @@ import pt.tecnico.distledger.common.grpc.BaseService;
 import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
-import pt.tecnico.distledger.server.domain.exceptions.FailedPropagationException;
+import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 
 /** Handles CrossServer operations, making gRPC requests to the server's CrossServer service. */
