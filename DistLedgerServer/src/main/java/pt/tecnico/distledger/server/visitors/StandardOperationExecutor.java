@@ -5,14 +5,11 @@ import pt.tecnico.distledger.server.LedgerManager;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.domain.exceptions.NonEmptyAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
-import pt.tecnico.distledger.server.domain.exceptions.ProtectedAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
-import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 
 /**
@@ -58,51 +55,6 @@ public class StandardOperationExecutor implements OperationExecutor {
     }
 
     Logger.debug("Created account for " + op.getUserId());
-  }
-
-  @Override
-  public void visit(DeleteOp op) {
-    if (op.getUserId().equals("broker")) {
-      throw new ProtectedAccountException(op.getUserId());
-    }
-
-    Account account = this.state.getAccounts().get(op.getUserId());
-    if (account == null) {
-      throw new UnknownAccountException(op.getUserId());
-    }
-
-    // Safety: the account is only deleted when we are sure that no other operation is accessing
-    //
-    // Safety: the operation is added to the ledger before the account is removed from the map,
-    // because otherwise a CreateOp could be executed in the meantime and add an account with the
-    // same ID to the ledger, before this operation is added, which would cause the ledger to be
-    // incoherent
-    //
-    // Liveness: only one synchronized block is needed, so this operation can never cause deadlocks
-
-    // noinspection SynchronizationOnLocalVariableOrMethodParameter
-    synchronized (account) {
-      // Now make sure that it wasn't deleted in the meantime
-      if (!this.state.getAccounts().containsKey(op.getUserId())) {
-        throw new UnknownAccountException(op.getUserId());
-      }
-
-      // Check if it has balance
-      final int balance = state.getAccounts().get(op.getUserId()).getBalance();
-      if (balance > 0) {
-        throw new NonEmptyAccountException(op.getUserId(), balance);
-      }
-
-      // No need to catch and rethrow the exception here, because we haven't made any changes to
-      // the state yet, so if the operation fails to be added to the ledger, we can just let the
-      // exception bubble up
-      this.ledgerManager.addToLedger(op);
-
-      // Now we can safely delete it since no other operation can access it
-      this.state.getAccounts().remove(op.getUserId());
-    }
-
-    Logger.debug("Deleted account of " + op.getUserId());
   }
 
   @Override

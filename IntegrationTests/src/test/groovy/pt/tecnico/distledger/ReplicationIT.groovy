@@ -48,12 +48,6 @@ class ReplicationIT extends BaseIT {
 
         then: "the output is correct"
         extractOutput() == "> Error: UNIMPLEMENTED: Unsupported operation on read-only server\n\n> "
-
-        when: "the user deletes an account on the secondary server"
-        runUser("deleteAccount B Alice")
-
-        then: "the output is correct"
-        extractOutput() == "> Error: UNIMPLEMENTED: Unsupported operation on read-only server\n\n> "
     }
 
     def "state can be read in the primary server even if the secondary server is inactive"() {
@@ -83,12 +77,6 @@ class ReplicationIT extends BaseIT {
     
         when: "the user transfers money on the primary server"
         runUser("transferTo A broker Alice 1000")
-
-        then: "the output is correct"
-        extractOutput() == "> Error: ABORTED: Secondary server is unavailable; only read operations are allowed\n\n> "
-
-        when: "the user deletes an account on the primary server"
-        runUser("deleteAccount A Alice")
 
         then: "the output is correct"
         extractOutput() == "> Error: ABORTED: Secondary server is unavailable; only read operations are allowed\n\n> "

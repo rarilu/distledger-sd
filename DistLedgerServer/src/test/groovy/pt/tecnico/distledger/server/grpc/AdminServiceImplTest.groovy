@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import pt.tecnico.distledger.server.DirectLedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
-import pt.tecnico.distledger.server.domain.operation.DeleteOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
@@ -92,9 +91,6 @@ class AdminServiceImplTest extends Specification {
                         .setDestUserId("broker")
                         .setAmount(100)
                         .build(),
-                Operation.newBuilder().setType(OperationType.OP_DELETE_ACCOUNT)
-                        .setUserId("Alice")
-                        .build()
         ]
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
@@ -102,7 +98,6 @@ class AdminServiceImplTest extends Specification {
         executor.execute(new CreateOp("Alice"))
         executor.execute(new TransferOp("broker", "Alice", 100))
         executor.execute(new TransferOp("Alice", "broker", 100))
-        executor.execute(new DeleteOp("Alice"))
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)

@@ -14,7 +14,6 @@ import pt.tecnico.distledger.server.LedgerManager;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
-import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
@@ -45,7 +44,6 @@ public class DistLedgerCrossServerServiceImpl
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
     return switch (operation.getType()) {
       case OP_CREATE_ACCOUNT -> new CreateOp(operation.getUserId());
-      case OP_DELETE_ACCOUNT -> new DeleteOp(operation.getUserId());
       case OP_TRANSFER_TO -> new TransferOp(
           operation.getUserId(), operation.getDestUserId(), operation.getAmount());
       default -> throw new IllegalArgumentException(PARSE_FAILED);

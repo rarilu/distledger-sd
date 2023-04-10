@@ -4,7 +4,6 @@ import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
-import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 
 /** Generates a LedgerState by visiting operations. */
@@ -24,15 +23,6 @@ public class LedgerStateGenerator implements OperationVisitor {
     this.builder.addLedger(
         Operation.newBuilder()
             .setType(OperationType.OP_CREATE_ACCOUNT)
-            .setUserId(op.getUserId())
-            .build());
-  }
-
-  @Override
-  public void visit(DeleteOp op) {
-    this.builder.addLedger(
-        Operation.newBuilder()
-            .setType(OperationType.OP_DELETE_ACCOUNT)
             .setUserId(op.getUserId())
             .build());
   }

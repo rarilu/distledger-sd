@@ -14,7 +14,6 @@ abstract class BaseTest extends Specification {
 
     protected static final String EXPECTED_USAGE_STRING = "Usage:\n" +
         "- createAccount <server> <username>\n" +
-        "- deleteAccount <server> <username>\n" +
         "- balance <server> <username>\n" +
         "- transferTo <server> <username_from> <username_to> <amount>\n" +
         "- exit\n"

@@ -7,7 +7,6 @@ import pt.tecnico.distledger.userclient.grpc.UserService;
 /** Parses the input from the user and executes the corresponding commands. */
 public class CommandParser extends BaseCommandParser {
   private static final String CREATE_ACCOUNT = "createAccount";
-  private static final String DELETE_ACCOUNT = "deleteAccount";
   private static final String TRANSFER_TO = "transferTo";
   private static final String BALANCE = "balance";
 
@@ -21,7 +20,6 @@ public class CommandParser extends BaseCommandParser {
   protected void dispatchCommand(String cmd, String line) {
     switch (cmd) {
       case CREATE_ACCOUNT -> this.createAccount(line);
-      case DELETE_ACCOUNT -> this.deleteAccount(line);
       case TRANSFER_TO -> this.transferTo(line);
       case BALANCE -> this.balance(line);
       default -> {
@@ -42,19 +40,6 @@ public class CommandParser extends BaseCommandParser {
     String username = split[2];
 
     this.handleServiceCallResponse(() -> this.userService.createAccount(server, username));
-  }
-
-  private void deleteAccount(String line) {
-    String[] split = line.split(SPACE);
-    if (split.length != 3) {
-      this.printUsage();
-      return;
-    }
-
-    String server = split[1];
-    String username = split[2];
-
-    this.handleServiceCallResponse(() -> this.userService.deleteAccount(server, username));
   }
 
   private void balance(String line) {
@@ -95,7 +80,6 @@ public class CommandParser extends BaseCommandParser {
     System.out.println(
         "Usage:\n"
             + "- createAccount <server> <username>\n"
-            + "- deleteAccount <server> <username>\n"
             + "- balance <server> <username>\n"
             + "- transferTo <server> <username_from> <username_to> <amount>\n"
             + "- exit\n");

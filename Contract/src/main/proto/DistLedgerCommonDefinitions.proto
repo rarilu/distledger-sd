@@ -11,7 +11,6 @@ enum OperationType {
   OP_UNSPECIFIED = 0;
   OP_TRANSFER_TO = 1;
   OP_CREATE_ACCOUNT = 2;
-  OP_DELETE_ACCOUNT = 3;
 }
 
 message Operation {
