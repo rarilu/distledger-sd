@@ -9,7 +9,9 @@ message RegisterRequest {
   string target = 3;
 }
 
-message RegisterResponse {}
+message RegisterResponse {
+  int32 uniqueId = 1;
+}
 
 message DeleteRequest {
   string service = 1;
