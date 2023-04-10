@@ -65,9 +65,6 @@ class GetLedgerStateTest extends BaseTest {
                         .setUserId("Alice")
                         .setDestUserId("broker")
                         .setAmount(100)
-                        .build(),
-                Operation.newBuilder().setType(OperationType.OP_DELETE_ACCOUNT)
-                        .setUserId("Alice")
                         .build()
         ]
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
@@ -97,10 +94,6 @@ class GetLedgerStateTest extends BaseTest {
                 "    userId: \"Alice\"\n" +
                 "    destUserId: \"broker\"\n" +
                 "    amount: 100\n" +
-                "  }\n" +
-                "  ledger {\n" +
-                "    type: OP_DELETE_ACCOUNT\n" +
-                "    userId: \"Alice\"\n" +
                 "  }\n" +
                 "}\n"
                 + "\n> ")

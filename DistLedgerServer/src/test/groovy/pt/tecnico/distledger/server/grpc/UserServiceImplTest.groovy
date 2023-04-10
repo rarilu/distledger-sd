@@ -14,8 +14,6 @@ import pt.tecnico.distledger.server.visitors.OperationExecutor
 import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
-import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountRequest
-import pt.tecnico.distledger.contract.user.UserDistLedger.DeleteAccountResponse
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
@@ -58,55 +56,6 @@ class UserServiceImplTest extends Specification {
         1 * observer.onError({
             it instanceof StatusRuntimeException
                     && it.getMessage() == "ALREADY_EXISTS: Account for user Alice already exists"
-        })
-    }
-
-    def "delete an existing account"() {
-        given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
-
-        when: "the account is deleted"
-        service.deleteAccount(DeleteAccountRequest.newBuilder().setUserId("Alice").build(), observer)
-
-        then: "the correct response is received"
-        1 * observer.onNext(DeleteAccountResponse.getDefaultInstance())
-    }
-
-    def "delete a non-existing account"() {
-        when: "a non-existing is deleted"
-        service.deleteAccount(DeleteAccountRequest.newBuilder().setUserId("void").build(), observer)
-
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "NOT_FOUND: Account void does not exist"
-        })
-    }
-
-    def "delete a protected account"() {
-        when: "a protected account is deleted"
-        service.deleteAccount(DeleteAccountRequest.newBuilder().setUserId("broker").build(), observer)
-
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage() == "INVALID_ARGUMENT: Account for user broker is protected"
-        })
-    }
-
-    def "delete a non-empty account"() {
-        given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
-
-        and: "with a given balance"
-        executor.execute(new TransferOp("broker", "Alice", 100))
-
-        when: "the account is deleted"
-        service.deleteAccount(DeleteAccountRequest.newBuilder().setUserId("Alice").build(), observer)
-
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage() == "FAILED_PRECONDITION: Account for user Alice has 100 left, needs to be empty"
         })
     }
 

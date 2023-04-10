@@ -35,7 +35,7 @@ class ReadOnlyUserServiceImplTest extends Specification {
         0 * observer.onNext(*_)
 
         where:
-        methodName << ["createAccount", "deleteAccount", "transferTo"]
+        methodName << ["createAccount", "transferTo"]
     }
 
     @Unroll

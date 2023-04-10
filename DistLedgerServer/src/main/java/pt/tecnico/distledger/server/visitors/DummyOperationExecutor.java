@@ -1,7 +1,6 @@
 package pt.tecnico.distledger.server.visitors;
 
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
-import pt.tecnico.distledger.server.domain.operation.DeleteOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.grpc.exceptions.UnsupportedOperationException;
 
@@ -11,11 +10,6 @@ import pt.tecnico.distledger.server.grpc.exceptions.UnsupportedOperationExceptio
 public class DummyOperationExecutor implements OperationExecutor {
   @Override
   public void visit(CreateOp op) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void visit(DeleteOp op) {
     throw new UnsupportedOperationException();
   }
 

@@ -3,7 +3,6 @@ package pt.tecnico.distledger.userclient
 class HelpTest extends BaseTest {
     def EXPECTED_HELP_STRING = "Usage:\n" +
         "- createAccount <server> <username>\n" +
-        "- deleteAccount <server> <username>\n" +
         "- balance <server> <username>\n" +
         "- transferTo <server> <username_from> <username_to> <amount>\n" +
         "- exit\n"

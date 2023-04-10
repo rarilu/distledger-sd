@@ -12,7 +12,7 @@ class AdminIT extends BaseIT {
     def "admin checks a non-empty ledger state"() {
         given: "an account with money"
         prepareUser("createAccount A Alice\ntransferTo A broker Alice 1000")
-        prepareUser("transferTo A Alice broker 1000\ndeleteAccount A Alice")
+        prepareUser("transferTo A Alice broker 1000")
 
         when: "the admin checks the ledger state"
         runAdmin("getLedgerState A")
@@ -35,10 +35,6 @@ class AdminIT extends BaseIT {
                 "    userId: \"Alice\"\n" +
                 "    destUserId: \"broker\"\n" +
                 "    amount: 1000\n" +
-                "  }\n" +
-                "  ledger {\n" +
-                "    type: OP_DELETE_ACCOUNT\n" +
-                "    userId: \"Alice\"\n" +
                 "  }\n" +
                 "}\n\n> "
     }

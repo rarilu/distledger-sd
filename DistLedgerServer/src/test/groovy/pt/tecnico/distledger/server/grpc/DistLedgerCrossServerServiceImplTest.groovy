@@ -41,9 +41,6 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
                         .setUserId("broker")
                         .setDestUserId("Alice")
                         .setAmount(100)
-                        .build(),
-                Operation.newBuilder().setType(OperationType.OP_DELETE_ACCOUNT)
-                        .setUserId("Bob")
                         .build()
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
@@ -55,8 +52,9 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         1 * observer.onNext(PropagateStateResponse.getDefaultInstance())
 
         and: "the account balances are correct"
-        state.getAccounts().size() == 2
+        state.getAccounts().size() == 3
         state.getAccountBalance("Alice") == 100
+        state.getAccountBalance("Bob") == 0
         state.getAccountBalance("broker") == 900
     }
 
