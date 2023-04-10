@@ -1,21 +1,28 @@
 syntax = "proto3";
 package pt.tecnico.distledger.contract.user;
 
+import "DistLedgerCommonDefinitions.proto";
+
 // User Interface of the DistLedger Service
 
 message BalanceRequest {
   string userId = 1;
+  VectorClock prevTS = 2;
 }
 
 message BalanceResponse {
   int32 value = 1;
+  VectorClock valueTS = 2;
 }
 
 message CreateAccountRequest {
   string userId = 1;
+  VectorClock prevTS = 2;
 }
 
-message CreateAccountResponse {}
+message CreateAccountResponse {
+  VectorClock valueTS = 1;
+}
 
 message DeleteAccountRequest {
   string userId = 1;
@@ -27,9 +34,12 @@ message TransferToRequest {
   string accountFrom = 1;
   string accountTo = 2;
   int32 amount = 3;
+  VectorClock prevTS = 4;
 }
 
-message TransferToResponse {}
+message TransferToResponse {
+  VectorClock valueTS = 1;
+}
 
 service UserService {
   rpc balance(BalanceRequest) returns (BalanceResponse);

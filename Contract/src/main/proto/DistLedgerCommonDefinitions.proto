@@ -3,6 +3,10 @@ package pt.tecnico.distledger.contract;
 
 // Common definitions of the DistLedger Service contract
 
+message VectorClock {
+  repeated int32 values = 1;
+}
+
 enum OperationType {
   OP_UNSPECIFIED = 0;
   OP_TRANSFER_TO = 1;
@@ -13,11 +17,12 @@ enum OperationType {
 message Operation {
   OperationType type = 1;
   string userId = 2;
-  string destUserId = 3;  //only for transferTo operations
-  int32 amount = 4;  //only for transferTo operations
+  string destUserId = 3;  // only for transferTo operations
+  int32 amount = 4;  // only for transferTo operations
+  VectorClock prevTS = 5; // last TS seen by initiating client
+  VectorClock TS = 6; // unique identifier for this operation
 }
 
 message LedgerState {
   repeated Operation ledger = 1;
 }
-
