@@ -14,4 +14,10 @@ public class ProtoUtils {
         .addAllValues(Arrays.stream(vectorClock.toArray()).boxed().toList())
         .build();
   }
+
+  /** Convert a Proto VectorClock object to a domain entity. */
+  public static VectorClock fromProto(DistLedgerCommonDefinitions.VectorClock vectorClock) {
+    return new VectorClock(
+        vectorClock.getValuesList().stream().mapToInt(Integer::intValue).toArray());
+  }
 }
