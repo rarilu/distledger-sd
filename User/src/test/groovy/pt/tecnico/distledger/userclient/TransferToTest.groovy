@@ -2,6 +2,7 @@ package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
 import org.grpcmock.GrpcMock
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
@@ -55,6 +56,11 @@ class TransferToTest extends BaseTest {
                                 .setAccountFrom("Alice")
                                 .setAccountTo("Bob")
                                 .setAmount(100)
+                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )
@@ -87,6 +93,11 @@ class TransferToTest extends BaseTest {
                                 .setAccountFrom("Alice")
                                 .setAccountTo("Bob")
                                 .setAmount(10000)
+                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )

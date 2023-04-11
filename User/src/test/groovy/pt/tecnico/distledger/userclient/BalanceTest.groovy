@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.VectorClock
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse
@@ -46,6 +47,11 @@ class BalanceTest extends BaseTest {
                         .withRequest(BalanceRequest
                                 .newBuilder()
                                 .setUserId("Alice")
+                                .setPrevTS(VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )
@@ -79,6 +85,11 @@ class BalanceTest extends BaseTest {
                         .withRequest(BalanceRequest
                                 .newBuilder()
                                 .setUserId("Alice")
+                                .setPrevTS(VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )
