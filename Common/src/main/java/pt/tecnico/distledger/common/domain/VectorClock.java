@@ -99,9 +99,8 @@ public final class VectorClock implements Comparable<VectorClock> {
 
   @Override
   public String toString() {
-    return "("
-        + String.join(
-            ", ", this.timeStamps.stream().map(Object::toString).collect(Collectors.toList()))
-        + ")";
+    return this.timeStamps.stream()
+        .map(Object::toString)
+        .collect(Collectors.joining(", ", "(", ")"));
   }
 }
