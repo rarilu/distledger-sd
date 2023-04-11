@@ -12,10 +12,12 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 /** Represents the current state of the server. */
 public class ServerState {
+  private final int id;
   private final List<Operation> ledger = Collections.synchronizedList(new ArrayList<>());
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
 
-  public ServerState() {
+  public ServerState(int id) {
+    this.id = id;
     this.accounts.put("broker", new Account(1000));
   }
 
@@ -38,13 +40,17 @@ public class ServerState {
 
   /** Returns the balance of the account with the given User ID. */
   public int getAccountBalance(String userId) {
-    return Optional.ofNullable(this.accounts.get(userId))
-        .map(Account::getBalance)
+    return Optional.ofNullable(this.accounts.get(userId)).map(Account::getBalance)
         .orElseThrow(() -> new UnknownAccountException(userId));
   }
 
   /** Returns the current list of accounts. */
   public ConcurrentMap<String, Account> getAccounts() {
     return this.accounts;
+  }
+
+  /** Returns the ID of the server. */
+  public int getId() {
+    return this.id;
   }
 }
