@@ -2,7 +2,6 @@ package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
 import java.util.concurrent.ConcurrentMap
-import pt.tecnico.distledger.server.LedgerManager
 import pt.tecnico.distledger.server.domain.Account
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -11,17 +10,15 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
+import pt.tecnico.distledger.server.visitors.OperationExecutor
 
 class TransferOpTest extends Specification {
     def state
-    def ledgerManager
     def executor
 
     def setup() {
         state = new ServerState()
-        ledgerManager = Mock(LedgerManager)
-        executor = new StandardOperationExecutor(state, ledgerManager)
+        executor = new OperationExecutor(state)
     }
 
     def "transfer from broker to a new user"() {
@@ -109,24 +106,6 @@ class TransferOpTest extends Specification {
 
         then: "an exception is thrown"
         thrown(NonPositiveTransferException)
-
-        and: "the accounts have the correct balance"
-        state.getAccounts().get("broker").getBalance() == 1000
-        state.getAccounts().get("Alice").getBalance() == 0
-    }
-
-    def "transfer but fail on addToLedger"() {
-        given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
-
-        and: "a ledger manager that fails on addToLedger"
-        ledgerManager.addToLedger(_) >> { throw new RuntimeException() }
-
-        when: "a transfer is made from the broker to the new user"
-        executor.execute(new TransferOp("broker", "Alice", 100))
-
-        then: "an exception is thrown"
-        thrown(RuntimeException)
 
         and: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 1000

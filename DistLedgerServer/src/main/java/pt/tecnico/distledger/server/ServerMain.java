@@ -6,7 +6,6 @@ import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
@@ -16,14 +15,10 @@ import pt.tecnico.distledger.server.grpc.AdminServiceImpl;
 import pt.tecnico.distledger.server.grpc.CrossServerService;
 import pt.tecnico.distledger.server.grpc.DistLedgerCrossServerServiceImpl;
 import pt.tecnico.distledger.server.grpc.UserServiceImpl;
-import pt.tecnico.distledger.server.visitors.DummyOperationExecutor;
-import pt.tecnico.distledger.server.visitors.OperationExecutor;
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 
 /** Main class for the DistLedger server. */
 public class ServerMain {
   private static final String SERVICE_NAME = "DistLedger";
-  private static final String PRIMARY_QUALIFIER = "A";
 
   /** Main method. */
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -57,24 +52,11 @@ public class ServerMain {
         // Init active flag
         final AtomicBoolean active = new AtomicBoolean(true);
 
-        // Check if the server is a primary server, and init the operation executor accordingly
-        final boolean isPrimary = Objects.equals(qualifier, PRIMARY_QUALIFIER);
-        OperationExecutor executor;
-        if (isPrimary) {
-          // Use a standard operation executor which replicates operations to the other servers
-          final LedgerManager ledgerManager =
-              new ReplicatingLedgerManager(crossServerService, state);
-          executor = new StandardOperationExecutor(state, ledgerManager);
-        } else {
-          // Use a dummy executor which only throws an exception for any operation it receives
-          executor = new DummyOperationExecutor();
-        }
-
         // Init service implementations
         // Currently the cross-server service implementation is not used by the primary server
         // but there is no harm in initializing it anyway - it will be useful in the future
         // and conditionally initializing would disproportionately harm code readability
-        final BindableService userServiceImpl = new UserServiceImpl(state, active, executor);
+        final BindableService userServiceImpl = new UserServiceImpl(state, active);
         final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
         final BindableService crossServerServiceImpl =
             new DistLedgerCrossServerServiceImpl(state, active);
