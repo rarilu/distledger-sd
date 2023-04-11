@@ -64,11 +64,15 @@ class VectorClockTest extends Specification {
 
         when: "they are compared"
         def order = a < b
+        def eOrder = a <= b
         def revOrder = b < a
         def equal = a.equals(b)
 
         then: "A < B"
         order == true
+
+        and: "A <= B"
+        eOrder == true
 
         and: "B > A"
         revOrder == false
