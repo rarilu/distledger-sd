@@ -10,7 +10,7 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-  int32 uniqueId = 1;
+  int32 assignedId = 1; // Unique ID in the service for the registered target
 }
 
 message DeleteRequest {
