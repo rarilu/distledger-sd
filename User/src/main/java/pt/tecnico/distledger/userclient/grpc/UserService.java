@@ -8,7 +8,9 @@ import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse;
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
+import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse;
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
+import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 
 /** Handles User operations, making gRPC requests to the server's User service. */
@@ -28,10 +30,16 @@ public class UserService extends BaseService<UserServiceGrpc.UserServiceBlocking
             .setPrevTS(ProtoUtils.toProto(this.prevTimeStamp))
             .build();
 
-    return this.makeRequestWithRetryInvalidatingStubCache(
-            server, request, UserServiceGrpc.UserServiceBlockingStub::balance, MAX_TRIES)
-        .map(BalanceResponse::getValue)
-        .map(value -> "value: " + value + "\n");
+    Optional<BalanceResponse> response =
+        this.makeRequestWithRetryInvalidatingStubCache(
+            server, request, UserServiceGrpc.UserServiceBlockingStub::balance, MAX_TRIES);
+
+    response
+        .map(BalanceResponse::getValueTS)
+        .map(ProtoUtils::fromProto)
+        .ifPresent(this.prevTimeStamp::merge);
+
+    return response.map(BalanceResponse::getValue).map(value -> "value: " + value + "\n");
   }
 
   /** Handle the Create Account command. */
@@ -42,13 +50,16 @@ public class UserService extends BaseService<UserServiceGrpc.UserServiceBlocking
             .setPrevTS(ProtoUtils.toProto(this.prevTimeStamp))
             .build();
 
-    if (this.makeRequestWithRetryInvalidatingStubCache(
-            server, request, UserServiceGrpc.UserServiceBlockingStub::createAccount, MAX_TRIES)
-        .isPresent()) {
-      return Optional.of("");
-    }
+    Optional<CreateAccountResponse> response =
+        this.makeRequestWithRetryInvalidatingStubCache(
+            server, request, UserServiceGrpc.UserServiceBlockingStub::createAccount, MAX_TRIES);
 
-    return Optional.empty();
+    response
+        .map(CreateAccountResponse::getValueTS)
+        .map(ProtoUtils::fromProto)
+        .ifPresent(this.prevTimeStamp::merge);
+
+    return response.isPresent() ? Optional.of("") : Optional.empty();
   }
 
   /** Handle the Transfer To command. */
@@ -61,12 +72,15 @@ public class UserService extends BaseService<UserServiceGrpc.UserServiceBlocking
             .setPrevTS(ProtoUtils.toProto(this.prevTimeStamp))
             .build();
 
-    if (this.makeRequestWithRetryInvalidatingStubCache(
-            server, request, UserServiceGrpc.UserServiceBlockingStub::transferTo, MAX_TRIES)
-        .isPresent()) {
-      return Optional.of("");
-    }
+    Optional<TransferToResponse> response =
+        this.makeRequestWithRetryInvalidatingStubCache(
+            server, request, UserServiceGrpc.UserServiceBlockingStub::transferTo, MAX_TRIES);
 
-    return Optional.empty();
+    response
+        .map(TransferToResponse::getValueTS)
+        .map(ProtoUtils::fromProto)
+        .ifPresent(this.prevTimeStamp::merge);
+
+    return response.isPresent() ? Optional.of("") : Optional.empty();
   }
 }

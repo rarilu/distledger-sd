@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
-import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.VectorClock
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
@@ -29,7 +29,12 @@ class CreateAccountTest extends BaseTest {
         and: "a mock server that returns an empty response"
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(UserServiceGrpc.getCreateAccountMethod())
-                        .willReturn(GrpcMock.response(CreateAccountResponse.getDefaultInstance())))
+                        .willReturn(GrpcMock.response(CreateAccountResponse.newBuilder()
+                                .setValueTS(VectorClock
+                                        .newBuilder()
+                                        .addAllValues([1, 4])
+                                        .build())
+                                .build())))
 
         when: "the user client is run"
         runMain()
@@ -43,7 +48,7 @@ class CreateAccountTest extends BaseTest {
                         .withRequest(CreateAccountRequest
                                 .newBuilder()
                                 .setUserId("Alice")
-                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                .setPrevTS(VectorClock
                                         .newBuilder()
                                         .addAllValues([])
                                         .build()
@@ -78,7 +83,7 @@ class CreateAccountTest extends BaseTest {
                         .withRequest(CreateAccountRequest
                                 .newBuilder()
                                 .setUserId("Alice")
-                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                .setPrevTS(VectorClock
                                         .newBuilder()
                                         .addAllValues([])
                                         .build()

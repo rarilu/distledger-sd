@@ -29,7 +29,13 @@ class BalanceTest extends BaseTest {
         and: "a mock server that returns a response with a certain balance"
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(UserServiceGrpc.getBalanceMethod())
-                        .willReturn(GrpcMock.response(BalanceResponse.newBuilder().setValue(balance).build())))
+                        .willReturn(GrpcMock.response(BalanceResponse.newBuilder()
+                                .setValue(balance)
+                                .setValueTS(VectorClock
+                                        .newBuilder()
+                                        .addAllValues([3, 1])
+                                        .build())
+                                .build())))
 
         when: "the user client is run"
         runMain()

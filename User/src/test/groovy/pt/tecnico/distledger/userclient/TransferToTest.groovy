@@ -40,7 +40,12 @@ class TransferToTest extends BaseTest {
         and: "a mock server that returns an empty response"
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(UserServiceGrpc.getTransferToMethod())
-                        .willReturn(GrpcMock.response(TransferToResponse.getDefaultInstance())))
+                        .willReturn(GrpcMock.response(TransferToResponse.newBuilder()
+                                .setValueTS(DistLedgerCommonDefinitions.VectorClock
+                                        .newBuilder()
+                                        .addAllValues([2, 2])
+                                        .build())
+                                .build())))
 
         when: "the user client is run"
         runMain()
