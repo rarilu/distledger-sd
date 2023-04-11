@@ -53,7 +53,7 @@ class RegisterAndUnregisterIT extends Specification {
         outBuf.reset()
     }
 
-    def startServer(untilRegister) {
+    def startServer(immediateShutdown) {
         def readServerStdin = new PipedInputStream()
         writeServerStdin = new PipedOutputStream(readServerStdin)
 
@@ -63,13 +63,14 @@ class RegisterAndUnregisterIT extends Specification {
             ServerMain.main(new String[] { port.toString(), "A" })
         }
 
-        // Hacky way to wait for the server to start
-        def serverStartupMsg = "Server started, listening on " + port + "\n"
-        if (untilRegister) {
-            serverStartupMsg += "Press enter to shutdown\n"
+        if (immediateShutdown) {
+            serverThread.join()
+        } else {
+            // Hacky way to wait for the server to start
+            def serverStartupMsg = "Server started, listening on " + port + "\nPress enter to shutdown\n"
+            while (outBuf.size() != serverStartupMsg.length()) {}
+            outBuf.reset()
         }
-        while (outBuf.size() != serverStartupMsg.length()) {}
-        outBuf.reset()
     }
 
     def extractOutput() {
@@ -80,7 +81,7 @@ class RegisterAndUnregisterIT extends Specification {
 
     def "fail to unregister the server"() {
         given: "a server is running"
-        startServer(true)
+        startServer(false)
 
         and: "the naming server is stopped"
         writeNamingServerStdin.write("\n".getBytes())
@@ -96,18 +97,15 @@ class RegisterAndUnregisterIT extends Specification {
         extractOutput() == ""
     }
 
-    def "register and unregister a server"() {
+    def "fail to register the server"() {
         given: "the naming server is stopped"
         writeNamingServerStdin.write("\n".getBytes())
         namingServerThread.join()
 
         when: "a server is started"
-        startServer(false)
+        startServer(true)
 
-        and: "the server is stopped"
-        serverThread.join()
-
-        then: "the server fails to register but closes normally"
+        then: "the server fails to register and closes with an error"
         extractOutput() == ""
     }
 }
