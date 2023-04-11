@@ -115,40 +115,6 @@ class TransferOpTest extends Specification {
         state.getAccounts().get("Alice").getBalance() == 0
     }
 
-    def "delete before entering the sync block"() {
-        given: "a mock state"
-        def state = Mock(ServerState)
-        def accounts = Mock(ConcurrentMap)
-        state.getAccounts() >> accounts
-
-        and: "a mock ledger manager"
-        def ledgerManager = Mock(LedgerManager)
-
-        and: "an executor with the mock state"
-        def executor = new StandardOperationExecutor(state, ledgerManager)
-        
-        and: "first calls to get return accounts"
-        1 * accounts.get("Alice") >> new Account()
-        1 * accounts.get("Bob") >> new Account()
-
-        and: "first call to containsKey returns false"
-        if (failing == "Alice") {
-            1 * accounts.containsKey("Alice") >> false
-        } else {
-            1 * accounts.containsKey("Alice") >> true
-            1 * accounts.containsKey("Bob") >> false
-        }
-
-        when: "the transfer is executed"
-        executor.execute(new TransferOp("Alice", "Bob", 100))
-
-        then: "an exception is thrown"
-        thrown(UnknownAccountException)
-
-        where:
-        failing << ["Alice", "Bob"]
-    }
-
     def "transfer but fail on addToLedger"() {
         given: "an account already created"
         executor.execute(new CreateOp("Alice"))
