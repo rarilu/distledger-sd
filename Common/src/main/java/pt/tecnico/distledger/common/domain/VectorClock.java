@@ -8,6 +8,22 @@ import pt.tecnico.distledger.common.domain.exceptions.ConcurrentVectorClocksExce
 public final class VectorClock implements Comparable<VectorClock> {
   private final ArrayList<Integer> timeStamps = new ArrayList<Integer>();
 
+  /** Creates a new vector clock with all timestamps set to 0. */
+  public VectorClock() {}
+
+  /**
+   * Creates a new vector clock with the given timestamps.
+   *
+   * @param timeStamps Timestamps to initialize the clock with.
+   */
+  VectorClock(int[] timeStamps) {
+    for (int i = 0; i < timeStamps.length; i++) {
+      if (timeStamps[i] > 0) {
+        this.set(i, timeStamps[i]);
+      }
+    }
+  }
+
   /**
    * Increment the timestamp of the given replica.
    *
@@ -65,6 +81,11 @@ public final class VectorClock implements Comparable<VectorClock> {
     }
 
     this.timeStamps.set(replica, ts);
+  }
+
+  /** Converts the vector clock to an array of timestamps. */
+  public int[] toArray() {
+    return this.timeStamps.stream().mapToInt(Integer::intValue).toArray();
   }
 
   @Override
