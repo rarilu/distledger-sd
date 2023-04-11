@@ -16,7 +16,7 @@ public final class VectorClock implements Comparable<VectorClock> {
    *
    * @param timeStamps Timestamps to initialize the clock with.
    */
-  VectorClock(int[] timeStamps) {
+  public VectorClock(int[] timeStamps) {
     for (int i = 0; i < timeStamps.length; i++) {
       if (timeStamps[i] > 0) {
         this.set(i, timeStamps[i]);
