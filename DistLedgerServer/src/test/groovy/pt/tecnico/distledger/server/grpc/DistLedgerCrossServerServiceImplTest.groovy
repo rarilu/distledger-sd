@@ -22,7 +22,7 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
     def observer
 
     def setup() {
-        state = new ServerState()
+        state = new ServerState(0)
         active = new AtomicBoolean(true)
         service = new DistLedgerCrossServerServiceImpl(state, active)
         observer = Mock(StreamObserver)

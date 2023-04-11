@@ -27,7 +27,7 @@ class UserServiceImplTest extends Specification {
     def executor
 
     def setup() {
-        state = new ServerState()
+        state = new ServerState(0)
         active = new AtomicBoolean(true)
         service = new UserServiceImpl(state, active)
         observer = Mock(StreamObserver)

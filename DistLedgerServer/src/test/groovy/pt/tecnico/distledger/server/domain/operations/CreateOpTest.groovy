@@ -12,7 +12,7 @@ class CreateOpTest extends Specification {
     def executor
 
     def setup() {
-        state = new ServerState()
+        state = new ServerState(0)
         executor = new OperationExecutor(state)
     }
 

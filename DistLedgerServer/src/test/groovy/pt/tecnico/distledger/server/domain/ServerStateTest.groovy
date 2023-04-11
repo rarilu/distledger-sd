@@ -5,7 +5,7 @@ import spock.lang.Specification
 class ServerStateTest extends Specification {
     def "state has broker account with 1000"() {
         when: "a new server state is created"
-        def state = new ServerState()
+        def state = new ServerState(0)
 
         then: "exactly one account exists"
         state.getAccounts().size() == 1        
