@@ -33,7 +33,7 @@ class NamingServiceImplTest extends Specification {
                 observer)
 
         then: "the correct response is received"
-        1 * observer.onNext(RegisterResponse.getDefaultInstance())
+        1 * observer.onNext(RegisterResponse.newBuilder().setAssignedId(0).build())
     }
 
     def "register an already registered server"() {
