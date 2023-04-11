@@ -26,7 +26,7 @@ class AdminServiceImplTest extends Specification {
     def observer
 
     def setup() {
-        def state = new ServerState()
+        def state = new ServerState(0)
         executor = new OperationExecutor(state)
         active = new AtomicBoolean(true)
         service = new AdminServiceImpl(state, active)
