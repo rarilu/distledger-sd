@@ -9,15 +9,12 @@ import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateResponse;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
-import pt.tecnico.distledger.server.DirectLedgerManager;
-import pt.tecnico.distledger.server.LedgerManager;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor;
 
 /** Implements the CrossServer service, handling gRPC requests. */
 public class DistLedgerCrossServerServiceImpl
@@ -36,9 +33,7 @@ public class DistLedgerCrossServerServiceImpl
    */
   public DistLedgerCrossServerServiceImpl(ServerState state, AtomicBoolean active) {
     this.active = active;
-
-    final LedgerManager ledgerManager = new DirectLedgerManager(state);
-    this.executor = new StandardOperationExecutor(state, ledgerManager);
+    this.executor = new OperationExecutor(state);
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {

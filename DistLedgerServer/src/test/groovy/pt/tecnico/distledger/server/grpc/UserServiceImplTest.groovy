@@ -5,13 +5,11 @@ import io.grpc.stub.StreamObserver
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import pt.tecnico.distledger.server.DirectLedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
@@ -23,18 +21,17 @@ import spock.lang.Specification
 
 class UserServiceImplTest extends Specification {
     def state
-    def executor
     def active
     def service
     def observer
+    def executor
 
     def setup() {
         state = new ServerState()
-        def ledgerManager = new DirectLedgerManager(state)
-        executor = new StandardOperationExecutor(state, ledgerManager)
         active = new AtomicBoolean(true)
-        service = new UserServiceImpl(state, active, executor)
+        service = new UserServiceImpl(state, active)
         observer = Mock(StreamObserver)
+        executor = new OperationExecutor(state)
     }
 
     def "create account"() {
@@ -187,52 +184,6 @@ class UserServiceImplTest extends Specification {
         then: "method fails with ServerUnavailableException"
         1 * observer.onError({
             it instanceof StatusRuntimeException && it.getMessage() == "UNAVAILABLE: Server is unavailable"
-        })
-
-        where: "method is any void function of UserServiceImpl"
-        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
-    }
-
-    def "catch failed propagations"() {
-        given: "a mocked executor that throws an FailedPropagationException when used"
-        def executor = Mock(OperationExecutor)
-        executor.execute(_) >> { throw new FailedPropagationException("Failed propagation") }
-
-        and: "a service with the mocked state and executor"
-        def service = new UserServiceImpl(state, active, executor)
-
-        when: "a method is called"
-        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
-
-        then: "method fails with RuntimeException"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "ABORTED: Failed propagation"
-        })
-
-        where: "method is any void function of UserServiceImpl not in the ignore list"
-        method << UserServiceImpl.class.getDeclaredMethods().findAll {
-            it.getReturnType() == void.class && ![ "balance" ].contains(it.getName())
-        }
-    }
-
-    def "catch runtime exceptions"() {
-        given: "a state that throws an exception when used"
-        def state = Mock(ServerState)
-        state.getAccountBalance(_) >> { throw new RuntimeException("Unknown error") }
-
-        and: "a mocked executor that throws an exception when used"
-        def executor = Mock(OperationExecutor)
-        executor.execute(_) >> { throw new RuntimeException("Unknown error") }
-
-        and: "a service with the mocked state and executor"
-        def service = new UserServiceImpl(state, active, executor)
-
-        when: "a method is called"
-        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
-
-        then: "method fails with RuntimeException"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
         })
 
         where: "method is any void function of UserServiceImpl"

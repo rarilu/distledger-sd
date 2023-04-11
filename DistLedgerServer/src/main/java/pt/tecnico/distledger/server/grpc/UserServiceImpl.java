@@ -21,7 +21,6 @@ import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
-import pt.tecnico.distledger.server.grpc.exceptions.UnsupportedOperationException;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 /** Implements the User service, handling gRPC requests. */
@@ -39,12 +38,11 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
    *
    * @param state The server state
    * @param active This server's active flag
-   * @param executor The operation executor to use
    */
-  public UserServiceImpl(ServerState state, AtomicBoolean active, OperationExecutor executor) {
+  public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
-    this.executor = executor;
+    this.executor = new OperationExecutor(state);
   }
 
   @Override
@@ -60,10 +58,6 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       this.executor.execute(new CreateOp(request.getUserId()));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (UnsupportedOperationException e) {
-      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (ServerUnavailableException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
@@ -95,10 +89,6 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
           new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
-    } catch (UnsupportedOperationException e) {
-      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.UNIMPLEMENTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(

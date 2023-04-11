@@ -5,11 +5,10 @@ import spock.lang.Specification
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean
-import pt.tecnico.distledger.server.DirectLedgerManager
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.tecnico.distledger.server.visitors.StandardOperationExecutor
+import pt.tecnico.distledger.server.visitors.OperationExecutor
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
@@ -28,8 +27,7 @@ class AdminServiceImplTest extends Specification {
 
     def setup() {
         def state = new ServerState()
-        def ledgerManager = new DirectLedgerManager(state)
-        executor = new StandardOperationExecutor(state, ledgerManager)
+        executor = new OperationExecutor(state)
         active = new AtomicBoolean(true)
         service = new AdminServiceImpl(state, active)
         observer = Mock(StreamObserver)
