@@ -94,16 +94,6 @@ public class StandardOperationExecutor implements OperationExecutor {
     // previous point)
     synchronized (order > 0 ? fromAccount : destAccount) {
       synchronized (order > 0 ? destAccount : fromAccount) {
-        // The accounts may have been deleted in the meantime, so we need to check again, now that
-        // they are locked
-        if (!this.state.getAccounts().containsKey(op.getUserId())) {
-          throw new UnknownAccountException(op.getUserId());
-        }
-
-        if (!this.state.getAccounts().containsKey(op.getDestUserId())) {
-          throw new UnknownAccountException(op.getDestUserId());
-        }
-
         // Check if the account has enough balance
         if (fromAccount.getBalance() < op.getAmount()) {
           throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());

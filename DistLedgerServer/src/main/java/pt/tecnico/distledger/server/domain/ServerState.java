@@ -38,10 +38,6 @@ public class ServerState {
 
   /** Returns the balance of the account with the given User ID. */
   public int getAccountBalance(String userId) {
-    // Safety: if the account is deleted after the .get(), but before the
-    // .getBalance(), there is no
-    // problem because the account will still have the balance before it was removed
-    // from the map
     return Optional.ofNullable(this.accounts.get(userId))
         .map(Account::getBalance)
         .orElseThrow(() -> new UnknownAccountException(userId));
