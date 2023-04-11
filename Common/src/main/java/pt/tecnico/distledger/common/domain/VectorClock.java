@@ -6,11 +6,7 @@ import pt.tecnico.distledger.common.domain.exceptions.ConcurrentVectorClocksExce
 
 /** Vector clock implementation class. */
 public final class VectorClock implements Comparable<VectorClock> {
-  private ArrayList<Integer> timeStamps;
-
-  public VectorClock() {
-    this.timeStamps = new ArrayList<Integer>();
-  }
+  private final ArrayList<Integer> timeStamps = new ArrayList<Integer>();
 
   /**
    * Increment the timestamp of the given replica.
@@ -98,9 +94,7 @@ public final class VectorClock implements Comparable<VectorClock> {
 
   @Override
   public String toString() {
-    return "("
-        + String.join(
-            ", ", this.timeStamps.stream().map(Object::toString).collect(Collectors.toList()))
-        + ")";
+    return "(" + String.join(", ",
+        this.timeStamps.stream().map(Object::toString).collect(Collectors.toList())) + ")";
   }
 }
