@@ -33,8 +33,8 @@ public class NamingService implements AutoCloseable {
     this(WELL_KNOWN_TARGET);
   }
 
-  /** Executes a register request. */
-  public void register(String service, String qualifier, String target) {
+  /** Executes a register request and returns the assigned ID. */
+  public int register(String service, String qualifier, String target) {
     RegisterRequest request =
         RegisterRequest.newBuilder()
             .setService(service)
@@ -44,7 +44,7 @@ public class NamingService implements AutoCloseable {
 
     Logger.debug("Register request: " + request);
 
-    this.stub.register(request);
+    return this.stub.register(request).getAssignedId();
   }
 
   /** Executes a delete request. */
