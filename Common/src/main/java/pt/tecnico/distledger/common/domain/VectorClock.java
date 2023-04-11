@@ -85,16 +85,23 @@ public final class VectorClock implements Comparable<VectorClock> {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof VectorClock) {
-      return this.compareTo((VectorClock) other) == 0;
+    if (other instanceof VectorClock vectorClock) {
+      return this.compareTo(vectorClock) == 0;
     } else {
       return false;
     }
   }
 
   @Override
+  public int hashCode() {
+    return this.timeStamps.hashCode();
+  }
+
+  @Override
   public String toString() {
-    return "(" + String.join(", ",
-        this.timeStamps.stream().map(Object::toString).collect(Collectors.toList())) + ")";
+    return "("
+        + String.join(
+            ", ", this.timeStamps.stream().map(Object::toString).collect(Collectors.toList()))
+        + ")";
   }
 }
