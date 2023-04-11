@@ -43,28 +43,6 @@ public class ServerMain {
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
       // Init the cross server service
       try (final CrossServerService crossServerService = new CrossServerService(namingService)) {
-        // Init server state
-        final ServerState state = new ServerState();
-
-        // Init active flag
-        final AtomicBoolean active = new AtomicBoolean(true);
-
-        // Init service implementations
-        final BindableService userServiceImpl = new UserServiceImpl(state, active);
-        final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
-        final BindableService crossServerServiceImpl =
-            new DistLedgerCrossServerServiceImpl(state, active);
-
-        // Launch server
-        final Server server =
-            ServerBuilder.forPort(port)
-                .addService(userServiceImpl)
-                .addService(adminServiceImpl)
-                .addService(crossServerServiceImpl)
-                .build();
-        server.start();
-        System.out.println("Server started, listening on " + port);
-
         // Register this server on the naming service
         final String target = InetAddress.getLocalHost().getHostAddress() + ":" + port;
         AtomicBoolean registered = new AtomicBoolean(false);
@@ -85,20 +63,44 @@ public class ServerMain {
                 });
 
         try {
+          int assignedId; // Assigned ID by the naming service
+
           try {
             Logger.debug("Registering server at " + target);
-            namingService.register(SERVICE_NAME, qualifier, target);
+            assignedId = namingService.register(SERVICE_NAME, qualifier, target);
             registered.set(true);
             Runtime.getRuntime().addShutdownHook(autoUnregister);
-
-            // Wait for user input to shut down server
-            System.out.println("Press enter to shutdown");
-            System.in.read();
-
           } catch (RuntimeException e) {
-            // If the server fails to register, it immediately shuts down
             Logger.error("Failed to register server: " + e.getMessage());
+            return;
           }
+
+          // Init server state - we need to do this after registering the server so that we can
+          // pass the assigned ID to the server state
+          final ServerState state = new ServerState(assignedId);
+
+          // Init active flag
+          final AtomicBoolean active = new AtomicBoolean(true);
+
+          // Init service implementations
+          final BindableService userServiceImpl = new UserServiceImpl(state, active);
+          final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
+          final BindableService crossServerServiceImpl =
+              new DistLedgerCrossServerServiceImpl(state, active);
+
+          // Launch server
+          final Server server =
+              ServerBuilder.forPort(port)
+                  .addService(userServiceImpl)
+                  .addService(adminServiceImpl)
+                  .addService(crossServerServiceImpl)
+                  .build();
+          server.start();
+          System.out.println("Server started, listening on " + port);
+
+          // Wait for user input to shut down server
+          System.out.println("Press enter to shutdown");
+          System.in.read();
 
           // Wait until server is terminated
           server.shutdown();
