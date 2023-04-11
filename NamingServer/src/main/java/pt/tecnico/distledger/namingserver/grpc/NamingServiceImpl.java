@@ -33,7 +33,9 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
     Logger.debug(request + "\n");
 
     try {
-      int id = this.state.registerServer(request.getService(), request.getQualifier(), request.getTarget());
+      int id =
+          this.state.registerServer(
+              request.getService(), request.getQualifier(), request.getTarget());
       responseObserver.onNext(RegisterResponse.newBuilder().setAssignedId(id).build());
       responseObserver.onCompleted();
     } catch (DuplicateServerEntryException e) {
