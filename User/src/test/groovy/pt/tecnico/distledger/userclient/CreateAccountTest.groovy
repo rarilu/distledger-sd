@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.userclient
 
 import io.grpc.Status
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.user.UserServiceGrpc
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
@@ -42,6 +43,11 @@ class CreateAccountTest extends BaseTest {
                         .withRequest(CreateAccountRequest
                                 .newBuilder()
                                 .setUserId("Alice")
+                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )
@@ -72,6 +78,11 @@ class CreateAccountTest extends BaseTest {
                         .withRequest(CreateAccountRequest
                                 .newBuilder()
                                 .setUserId("Alice")
+                                .setPrevTS(DistLedgerCommonDefinitions.VectorClock
+                                        .newBuilder()
+                                        .addAllValues([])
+                                        .build()
+                                )
                                 .build()),
                 GrpcMock.times(1)
         )
