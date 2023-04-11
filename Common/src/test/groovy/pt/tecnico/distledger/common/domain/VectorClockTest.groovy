@@ -5,12 +5,6 @@ import pt.tecnico.distledger.common.domain.exceptions.ConcurrentVectorClocksExce
 import spock.lang.Specification
 
 class VectorClockTest extends Specification {
-    def setIfNonZero(VectorClock clock, int index, int value) {
-        if (value != 0) {
-            clock.set(index, value)
-        }
-    }
-
     def "increment is done correctly"() {
         given: "a vector clock"
         def clock = new VectorClock()
@@ -23,22 +17,22 @@ class VectorClockTest extends Specification {
         and: "toString is called"
         def string = clock.toString()
 
+        and: "toArray is called"
+        def array = clock.toArray()
+
         then: "the string is correct"
         string == "(1, 0, 2)"
+
+        and: "the array is correct"
+        array == [1, 0, 2]
     }
 
     def "merge is done correctly"() {
         given: "a vector clock A"
-        def a = new VectorClock()
-        setIfNonZero(a, 0, a0)
-        setIfNonZero(a, 1, a1)
-        setIfNonZero(a, 2, a2)
+        def a = new VectorClock([a0, a1, a2] as int[])
 
         and: "a vector clock B"
-        def b = new VectorClock()
-        setIfNonZero(b, 0, b0)
-        setIfNonZero(b, 1, b1)
-        setIfNonZero(b, 2, b2)
+        def b = new VectorClock([b0, b1, b2] as int[])
 
         when: "A is merged with B"
         a.merge(b)
