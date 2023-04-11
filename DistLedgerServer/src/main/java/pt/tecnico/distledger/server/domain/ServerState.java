@@ -40,7 +40,8 @@ public class ServerState {
 
   /** Returns the balance of the account with the given User ID. */
   public int getAccountBalance(String userId) {
-    return Optional.ofNullable(this.accounts.get(userId)).map(Account::getBalance)
+    return Optional.ofNullable(this.accounts.get(userId))
+        .map(Account::getBalance)
         .orElseThrow(() -> new UnknownAccountException(userId));
   }
 
