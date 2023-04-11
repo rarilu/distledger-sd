@@ -83,16 +83,29 @@ class VectorClockTest extends Specification {
         equal == false
     }
 
-    def "A is equal to itself but not equal to null"() {
+    def "A is equal to B but not equal to null"() {
         given: "A = (1)"
         def a = new VectorClock()
         a.increment(0)
 
-        when: "A is compared to itself"
-        def equal = a.equals(a)
+        and: "B = (1)"
+        def b = new VectorClock()
+        b.increment(0)
 
-        then: "A == A"
+        when: "A is compared to B"
+        def equal = a.equals(b)
+
+        and: "A is hashed"
+        def aHash = a.hashCode()
+
+        and: "B is hashed"
+        def bHash = b.hashCode()
+
+        then: "A == B"
         equal == true
+
+        and: "hashes are equal"
+        aHash == bHash
 
         when: "A is compared to null"
         equal = a.equals(null)
