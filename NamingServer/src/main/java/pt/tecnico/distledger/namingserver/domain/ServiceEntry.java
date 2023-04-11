@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
 import pt.tecnico.distledger.namingserver.domain.exceptions.ServerEntryNotFoundException;
 
@@ -14,13 +15,14 @@ public class ServiceEntry {
   private final String name;
   private final ConcurrentMap<String, List<ServerEntry>> servers = new ConcurrentHashMap<>();
   private final Set<String> targets = ConcurrentHashMap.newKeySet();
+  private final AtomicInteger nextId = new AtomicInteger(0);
 
   public ServiceEntry(String name) {
     this.name = name;
   }
 
-  /** Registers a server in the service entry. */
-  public void registerServer(String qualifier, String target) {
+  /** Registers a server in the service entry, and returns the server's id in the service. */
+  public int registerServer(String qualifier, String target) {
     // Add the target to the set of registered targets, and throw an exception if it was already
     // present
     if (!this.targets.add(target)) {
@@ -41,6 +43,9 @@ public class ServiceEntry {
 
           return serverEntries;
         });
+
+    // Return the server's id in the service
+    return this.nextId.getAndIncrement();
   }
 
   /** Deletes a server from the service entry. */
