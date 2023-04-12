@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
 
+import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException
@@ -18,7 +19,7 @@ class CreateOpTest extends Specification {
 
     def "create a new account"() {
         when: "a new account is created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         then: "there are exactly two accounts"
         state.getAccounts().size() == 2
@@ -29,10 +30,10 @@ class CreateOpTest extends Specification {
 
     def "create a duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         when: "an account with the same name is created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         then: "an exception is thrown"
         thrown(AccountAlreadyExistsException)

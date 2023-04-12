@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateResponse;
@@ -38,9 +39,13 @@ public class DistLedgerCrossServerServiceImpl
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
     return switch (operation.getType()) {
-      case OP_CREATE_ACCOUNT -> new CreateOp(operation.getUserId());
+      case OP_CREATE_ACCOUNT -> new CreateOp(
+          operation.getUserId(), ProtoUtils.fromProto(operation.getPrevTS()));
       case OP_TRANSFER_TO -> new TransferOp(
-          operation.getUserId(), operation.getDestUserId(), operation.getAmount());
+          operation.getUserId(),
+          operation.getDestUserId(),
+          operation.getAmount(),
+          ProtoUtils.fromProto(operation.getPrevTS()));
       default -> throw new IllegalArgumentException(PARSE_FAILED);
     };
   }
