@@ -9,6 +9,8 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipRequest;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 
 /** Handles Admin operations, making gRPC requests to the server's Admin service. */
@@ -41,5 +43,13 @@ public class AdminService extends BaseService<AdminServiceGrpc.AdminServiceBlock
     return this.makeRequestWithRetryInvalidatingStubCache(
             server, request, AdminServiceGrpc.AdminServiceBlockingStub::getLedgerState, MAX_TRIES)
         .map(GetLedgerStateResponse::toString);
+  }
+
+  /** Handle the Gossip command. */
+  public Optional<String> gossip(String server) {
+    GossipRequest request = GossipRequest.getDefaultInstance();
+    return this.makeRequestWithRetryInvalidatingStubCache(
+            server, request, AdminServiceGrpc.AdminServiceBlockingStub::gossip, MAX_TRIES)
+        .map(GossipResponse::toString);
   }
 }
