@@ -2,6 +2,7 @@ package pt.tecnico.distledger.namingserver.grpc
 
 import spock.lang.Specification
 
+import java.util.stream.Collectors
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import pt.tecnico.distledger.namingserver.domain.NamingServerState
@@ -108,14 +109,17 @@ class NamingServiceImplTest extends Specification {
 
         then: "the correct response is received"
         1 * observer.onNext({
-            it instanceof LookupResponse && it.getTargetsList() == targetsList
+            it instanceof LookupResponse
+                    && it.getEntriesList().stream().map({ it.getQualifier() }).collect(Collectors.toList()) == qualifiersList
+                    && it.getEntriesList().stream().map({ it.getTarget() }).collect(Collectors.toList()) == targetsList
+                    && it.getEntriesList().stream().map({ it.getId() }).collect(Collectors.toList()) == idsList
         })
 
         where:
-        serviceName  | qualifier | targetsList
-        "DistLedger" | "A"       | ["localhost:2000"]
-        "DistLedger" | "void"    | []
-        "void"       | "A"       | []
+        serviceName  | qualifier | qualifiersList | targetsList        | idsList
+        "DistLedger" | "A"       | ["A"]          | ["localhost:2000"] | [0]
+        "DistLedger" | "void"    | []             | []                 | []
+        "void"       | "A"       | []             | []                 | []           
     }
 
     def "lookup all servers in a service"() {
@@ -130,7 +134,11 @@ class NamingServiceImplTest extends Specification {
         then: "the correct response is received"
         1 * observer.onNext({
             it instanceof LookupResponse
-                    && it.getTargetsList() == ["localhost:2000", "localhost:2001", "localhost:2002"]
+                    && it.getEntriesList() == [
+                        LookupResponse.Entry.newBuilder().setQualifier("A").setTarget("localhost:2000").setId(0).build(),
+                        LookupResponse.Entry.newBuilder().setQualifier("B").setTarget("localhost:2001").setId(1).build(),
+                        LookupResponse.Entry.newBuilder().setQualifier("C").setTarget("localhost:2002").setId(2).build()
+                    ]
         })
     }
 
