@@ -21,7 +21,11 @@ public class ServiceEntry {
     this.name = name;
   }
 
-  /** Registers a server in the service entry, and returns the server's id in the service. */
+  /**
+   * Registers a server in the service entry.
+   *
+   * @return a newly-assigned server ID, within this service.
+   */
   public int registerServer(String qualifier, String target) {
     // Add the target to the set of registered targets, and throw an exception if it was already
     // present
