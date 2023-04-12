@@ -14,6 +14,9 @@ import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
  * Naming Service.
  */
 public class NamingService implements AutoCloseable {
+  /** Represents an entry in the naming service. */
+  public record Entry(String qualifier, String target, int id) {}
+
   /** Target host and port for the well-known naming server. */
   private static final String WELL_KNOWN_TARGET = "localhost:5001";
 
@@ -60,15 +63,17 @@ public class NamingService implements AutoCloseable {
   /**
    * Executes a lookup request, searching by service and qualifier.
    *
-   * @return a list of targets that match the given service and qualifier.
+   * @return a list of entries that match the given service and qualifier.
    */
-  public List<String> lookup(String service, String qualifier) {
+  public List<Entry> lookup(String service, String qualifier) {
     LookupRequest request =
         LookupRequest.newBuilder().setService(service).setQualifier(qualifier).build();
 
     Logger.debug("Lookup request: " + request);
 
-    return this.stub.lookup(request).getTargetsList();
+    return this.stub.lookup(request).getEntriesList().stream()
+        .map(proto -> new Entry(proto.getQualifier(), proto.getTarget(), proto.getId()))
+        .toList();
   }
 
   /**
@@ -76,12 +81,14 @@ public class NamingService implements AutoCloseable {
    *
    * @return a list of targets that match the given service.
    */
-  public List<String> lookup(String service) {
+  public List<Entry> lookup(String service) {
     LookupRequest request = LookupRequest.newBuilder().setService(service).build();
 
     Logger.debug("Lookup request: " + request);
 
-    return this.stub.lookup(request).getTargetsList();
+    return this.stub.lookup(request).getEntriesList().stream()
+        .map(proto -> new Entry(proto.getQualifier(), proto.getTarget(), proto.getId()))
+        .toList();
   }
 
   /** Close channel immediately. */
