@@ -32,7 +32,8 @@ message LookupResponse {
     int32 id = 3;
   }
 
-  repeated Entry entries = 1;
+  reserved 1; // previous version of the protocol used this field
+  repeated Entry entries = 2;
 }
 
 service NamingService {
