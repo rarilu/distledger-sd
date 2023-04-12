@@ -26,6 +26,10 @@ public class ServerState {
 
   /** Register a given operation in the ledger. */
   public void addToLedger(Operation op) {
+    synchronized (this.valueTimestamp) {
+      this.valueTimestamp.merge(op.getPrevTS());
+    }
+
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
