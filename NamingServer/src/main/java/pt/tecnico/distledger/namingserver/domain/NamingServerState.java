@@ -35,14 +35,14 @@ public class NamingServerState {
   }
 
   /** Looks up the server entries for the given service and qualifier. */
-  public List<String> lookup(String service, String qualifier) {
+  public List<ServerEntry> lookup(String service, String qualifier) {
     return Optional.ofNullable(this.services.get(service))
         .map(s -> s.lookup(qualifier))
         .orElse(List.of());
   }
 
   /** Looks up the server entries for the given service. */
-  public List<String> lookup(String service) {
+  public List<ServerEntry> lookup(String service) {
     return Optional.ofNullable(this.services.get(service))
         .map(ServiceEntry::lookup)
         .orElse(List.of());
