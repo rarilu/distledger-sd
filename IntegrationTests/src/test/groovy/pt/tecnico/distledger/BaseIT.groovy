@@ -63,24 +63,24 @@ abstract class BaseIT extends Specification {
         while (outBuf.size() != namingServerStartupMsg.length()) {}
         outBuf.reset()
 
-        // Start the a server and set the input stream
+        // Start the A server and set the input stream
         aServerThread = Thread.start {
             mockStdin.setStream(readAServerStdin)
             ServerMain.main(new String[] { aPort.toString(), "A" })
         }
 
-        // Hacky way to wait for the a server to start
+        // Hacky way to wait for the A server to start
         def aServerStartupMsg = "Server started, listening on " + aPort.toString() + "\nPress enter to shutdown\n"
         while (outBuf.size() != aServerStartupMsg.length()) {}
         outBuf.reset()
 
-        // Start the b server and set the input stream
+        // Start the B server and set the input stream
         bServerThread = Thread.start {
             mockStdin.setStream(readBServerStdin)
             ServerMain.main(new String[] { bPort.toString(), "B" })
         }
 
-        // Hacky way to wait for the b server to start
+        // Hacky way to wait for the B server to start
         def bServerStartupMsg = "Server started, listening on " +
                 bPort.toString() +
                 "\nPress enter to shutdown\n"
