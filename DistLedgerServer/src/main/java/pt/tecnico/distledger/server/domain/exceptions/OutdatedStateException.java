@@ -3,8 +3,8 @@ package pt.tecnico.distledger.server.domain.exceptions;
 import pt.tecnico.distledger.common.domain.VectorClock;
 
 /**
- * Represents an exception thrown when a request has a timestamp that doesn't happen before the
- * value timestamp.
+ * Represents an exception thrown when a request cannot be processed due to a state timestamp being
+ * outdated.
  */
 public class OutdatedStateException extends RuntimeException {
   /** Creates a new exception with the given request and state timestamps. */
