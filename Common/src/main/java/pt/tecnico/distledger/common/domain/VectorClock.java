@@ -2,10 +2,9 @@ package pt.tecnico.distledger.common.domain;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import pt.tecnico.distledger.common.domain.exceptions.ConcurrentVectorClocksException;
 
 /** Vector clock implementation class. */
-public final class VectorClock implements Comparable<VectorClock> {
+public final class VectorClock {
   private final ArrayList<Integer> timeStamps = new ArrayList<Integer>();
 
   /** Creates a new vector clock with all timestamps set to 0. */
@@ -22,6 +21,14 @@ public final class VectorClock implements Comparable<VectorClock> {
         this.set(i, timeStamps[i]);
       }
     }
+  }
+
+  /** Represents the possible results of a comparison between two vector clocks. */
+  public enum Order {
+    BEFORE,
+    EQUAL,
+    AFTER,
+    CONCURRENT
   }
 
   /**
@@ -88,34 +95,34 @@ public final class VectorClock implements Comparable<VectorClock> {
     return this.timeStamps.stream().mapToInt(Integer::intValue).toArray();
   }
 
-  @Override
-  public int compareTo(VectorClock other) {
-    int order = 0;
+  /**
+   * Compares two vector clocks.
+   *
+   * @param c1 First clock.
+   * @param c2 Second clock.
+   * @return the result of the comparison.
+   */
+  public static Order compare(VectorClock c1, VectorClock c2) {
+    Order order = Order.EQUAL;
 
-    for (int i = 0; i < Math.max(this.timeStamps.size(), other.timeStamps.size()); ++i) {
-      int cmp = Integer.signum(Integer.compare(this.get(i), other.get(i)));
-      if (order == 0) {
-        order = cmp;
-      } else if (order != cmp && cmp != 0) {
-        throw new ConcurrentVectorClocksException();
+    for (int i = 0; i < Math.max(c1.timeStamps.size(), c2.timeStamps.size()); ++i) {
+      Order comparison;
+      if (c1.get(i) < c2.get(i)) {
+        comparison = Order.BEFORE;
+      } else if (c1.get(i) > c2.get(i)) {
+        comparison = Order.AFTER;
+      } else {
+        comparison = Order.EQUAL;
+      }
+
+      if (order == Order.EQUAL) {
+        order = comparison;
+      } else if (order != comparison && comparison != Order.EQUAL) {
+        return Order.CONCURRENT;
       }
     }
 
     return order;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other instanceof VectorClock vectorClock) {
-      return this.compareTo(vectorClock) == 0;
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return this.timeStamps.hashCode();
   }
 
   @Override

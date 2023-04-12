@@ -1,7 +1,5 @@
 package pt.tecnico.distledger.common.domain
 
-import pt.tecnico.distledger.common.domain.exceptions.ConcurrentVectorClocksException
-
 import spock.lang.Specification
 
 class VectorClockTest extends Specification {
@@ -62,23 +60,11 @@ class VectorClockTest extends Specification {
         b.increment(1)
         b.increment(2)
 
-        when: "they are compared"
-        def order = a < b
-        def eOrder = a <= b
-        def revOrder = b < a
-        def equal = a.equals(b)
+        when: "A is compared to B"
+        def order = VectorClock.compare(a, b)
 
         then: "A < B"
-        order == true
-
-        and: "A <= B"
-        eOrder == true
-
-        and: "B > A"
-        revOrder == false
-
-        and: "A != B"
-        equal == false
+        order == VectorClock.Order.BEFORE
     }
 
     def "A is equal to B but not equal to null"() {
@@ -91,25 +77,10 @@ class VectorClockTest extends Specification {
         b.increment(0)
 
         when: "A is compared to B"
-        def equal = a.equals(b)
-
-        and: "A is hashed"
-        def aHash = a.hashCode()
-
-        and: "B is hashed"
-        def bHash = b.hashCode()
+        def order = VectorClock.compare(a, b)
 
         then: "A == B"
-        equal == true
-
-        and: "hashes are equal"
-        aHash == bHash
-
-        when: "A is compared to null"
-        equal = a.equals(null)
-
-        then: "A != null"
-        equal == false
+        order == VectorClock.Order.EQUAL
     }
 
     def "A and B are concurrent and happen before C"() {
@@ -127,22 +98,22 @@ class VectorClockTest extends Specification {
         c.increment(1)
         c.increment(3)
 
-        when: "A and C are compared"
-        def aOrder = a < c
+        when: "A is compared to C"
+        def acOrder = VectorClock.compare(a, c)
 
         then: "A < C"
-        aOrder == true
+        acOrder == VectorClock.Order.BEFORE
 
-        when: "B and C are compared"
-        def bOrder = b < c
+        when: "C is compared to B"
+        def cbOrder = VectorClock.compare(c, b)
 
-        then: "B < C"
-        bOrder == true
+        then: "C > B"
+        cbOrder == VectorClock.Order.AFTER
 
-        when: "A and B are compared"
-        a < b
+        when: "A is compared to B"
+        def abOrder = VectorClock.compare(a, b)
 
-        then: "an exception is thrown"
-        thrown ConcurrentVectorClocksException
+        then: "they are concurrent"
+        abOrder == VectorClock.Order.CONCURRENT
     }
 }
