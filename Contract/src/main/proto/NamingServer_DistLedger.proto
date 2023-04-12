@@ -26,7 +26,13 @@ message LookupRequest {
 }
 
 message LookupResponse {
-  repeated string targets = 1;
+  message Entry {
+    string qualifier = 1;
+    string target = 2;
+    int32 id = 3;
+  }
+
+  repeated Entry entries = 1;
 }
 
 service NamingService {
