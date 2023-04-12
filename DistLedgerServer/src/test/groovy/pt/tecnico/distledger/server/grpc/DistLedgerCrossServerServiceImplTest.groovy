@@ -6,6 +6,7 @@ import io.grpc.stub.StreamObserver
 import java.lang.reflect.Modifier
 import java.util.concurrent.atomic.AtomicBoolean
 
+import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
@@ -53,9 +54,9 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
 
         and: "the account balances are correct"
         state.getAccounts().size() == 3
-        state.getAccountBalance("Alice") == 100
-        state.getAccountBalance("Bob") == 0
-        state.getAccountBalance("broker") == 900
+        state.getAccountBalance("Alice", new VectorClock()) == 100
+        state.getAccountBalance("Bob", new VectorClock()) == 0
+        state.getAccountBalance("broker", new VectorClock()) == 900
     }
 
     def "propagate state with invalid operation"() {
