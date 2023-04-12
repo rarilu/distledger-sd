@@ -73,6 +73,7 @@ public class ServiceEntry {
     List<ServerEntry> serverEntries = this.servers.getOrDefault(qualifier, List.of());
 
     // Safety: we need to synchronize on the server entries list since we are iterating over it
+    // It's okay to return the records without cloning them, since they are immutable
     synchronized (serverEntries) {
       return serverEntries.stream().filter(entry -> qualifier.equals(entry.qualifier())).toList();
     }
@@ -83,6 +84,7 @@ public class ServiceEntry {
     List<ServerEntry> entries = new ArrayList<>();
 
     // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
+    // It's okay to return the records without cloning them, since they are immutable
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       // Safety: we need to synchronize on the server entries list since we are iterating over it
       synchronized (serverEntries) {
