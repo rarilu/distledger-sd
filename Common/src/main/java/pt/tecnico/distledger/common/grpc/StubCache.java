@@ -47,18 +47,18 @@ public class StubCache<T> implements AutoCloseable {
     this.cachedStubs.computeIfAbsent(
         qualifier,
         qual -> {
-          List<String> targets = this.namingService.lookup(SERVICE_NAME, qual);
-          if (targets.size() > 1) {
+          List<NamingService.Entry> entries = this.namingService.lookup(SERVICE_NAME, qual);
+          if (entries.size() > 1) {
             throw new DuplicateQualifierException(qual);
           }
 
-          return targets.stream()
+          return entries.stream()
               .findFirst()
               .map(
-                  target -> {
-                    Logger.debug("Connecting to " + target);
+                  entry -> {
+                    Logger.debug("Connecting to " + entry.target());
                     final ManagedChannel channel =
-                        ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+                        ManagedChannelBuilder.forTarget(entry.target()).usePlaintext().build();
                     final T stub = this.stubFactory.apply(channel);
 
                     return new CachedStub<>(channel, stub);
