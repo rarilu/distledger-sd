@@ -9,6 +9,7 @@ public class CommandParser extends BaseCommandParser {
   private static final String CREATE_ACCOUNT = "createAccount";
   private static final String TRANSFER_TO = "transferTo";
   private static final String BALANCE = "balance";
+  private static final String TIMESTAMP = "timestamp";
 
   private final UserService userService;
 
@@ -22,6 +23,7 @@ public class CommandParser extends BaseCommandParser {
       case CREATE_ACCOUNT -> this.createAccount(line);
       case TRANSFER_TO -> this.transferTo(line);
       case BALANCE -> this.balance(line);
+      case TIMESTAMP -> this.handleServiceCallResponse(this.userService::timestamp);
       default -> {
         Logger.debug("Unknown command: " + cmd);
         this.printUsage();
@@ -82,6 +84,7 @@ public class CommandParser extends BaseCommandParser {
             + "- createAccount <server> <username>\n"
             + "- balance <server> <username>\n"
             + "- transferTo <server> <username_from> <username_to> <amount>\n"
+            + "- timestamp\n"
             + "- exit\n");
   }
 }

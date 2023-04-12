@@ -16,6 +16,7 @@ abstract class BaseTest extends Specification {
         "- createAccount <server> <username>\n" +
         "- balance <server> <username>\n" +
         "- transferTo <server> <username_from> <username_to> <amount>\n" +
+        "- timestamp\n" +
         "- exit\n"
 
     def setup() {

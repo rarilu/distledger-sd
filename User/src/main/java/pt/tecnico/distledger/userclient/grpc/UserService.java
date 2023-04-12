@@ -83,4 +83,9 @@ public class UserService extends BaseService<UserServiceGrpc.UserServiceBlocking
 
     return response.isPresent() ? Optional.of("") : Optional.empty();
   }
+
+  /** Handle the Timestamp command. */
+  public Optional<String> timestamp() {
+    return Optional.of("timestamp: " + this.prevTimeStamp.toString() + "\n");
+  }
 }
