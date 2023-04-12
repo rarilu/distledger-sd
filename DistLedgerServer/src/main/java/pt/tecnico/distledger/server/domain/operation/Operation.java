@@ -6,19 +6,19 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 /** Represents a state-modifying operation. */
 public abstract class Operation {
   private final String userId;
-  private final VectorClock prevTS;
+  private final VectorClock prevTimestamp;
 
-  protected Operation(String userId, VectorClock prevTS) {
+  protected Operation(String userId, VectorClock prevTimestamp) {
     this.userId = userId;
-    this.prevTS = prevTS;
+    this.prevTimestamp = prevTimestamp;
   }
 
   public String getUserId() {
     return this.userId;
   }
 
-  public VectorClock getPrevTS() {
-    return this.prevTS;
+  public VectorClock getPrevTimestamp() {
+    return this.prevTimestamp;
   }
 
   public abstract void accept(OperationVisitor visitor);
