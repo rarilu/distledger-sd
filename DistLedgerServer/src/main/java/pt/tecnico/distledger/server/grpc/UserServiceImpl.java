@@ -4,6 +4,7 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse;
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest;
@@ -55,7 +56,8 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.executor.execute(new CreateOp(request.getUserId()));
+      this.executor.execute(
+          new CreateOp(request.getUserId(), ProtoUtils.fromProto(request.getPrevTS())));
       responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
@@ -86,7 +88,11 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
         throw new ServerUnavailableException();
       }
       this.executor.execute(
-          new TransferOp(request.getAccountFrom(), request.getAccountTo(), request.getAmount()));
+          new TransferOp(
+              request.getAccountFrom(),
+              request.getAccountTo(),
+              request.getAmount(),
+              ProtoUtils.fromProto(request.getPrevTS())));
       responseObserver.onNext(TransferToResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {

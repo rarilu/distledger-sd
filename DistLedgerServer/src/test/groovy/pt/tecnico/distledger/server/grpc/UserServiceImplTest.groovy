@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver
 
 import java.util.concurrent.atomic.AtomicBoolean
 
+import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
@@ -44,7 +45,7 @@ class UserServiceImplTest extends Specification {
 
     def "create duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         when: "the account is created again"
         service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
@@ -58,7 +59,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -74,7 +75,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts with insufficient funds"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -109,7 +110,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer non-positive amount"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         when: "transfer non-positive amount"
         service.transferTo(TransferToRequest.newBuilder()
@@ -147,11 +148,11 @@ class UserServiceImplTest extends Specification {
 
     def "get balance for existing account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice"))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
 
         and: "with a given balance"
         if (balance > 0) {
-            executor.execute(new TransferOp("broker", "Alice", balance))
+            executor.execute(new TransferOp("broker", "Alice", balance, new VectorClock()))
         }
 
         when: "get balance for account"

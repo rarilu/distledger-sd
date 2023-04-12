@@ -5,6 +5,7 @@ import spock.lang.Specification
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.atomic.AtomicBoolean
+import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
@@ -93,9 +94,9 @@ class AdminServiceImplTest extends Specification {
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
         and: "a server state with some operations"
-        executor.execute(new CreateOp("Alice"))
-        executor.execute(new TransferOp("broker", "Alice", 100))
-        executor.execute(new TransferOp("Alice", "broker", 100))
+        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", 100, new VectorClock()))
+        executor.execute(new TransferOp("Alice", "broker", 100, new VectorClock()))
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)

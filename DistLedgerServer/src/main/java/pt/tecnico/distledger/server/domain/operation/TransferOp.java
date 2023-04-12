@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.domain.operation;
 
+import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 /** Represents a transfer operation. */
@@ -14,8 +15,8 @@ public class TransferOp extends Operation {
    * @param destUserId the user id of the account to transfer to
    * @param amount the amount to transfer
    */
-  public TransferOp(String fromUserId, String destUserId, int amount) {
-    super(fromUserId);
+  public TransferOp(String fromUserId, String destUserId, int amount, VectorClock prevTS) {
+    super(fromUserId, prevTS);
     this.destUserId = destUserId;
     this.amount = amount;
   }
