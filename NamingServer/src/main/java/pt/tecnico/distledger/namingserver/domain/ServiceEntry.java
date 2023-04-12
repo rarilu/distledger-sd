@@ -80,16 +80,16 @@ public class ServiceEntry {
 
   /** Looks up all servers in the service entry. */
   public List<ServerEntry> lookup() {
-    List<ServerEntry> targets = new ArrayList<>();
+    List<ServerEntry> entries = new ArrayList<>();
 
     // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       // Safety: we need to synchronize on the server entries list since we are iterating over it
       synchronized (serverEntries) {
-        targets.addAll(serverEntries);
+        entries.addAll(serverEntries);
       }
     }
 
-    return targets;
+    return entries;
   }
 }

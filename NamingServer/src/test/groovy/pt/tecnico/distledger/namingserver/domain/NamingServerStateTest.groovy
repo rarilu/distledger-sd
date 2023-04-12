@@ -111,7 +111,9 @@ class NamingServerStateTest extends Specification {
         def distledgerC = namingServerState.lookup("Distledger", "C")
 
         then: "the lookup returns the correct servers"
-        distledgerA == [new ServerEntry("A", "localhost:8000", 0), new ServerEntry("A", "localhost:8001", 1), new ServerEntry("A", "localhost:8002", 2)]
+        distledgerA == [new ServerEntry("A", "localhost:8000", 0),
+                        new ServerEntry("A", "localhost:8001", 1),
+                        new ServerEntry("A", "localhost:8002", 2)]
         other == [new ServerEntry("A", "localhost:8005", 0), new ServerEntry("B", "localhost:8006", 1)]
         none.isEmpty()
         distledgerC.isEmpty()
