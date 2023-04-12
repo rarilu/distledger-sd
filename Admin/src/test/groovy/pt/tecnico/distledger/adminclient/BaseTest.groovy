@@ -8,6 +8,7 @@ import org.grpcmock.GrpcMock
 
 abstract class BaseTest extends Specification {
     def mockServerTarget
+    def mockServerEntry
     def initialStdin
     def initialStdout
     def outBuf
@@ -24,11 +25,12 @@ abstract class BaseTest extends Specification {
         // Port 0 means that the OS will assign a random free port
 
         mockServerTarget = "localhost:" + GrpcMock.getGlobalPort().toString()
+        mockServerEntry = NamingServerDistLedger.LookupResponse.Entry.newBuilder().setQualifier("DistLedger").setTarget(mockServerTarget).setId(0).build()
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(NamingServiceGrpc.getLookupMethod())
                         .willReturn(GrpcMock.response(
                                 NamingServerDistLedger.LookupResponse.newBuilder()
-                                        .addTargets(mockServerTarget)
+                                        .addEntries(mockServerEntry)
                                         .build())))
 
         initialStdin = System.in

@@ -21,13 +21,19 @@ class NamingServiceTest extends Specification {
         GrpcMock.stubFor(
                 GrpcMock.unaryMethod(NamingServiceGrpc.getLookupMethod())
                         .willReturn(GrpcMock.response(LookupResponse.newBuilder()
-                                .addAllTargets(["localhost:5001", "localhost:5002", "localhost:5003"]).build())))
+                                .addAllEntries([
+                                        LookupResponse.Entry.newBuilder().setQualifier("A").setTarget("localhost:5001").setId(0).build(),
+                                        LookupResponse.Entry.newBuilder().setQualifier("B").setTarget("localhost:5002").setId(1).build(),
+                                        LookupResponse.Entry.newBuilder().setQualifier("C").setTarget("localhost:5003").setId(2).build()
+                                        ]).build())))
 
         when: "a lookup of a service is requested"
         def result = service.lookup("DistLedger")
 
         then: "the result is correct"
-        result == ["localhost:5001", "localhost:5002", "localhost:5003"]
+        result == [new NamingService.Entry("A", "localhost:5001", 0),
+                   new NamingService.Entry("B", "localhost:5002", 1),
+                   new NamingService.Entry("C", "localhost:5003", 2)]
 
         and: "the mock server received the correct request, exactly once"
         GrpcMock.verifyThat(
