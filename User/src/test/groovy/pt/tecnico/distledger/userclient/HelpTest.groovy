@@ -5,6 +5,7 @@ class HelpTest extends BaseTest {
         "- createAccount <server> <username>\n" +
         "- balance <server> <username>\n" +
         "- transferTo <server> <username_from> <username_to> <amount>\n" +
+        "- timestamp\n" +
         "- exit\n"
 
     def "help output is correct"() {
