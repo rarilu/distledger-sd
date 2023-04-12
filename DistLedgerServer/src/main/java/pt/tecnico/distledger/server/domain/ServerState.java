@@ -27,7 +27,7 @@ public class ServerState {
   /** Register a given operation in the ledger. */
   public void addToLedger(Operation op) {
     synchronized (this.valueTimestamp) {
-      this.valueTimestamp.merge(op.getPrevTS());
+      this.valueTimestamp.merge(op.getPrevTimestamp());
     }
 
     // Safety: synchronized list, it's okay to add to it without a synchronized
@@ -50,17 +50,17 @@ public class ServerState {
    *
    * <p>Safety: prevTS must not be written to during execution of this method
    */
-  public int getAccountBalance(String userId, VectorClock prevTS) {
+  public int getAccountBalance(String userId, VectorClock prevTimestamp) {
     Optional<Account> account;
 
     synchronized (this.valueTimestamp) {
-      switch (VectorClock.compare(prevTS, this.valueTimestamp)) {
+      switch (VectorClock.compare(prevTimestamp, this.valueTimestamp)) {
         case BEFORE:
         case EQUAL:
           account = Optional.ofNullable(this.accounts.get(userId));
           break;
         default:
-          throw new OutdatedStateException(prevTS, this.valueTimestamp);
+          throw new OutdatedStateException(prevTimestamp, this.valueTimestamp);
       }
     }
 

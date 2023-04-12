@@ -15,8 +15,8 @@ public class TransferOp extends Operation {
    * @param destUserId the user id of the account to transfer to
    * @param amount the amount to transfer
    */
-  public TransferOp(String fromUserId, String destUserId, int amount, VectorClock prevTS) {
-    super(fromUserId, prevTS);
+  public TransferOp(String fromUserId, String destUserId, int amount, VectorClock prevTimestamp) {
+    super(fromUserId, prevTimestamp);
     this.destUserId = destUserId;
     this.amount = amount;
   }
