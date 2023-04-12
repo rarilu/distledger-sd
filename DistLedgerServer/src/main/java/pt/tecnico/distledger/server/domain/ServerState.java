@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import pt.tecnico.distledger.common.domain.VectorClock;
+import pt.tecnico.distledger.server.domain.exceptions.OutdatedStateException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
@@ -15,6 +17,7 @@ public class ServerState {
   private final int id;
   private final List<Operation> ledger = Collections.synchronizedList(new ArrayList<>());
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
+  private final VectorClock valueTimestamp = new VectorClock();
 
   public ServerState(int id) {
     this.id = id;
@@ -38,11 +41,26 @@ public class ServerState {
     }
   }
 
-  /** Returns the balance of the account with the given User ID. */
-  public int getAccountBalance(String userId) {
-    return Optional.ofNullable(this.accounts.get(userId))
-        .map(Account::getBalance)
-        .orElseThrow(() -> new UnknownAccountException(userId));
+  /**
+   * Returns the balance of the account with the given User ID.
+   *
+   * <p>Safety: prevTS must not be written to during execution of this method
+   */
+  public int getAccountBalance(String userId, VectorClock prevTS) {
+    Optional<Account> account;
+
+    synchronized (this.valueTimestamp) {
+      switch (VectorClock.compare(prevTS, this.valueTimestamp)) {
+        case BEFORE:
+        case EQUAL:
+          account = Optional.ofNullable(this.accounts.get(userId));
+          break;
+        default:
+          throw new OutdatedStateException(prevTS, this.valueTimestamp);
+      }
+    }
+
+    return account.map(Account::getBalance).orElseThrow(() -> new UnknownAccountException(userId));
   }
 
   /** Returns the current list of accounts. */

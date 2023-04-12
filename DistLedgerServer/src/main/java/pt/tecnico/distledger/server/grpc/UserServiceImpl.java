@@ -129,7 +129,9 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      final int balance = this.state.getAccountBalance(request.getUserId());
+      final int balance =
+          this.state.getAccountBalance(
+              request.getUserId(), ProtoUtils.fromProto(request.getPrevTS()));
       responseObserver.onNext(BalanceResponse.newBuilder().setValue(balance).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
