@@ -11,8 +11,9 @@ public class NamingServerState {
   private final ConcurrentMap<String, ServiceEntry> services = new ConcurrentHashMap<>();
 
   /**
-   * Registers a new server entry for the given service and target - returns the server's id on the
-   * service.
+   * Registers a new server entry for the given service and target.
+   *
+   * @return a newly-assigned server ID, unique within the given service
    */
   public int registerServer(String service, String qualifier, String target) {
     return this.services
