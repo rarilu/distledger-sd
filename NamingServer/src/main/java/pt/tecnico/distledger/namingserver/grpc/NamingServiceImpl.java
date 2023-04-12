@@ -12,6 +12,7 @@ import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.Regist
 import pt.tecnico.distledger.contract.namingserver.NamingServerDistLedger.RegisterResponse;
 import pt.tecnico.distledger.contract.namingserver.NamingServiceGrpc;
 import pt.tecnico.distledger.namingserver.domain.NamingServerState;
+import pt.tecnico.distledger.namingserver.domain.ServerEntry;
 import pt.tecnico.distledger.namingserver.domain.exceptions.DuplicateServerEntryException;
 import pt.tecnico.distledger.namingserver.domain.exceptions.ServerEntryNotFoundException;
 
@@ -74,14 +75,26 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
 
     try {
       // Lookup the target servers with the requested characteristics.
-      List<String> targets;
+      List<ServerEntry> entries;
       if (request.getQualifier().isEmpty()) {
-        targets = this.state.lookup(request.getService());
+        entries = this.state.lookup(request.getService());
       } else {
-        targets = this.state.lookup(request.getService(), request.getQualifier());
+        entries = this.state.lookup(request.getService(), request.getQualifier());
       }
 
-      responseObserver.onNext(LookupResponse.newBuilder().addAllTargets(targets).build());
+      responseObserver.onNext(
+          LookupResponse.newBuilder()
+              .addAllEntries(
+                  entries.stream()
+                      .map(
+                          entry ->
+                              LookupResponse.Entry.newBuilder()
+                                  .setQualifier(entry.qualifier())
+                                  .setTarget(entry.target())
+                                  .setId(entry.id())
+                                  .build())
+                      .toList())
+              .build());
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
       Logger.debug(LOOKUP_FAILED + e.getMessage());

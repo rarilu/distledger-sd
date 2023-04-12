@@ -33,11 +33,13 @@ public class ServiceEntry {
       throw new DuplicateServerEntryException(this.name, target);
     }
 
+    int id = this.nextId.getAndIncrement();
+
     // Add the server entry to the list of servers for the given qualifier
     this.servers.compute(
         qualifier,
         (k, serverEntries) -> {
-          ServerEntry newEntry = new ServerEntry(k, target);
+          ServerEntry newEntry = new ServerEntry(k, target, id);
 
           if (serverEntries == null) {
             serverEntries = Collections.synchronizedList(new ArrayList<>(List.of(newEntry)));
@@ -48,8 +50,7 @@ public class ServiceEntry {
           return serverEntries;
         });
 
-    // Return the server's id in the service
-    return this.nextId.getAndIncrement();
+    return id;
   }
 
   /** Deletes a server from the service entry. */
@@ -68,27 +69,24 @@ public class ServiceEntry {
   }
 
   /** Looks up servers with the given qualifier in the service entry. */
-  public List<String> lookup(String qualifier) {
+  public List<ServerEntry> lookup(String qualifier) {
     List<ServerEntry> serverEntries = this.servers.getOrDefault(qualifier, List.of());
 
     // Safety: we need to synchronize on the server entries list since we are iterating over it
     synchronized (serverEntries) {
-      return serverEntries.stream()
-          .filter(entry -> qualifier.equals(entry.qualifier()))
-          .map(ServerEntry::target)
-          .toList();
+      return serverEntries.stream().filter(entry -> qualifier.equals(entry.qualifier())).toList();
     }
   }
 
   /** Looks up all servers in the service entry. */
-  public List<String> lookup() {
-    List<String> targets = new ArrayList<>();
+  public List<ServerEntry> lookup() {
+    List<ServerEntry> targets = new ArrayList<>();
 
     // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       // Safety: we need to synchronize on the server entries list since we are iterating over it
       synchronized (serverEntries) {
-        targets.addAll(serverEntries.stream().map(ServerEntry::target).toList());
+        targets.addAll(serverEntries);
       }
     }
 
