@@ -62,7 +62,7 @@ public class DistLedgerCrossServerServiceImpl
           request.getState().getLedgerList().stream().map(this::parseOperation).toList();
 
       // Safety: the operations are executed and stored in the ledger in the same order they were
-      // received. Since the primary server always waits for a response before continuing, we don't
+      // received. Since the a server always waits for a response before continuing, we don't
       // need to worry about concurrent calls to propagateState.
       operations.forEach(op -> op.accept(executor));
 

@@ -10,8 +10,8 @@ import spock.lang.Specification
 import spock.lang.Timeout
 
 abstract class BaseIT extends Specification {
-    def primaryPort = 2001
-    def secondaryPort = 2002
+    def aPort = 2001
+    def bPort = 2002
 
     def initialStdin
     def initialStdout
@@ -19,12 +19,12 @@ abstract class BaseIT extends Specification {
 
     def mockStdin
     def writeNamingServerStdin
-    def writePrimaryServerStdin
-    def writeSecondaryServerStdin
+    def writeAServerStdin
+    def writeBServerStdin
 
     def namingServerThread
-    def primaryServerThread
-    def secondaryServerThread
+    def aServerThread
+    def bServerThread
 
     @Timeout(5)
     def setup() {
@@ -47,10 +47,10 @@ abstract class BaseIT extends Specification {
         // Prepare the server input streams
         def readNamingServerStdin = new PipedInputStream()
         writeNamingServerStdin = new PipedOutputStream(readNamingServerStdin)
-        def readPrimaryServerStdin = new PipedInputStream()
-        writePrimaryServerStdin = new PipedOutputStream(readPrimaryServerStdin)
-        def readSecondaryServerStdin = new PipedInputStream()
-        writeSecondaryServerStdin = new PipedOutputStream(readSecondaryServerStdin)
+        def readAServerStdin = new PipedInputStream()
+        writeAServerStdin = new PipedOutputStream(readAServerStdin)
+        def readBServerStdin = new PipedInputStream()
+        writeBServerStdin = new PipedOutputStream(readBServerStdin)
 
         // Start the naming server and set the input stream
         namingServerThread = Thread.start {
@@ -63,37 +63,37 @@ abstract class BaseIT extends Specification {
         while (outBuf.size() != namingServerStartupMsg.length()) {}
         outBuf.reset()
 
-        // Start the primary server and set the input stream
-        primaryServerThread = Thread.start {
-            mockStdin.setStream(readPrimaryServerStdin)
-            ServerMain.main(new String[] { primaryPort.toString(), "A" })
+        // Start the a server and set the input stream
+        aServerThread = Thread.start {
+            mockStdin.setStream(readAServerStdin)
+            ServerMain.main(new String[] { aPort.toString(), "A" })
         }
 
-        // Hacky way to wait for the primary server to start
-        def primaryServerStartupMsg = "Server started, listening on " + primaryPort.toString() + "\nPress enter to shutdown\n"
-        while (outBuf.size() != primaryServerStartupMsg.length()) {}
+        // Hacky way to wait for the a server to start
+        def aServerStartupMsg = "Server started, listening on " + aPort.toString() + "\nPress enter to shutdown\n"
+        while (outBuf.size() != aServerStartupMsg.length()) {}
         outBuf.reset()
 
-        // Start the secondary server and set the input stream
-        secondaryServerThread = Thread.start {
-            mockStdin.setStream(readSecondaryServerStdin)
-            ServerMain.main(new String[] { secondaryPort.toString(), "B" })
+        // Start the b server and set the input stream
+        bServerThread = Thread.start {
+            mockStdin.setStream(readBServerStdin)
+            ServerMain.main(new String[] { bPort.toString(), "B" })
         }
 
-        // Hacky way to wait for the secondary server to start
-        def secondaryServerStartupMsg = "Server started, listening on " +
-                secondaryPort.toString() +
+        // Hacky way to wait for the b server to start
+        def bServerStartupMsg = "Server started, listening on " +
+                bPort.toString() +
                 "\nPress enter to shutdown\n"
-        while (outBuf.size() != secondaryServerStartupMsg.length()) {}
+        while (outBuf.size() != bServerStartupMsg.length()) {}
         outBuf.reset()
     }
 
     def cleanup() {
         // Send input to the servers to shutdown
-        writePrimaryServerStdin.write("\n".getBytes())
-        writeSecondaryServerStdin.write("\n".getBytes())
-        primaryServerThread.join()
-        secondaryServerThread.join()
+        writeAServerStdin.write("\n".getBytes())
+        writeBServerStdin.write("\n".getBytes())
+        aServerThread.join()
+        bServerThread.join()
 
         // Send input to the naming server to shutdown
         writeNamingServerStdin.write("\n".getBytes())
