@@ -23,7 +23,7 @@ class NamingServiceImplTest extends Specification {
         observer = Mock(StreamObserver)
     }
 
-    def "register a server"() {
+    def "register servers"() {
         when: "a server is registered"
         service.register(RegisterRequest.newBuilder()
                 .setService("DistLedger")
@@ -34,6 +34,17 @@ class NamingServiceImplTest extends Specification {
 
         then: "the correct response is received"
         1 * observer.onNext(RegisterResponse.newBuilder().setAssignedId(0).build())
+
+        when: "another server is registered with the same service"
+        service.register(RegisterRequest.newBuilder()
+                .setService("DistLedger")
+                .setQualifier("B")
+                .setTarget("localhost:2001")
+                .build(),
+                observer)
+
+        then: "the correct response is received"
+        1 * observer.onNext(RegisterResponse.newBuilder().setAssignedId(1).build())
     }
 
     def "register an already registered server"() {
