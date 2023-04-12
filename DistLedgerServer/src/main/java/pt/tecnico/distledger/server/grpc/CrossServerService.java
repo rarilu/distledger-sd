@@ -5,6 +5,7 @@ import pt.tecnico.distledger.common.grpc.BaseService;
 import pt.tecnico.distledger.common.grpc.NamingService;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
+import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 
@@ -36,10 +37,7 @@ public class CrossServerService
               DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceBlockingStub
                   ::propagateState,
               MAX_TRIES)
-          .orElseThrow(
-              () ->
-                  new FailedPropagationException(
-                      "Secondary server is unavailable; only read operations are allowed"));
+          .orElseThrow(ServerUnavailableException::new);
     } catch (RuntimeException e) {
       throw new FailedPropagationException(e);
     }

@@ -42,9 +42,6 @@ public class ServerMain {
     try (final NamingService namingService =
         namingServerTarget.map(NamingService::new).orElseGet(NamingService::new)) {
       // Init the cross server service
-      // Currently the cross-server service is not used by the secondary server but there is no
-      // harm in initializing it anyway - it will be useful in the future and conditionally
-      // initializing would disproportionately harm code readability
       try (final CrossServerService crossServerService = new CrossServerService(namingService)) {
         // Init server state
         final ServerState state = new ServerState();
@@ -53,9 +50,6 @@ public class ServerMain {
         final AtomicBoolean active = new AtomicBoolean(true);
 
         // Init service implementations
-        // Currently the cross-server service implementation is not used by the primary server
-        // but there is no harm in initializing it anyway - it will be useful in the future
-        // and conditionally initializing would disproportionately harm code readability
         final BindableService userServiceImpl = new UserServiceImpl(state, active);
         final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
         final BindableService crossServerServiceImpl =
