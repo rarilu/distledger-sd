@@ -10,6 +10,7 @@ import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
@@ -24,7 +25,7 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 import pt.tecnico.distledger.common.grpc.NamingService
 
 class AdminServiceImplTest extends Specification {
-    def executor
+    def state
     def active
     def namingService
     def crossServerService
@@ -32,8 +33,7 @@ class AdminServiceImplTest extends Specification {
     def observer
 
     def setup() {
-        def state = new ServerState(0)
-        executor = new OperationExecutor(state)
+        state = new ServerState(0)
         active = new AtomicBoolean(true)
 
         namingService = Mock(NamingService)
@@ -89,24 +89,33 @@ class AdminServiceImplTest extends Specification {
         def operations = [
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Alice")
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setStable(true)
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("broker")
                         .setDestUserId("Alice")
                         .setAmount(100)
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setStable(true)
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("Alice")
                         .setDestUserId("broker")
                         .setAmount(100)
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setStable(true)
                         .build(),
         ]
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
         and: "a server state with some operations"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
-        executor.execute(new TransferOp("broker", "Alice", 100, new VectorClock(), new VectorClock()))
-        executor.execute(new TransferOp("Alice", "broker", 100, new VectorClock(), new VectorClock()))
+        state.addToLedger(new CreateOp("Alice", new VectorClock(), new VectorClock()), false)
+        state.addToLedger(new TransferOp("broker", "Alice", 100, new VectorClock(), new VectorClock()), false)
+        state.addToLedger(new TransferOp("Alice", "broker", 100, new VectorClock(), new VectorClock()), false)
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)

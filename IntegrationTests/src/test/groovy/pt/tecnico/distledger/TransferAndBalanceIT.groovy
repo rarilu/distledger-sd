@@ -9,7 +9,13 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker Alice " + amount)
 
         then: "the output is correct"
-        extractOutput() == "> Error: INVALID_ARGUMENT: Transfers with non-positive amount are not allowed\n\n> "
+        extractOutput() == "> OK\n\n> "
+
+        when: "the user checks the balance of the account"
+        runUser("balance A Alice")
+
+        then: "the balance is correct"
+        extractOutput() == "> OK\nvalue: 0\n\n> "
 
         where:
         amount << [0, -1]
@@ -20,7 +26,13 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A Alice broker 1000")
 
         then: "the output is correct"
-        extractOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
+        extractOutput() == "> OK\n\n> "
+
+        when: "the user checks the balance of the broker account"
+        runUser("balance A broker")
+
+        then: "the balance is correct"
+        extractOutput() == "> OK\nvalue: 1000\n\n> "
     }
 
     def "transfer to an unknown account"() {
@@ -28,7 +40,13 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker Alice 1000")
 
         then: "the output is correct"
-        extractOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
+        extractOutput() == "> OK\n\n> "
+
+        when: "the user checks the balance of the broker account"
+        runUser("balance A broker")
+
+        then: "the balance is correct"
+        extractOutput() == "> OK\nvalue: 1000\n\n> "
     }
 
     def "transfer without enough balance"() {
@@ -39,8 +57,13 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A Alice broker 1001")
 
         then: "the output is correct"
-        extractOutput() ==
-                "> Error: FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 1001\n\n> "
+        extractOutput() == "> OK\n\n> "
+
+        when: "the user checks the balance of the account"
+        runUser("balance A Alice")
+
+        then: "the balance is correct"
+        extractOutput() == "> OK\nvalue: 1000\n\n> "
     }
 
     def "transfer to same account"() {
@@ -48,7 +71,13 @@ class TransferAndBalanceIT extends BaseIT {
         runUser("transferTo A broker broker 1000")
 
         then: "the output is correct"
-        extractOutput() == "> Error: INVALID_ARGUMENT: Transfers from an account to itself are not allowed\n\n> "
+        extractOutput() == "> OK\n\n> "
+
+        when: "the user checks the balance of the account"
+        runUser("balance A broker")
+
+        then: "the balance is correct"
+        extractOutput() == "> OK\nvalue: 1000\n\n> "
     }
 
     def "transfer with inactive server"() {
