@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.visitors;
 
+import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType;
@@ -24,6 +25,10 @@ public class LedgerStateGenerator implements OperationVisitor {
         Operation.newBuilder()
             .setType(OperationType.OP_CREATE_ACCOUNT)
             .setUserId(op.getUserId())
+            .setPrevTS(ProtoUtils.toProto(op.getPrevTimeStamp()))
+            .setTS(ProtoUtils.toProto(op.getTimeStamp()))
+            .setStable(op.isStable())
+            .setFailed(op.hasFailed())
             .build());
   }
 
@@ -35,6 +40,10 @@ public class LedgerStateGenerator implements OperationVisitor {
             .setUserId(op.getUserId())
             .setDestUserId(op.getDestUserId())
             .setAmount(op.getAmount())
+            .setPrevTS(ProtoUtils.toProto(op.getPrevTimeStamp()))
+            .setTS(ProtoUtils.toProto(op.getTimeStamp()))
+            .setStable(op.isStable())
+            .setFailed(op.hasFailed())
             .build());
   }
 }
