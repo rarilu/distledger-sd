@@ -28,7 +28,8 @@ public class ServerState {
   public VectorClock addToLedger(Operation op) {
     VectorClock timeStamp;
 
-    // Safety: it's okay do this without locking the ledger since the order in which the clock is merged doesn't matter: the end result is the same
+    // Safety: it's okay do this without locking the ledger since the order in which the clock is
+    // merged doesn't matter: the end result is the same
     synchronized (this.valueTimeStamp) {
       this.valueTimeStamp.merge(op.getPrevTimeStamp());
       timeStamp = new VectorClock(this.valueTimeStamp);
