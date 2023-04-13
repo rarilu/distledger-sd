@@ -66,6 +66,10 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       synchronized (this.lastIndicesGossiped) {
         this.crossServerService.propagateState(
             server -> {
+              if (server.id() == this.state.getId()) {
+                return null;
+              }
+
               LedgerStateGenerator generator = new LedgerStateGenerator();
               this.state
                   .visitLedger(generator, this.lastIndicesGossiped.get(server.id()))
