@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Vector clock implementation class. */
-public final class VectorClock {
+public final class VectorClock implements Cloneable {
   private final ArrayList<Integer> timeStamps = new ArrayList<Integer>();
 
   /** Creates a new vector clock with all timestamps set to 0. */
@@ -22,6 +22,15 @@ public final class VectorClock {
         this.set(i, timeStamps[i]);
       }
     }
+  }
+
+  /**
+   * Creates a new vector clock from a given vector clock.
+   *
+   * @param other Vector clock to copy
+   */
+  public VectorClock(VectorClock other) {
+    this.timeStamps.addAll(other.timeStamps);
   }
 
   /** Represents the possible results of a comparison between two vector clocks. */
