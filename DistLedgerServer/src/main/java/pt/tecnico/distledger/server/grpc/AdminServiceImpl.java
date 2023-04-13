@@ -10,6 +10,8 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipRequest;
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
@@ -17,16 +19,20 @@ import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 /** Implements the Admin service, handling gRPC requests. */
 public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   private static final String ACTIVATE_FAILED = "Activate failed: ";
+  private static final String GOSSIP_FAILED = "Gossip failed: ";
   private static final String DEACTIVATE_FAILED = "Deactivate failed: ";
   private static final String GET_LEDGER_STATE_FAILED = "Get Ledger State failed: ";
 
   private final ServerState state;
   private final AtomicBoolean active;
+  private final CrossServerService crossServerService;
 
   /** Creates a new Admin service. */
-  public AdminServiceImpl(ServerState state, AtomicBoolean active) {
+  public AdminServiceImpl(
+      ServerState state, AtomicBoolean active, CrossServerService crossServerService) {
     this.state = state;
     this.active = active;
+    this.crossServerService = crossServerService;
   }
 
   @Override
@@ -40,6 +46,27 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
       Logger.debug(ACTIVATE_FAILED + e.getMessage());
+      responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void gossip(GossipRequest request, StreamObserver<GossipResponse> responseObserver) {
+    Logger.debug("Received Gossip request:");
+    Logger.debug(request + "\n");
+
+    try {
+      this.crossServerService.propagateState(
+          server -> {
+            LedgerStateGenerator generator = new LedgerStateGenerator();
+            this.state.visitLedger(generator);
+            return generator;
+          });
+
+      responseObserver.onNext(GossipResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (RuntimeException e) {
+      Logger.debug(GOSSIP_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
     }
   }

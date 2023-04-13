@@ -84,7 +84,8 @@ public class ServerMain {
 
           // Init service implementations
           final BindableService userServiceImpl = new UserServiceImpl(state, active);
-          final BindableService adminServiceImpl = new AdminServiceImpl(state, active);
+          final BindableService adminServiceImpl =
+              new AdminServiceImpl(state, active, crossServerService);
           final BindableService crossServerServiceImpl =
               new DistLedgerCrossServerServiceImpl(state, active);
 
