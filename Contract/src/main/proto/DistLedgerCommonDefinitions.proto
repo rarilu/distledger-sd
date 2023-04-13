@@ -20,6 +20,8 @@ message Operation {
   int32 amount = 4;  // only for transferTo operations
   VectorClock prevTS = 5; // last TS seen by initiating client
   VectorClock TS = 6; // unique identifier for this operation
+  bool stable = 7; // whether the operation has been stabilized
+  bool failed = 8; // whether the operation failed executing - an operation may not fail immediately when stabilized
 }
 
 message LedgerState {
