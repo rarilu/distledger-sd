@@ -1,7 +1,6 @@
 package pt.tecnico.distledger.server.visitors;
 
 import pt.tecnico.distledger.common.Logger;
-import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
@@ -20,48 +19,19 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 public class OperationExecutor implements OperationVisitor {
   private final ServerState state;
 
-  // This is used to store the timestamp of when the last operation was added to the ledger, to be
-  // later used
-  // Safety: this is a ThreadLocal so that it isn't changed between when it is executed and when it
-  // is used
-  ThreadLocal<VectorClock> lastTimeStamp = new ThreadLocal<>();
-
   public OperationExecutor(ServerState state) {
     this.state = state;
   }
 
-  public VectorClock execute(Operation op) {
+  public void execute(Operation op) {
     op.accept(this);
-    return this.lastTimeStamp.get();
   }
 
   @Override
   public void visit(CreateOp op) {
-    Account account = new Account();
-
-    // Safety: the account needs to be locked between the .putIfAbsent() and the .addToLedger()
-    // because another operation could be executed between those two calls and access the account,
-    // possibly adding it to the ledger before this operation does, which would cause the ledger to
-    // be incoherent
-    //
-    // Liveness: it's impossible for a deadlock to occur because the account was just created, and
-    // only this thread has access to it
-
-    // noinspection SynchronizationOnLocalVariableOrMethodParameter
-    synchronized (account) {
-      Account old = this.state.getAccounts().putIfAbsent(op.getUserId(), account);
-      if (old != null) {
-        throw new AccountAlreadyExistsException(op.getUserId());
-      }
-
-      try {
-        lastTimeStamp.set(this.state.addToLedger(op));
-      } catch (RuntimeException e) {
-        // If the operation failed to be added to the ledger, we need to remove the account from
-        // the map, otherwise it would be in an inconsistent state
-        this.state.getAccounts().remove(op.getUserId());
-        throw e;
-      }
+    Account old = this.state.getAccounts().putIfAbsent(op.getUserId(), new Account());
+    if (old != null) {
+      throw new AccountAlreadyExistsException(op.getUserId());
     }
 
     Logger.debug("Created account for " + op.getUserId());
@@ -108,11 +78,6 @@ public class OperationExecutor implements OperationVisitor {
         if (fromAccount.getBalance() < op.getAmount()) {
           throw new NotEnoughBalanceException(op.getUserId(), op.getAmount());
         }
-
-        // No need to catch and rethrow the exception here, because we haven't made any changes to
-        // the state yet, so if the operation fails to be added to the ledger, we can just let the
-        // exception bubble up
-        lastTimeStamp.set(this.state.addToLedger(op));
 
         // Transfer the balance
         fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());
