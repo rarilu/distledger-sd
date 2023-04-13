@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.OperationType
@@ -32,16 +33,45 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
     def "propagate state"() {
         given: "a state to propagate"
         def operations = [
-                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
-                        .setUserId("Alice")
-                        .build(),
-                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
-                        .setUserId("Bob")
-                        .build(),
+                // The operation below will only be executed after the account is created
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("broker")
                         .setDestUserId("Alice")
                         .setAmount(100)
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(0).addValues(1).build())
+                        .build(),
+                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
+                        .setUserId("Alice")
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
+                        .build(),
+                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
+                        .setUserId("Bob")
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(2).build())
+                        .build(),
+                // The operation below is a duplicate of the first one
+                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
+                        .setUserId("broker")
+                        .setDestUserId("Alice")
+                        .setAmount(100)
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(0).addValues(1).build())
+                        .build(),
+                // The operation below has a previous timestamp that is not in the ledger, will be pending
+                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
+                        .setUserId("Alice")
+                        .setDestUserId("broker")
+                        .setAmount(50)
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(10).build())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(4).build())
+                        .build(),
+                // The operation below will fail
+                Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
+                        .setUserId("Alice")
+                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
+                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(5).build())
                         .build()
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
@@ -57,6 +87,14 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
         state.getAccountBalance("Alice", new VectorClock()).value() == 100
         state.getAccountBalance("Bob", new VectorClock()).value() == 0
         state.getAccountBalance("broker", new VectorClock()).value() == 900
+
+        and: "the ledger is correct"
+        state.ledger.size() == 5
+        state.ledger[0].isStable() && !state.ledger[0].hasFailed()
+        state.ledger[1].isStable() && !state.ledger[1].hasFailed()
+        state.ledger[2].isStable() && state.ledger[2].hasFailed()
+        state.ledger[3].isStable() && !state.ledger[3].hasFailed()
+        !state.ledger[4].isStable() && !state.ledger[4].hasFailed()
     }
 
     def "propagate state with invalid operation"() {
