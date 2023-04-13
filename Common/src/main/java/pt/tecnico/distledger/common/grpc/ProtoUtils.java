@@ -17,9 +17,7 @@ public class ProtoUtils {
       timeStamps.remove(timeStamps.size() - 1);
     }
 
-    return DistLedgerCommonDefinitions.VectorClock.newBuilder()
-        .addAllValues(vectorClock.toList())
-        .build();
+    return DistLedgerCommonDefinitions.VectorClock.newBuilder().addAllValues(timeStamps).build();
   }
 
   /** Convert a Proto VectorClock object to a domain entity. */
