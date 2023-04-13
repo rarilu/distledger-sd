@@ -47,14 +47,32 @@ public class ServerState {
     return timeStamp;
   }
 
-  /** Visit all operations in the ledger, using the specified visitor. */
-  public void visitLedger(OperationVisitor visitor) {
+  /**
+   * Visit all operations in the ledger, using the specified visitor.
+   *
+   * @param visitor the visitor for each operation to accept.
+   * @param startAtIndex the index to start visiting from.
+   * @return the index of the last operation visited, if any.
+   */
+  public Optional<Integer> visitLedger(OperationVisitor visitor, int startAtIndex) {
     // Safety: prevent operations from being added to the ledger while we are
     // visiting it
     // Operations themselves are read-only, so that's not an issue
     synchronized (this.ledger) {
-      this.ledger.forEach(op -> op.accept(visitor));
+      if (this.ledger.isEmpty()) {
+        return Optional.empty();
+      }
+
+      for (int i = startAtIndex; i < this.ledger.size(); i++) {
+        this.ledger.get(i).accept(visitor);
+      }
+
+      return Optional.of(this.ledger.size() - 1);
     }
+  }
+
+  public void visitLedger(OperationVisitor visitor) {
+    visitLedger(visitor, 0);
   }
 
   /**
