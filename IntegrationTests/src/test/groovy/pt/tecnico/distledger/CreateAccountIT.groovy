@@ -14,7 +14,7 @@ class CreateAccountIT extends BaseIT {
         runUser("createAccount A broker")
 
         then: "the output is correct"
-        extractOutput() == "> Error: ALREADY_EXISTS: Account for user broker already exists\n\n> "
+        extractOutput() == "> OK\n\n> "
     }
 
     def "create account with inactive server, reactivate and try again"() {

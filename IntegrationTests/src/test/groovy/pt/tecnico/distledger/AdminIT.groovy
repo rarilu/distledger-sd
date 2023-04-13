@@ -23,18 +23,37 @@ class AdminIT extends BaseIT {
                 "  ledger {\n" +
                 "    type: OP_CREATE_ACCOUNT\n" +
                 "    userId: \"Alice\"\n" +
+                "    prevTS {\n" +
+                "    }\n" +
+                "    TS {\n" +
+                "      values: 1\n" +
+                "    }\n" +
+                "    stable: true\n" +
                 "  }\n" +
                 "  ledger {\n" +
                 "    type: OP_TRANSFER_TO\n" +
                 "    userId: \"broker\"\n" +
                 "    destUserId: \"Alice\"\n" +
                 "    amount: 1000\n" +
+                "    prevTS {\n" +
+                "      values: 1\n" +
+                "    }\n" +
+                "    TS {\n" +
+                "      values: 2\n" +
+                "    }\n" +
+                "    stable: true\n" +
                 "  }\n" +
                 "  ledger {\n" +
                 "    type: OP_TRANSFER_TO\n" +
                 "    userId: \"Alice\"\n" +
                 "    destUserId: \"broker\"\n" +
                 "    amount: 1000\n" +
+                "    prevTS {\n" +
+                "    }\n" +
+                "    TS {\n" +
+                "      values: 3\n" +
+                "    }\n" +
+                "    stable: true\n" +
                 "  }\n" +
                 "}\n\n> "
     }

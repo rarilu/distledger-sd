@@ -28,6 +28,7 @@ class UserServiceImplTest extends Specification {
     def service
     def observer
     def executor
+    def ts = new VectorClock()
 
     def setup() {
         state = new ServerState(0)
@@ -43,7 +44,10 @@ class UserServiceImplTest extends Specification {
 
         then: "the correct response is received"
         1 * observer.onNext(CreateAccountResponse.newBuilder().setValueTS(
-            DistLedgerCommonDefinitions.VectorClock.getDefaultInstance()).build())
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && !state.ledger[0].hasFailed()
     }
 
     def "create duplicate account"() {
@@ -53,11 +57,12 @@ class UserServiceImplTest extends Specification {
         when: "the account is created again"
         service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
 
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage() == "ALREADY_EXISTS: Account for user Alice already exists"
-        })
+        then: "the correct response is received"
+        1 * observer.onNext(CreateAccountResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && state.ledger[0].hasFailed()
     }
 
     def "transfer between accounts"() {
@@ -74,7 +79,10 @@ class UserServiceImplTest extends Specification {
 
         then: "the correct response is received"
         1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
-            DistLedgerCommonDefinitions.VectorClock.getDefaultInstance()).build())
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && !state.ledger[0].hasFailed()
     }
 
     def "transfer between accounts with insufficient funds"() {
@@ -89,12 +97,16 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage()
-                    == "FAILED_PRECONDITION: Account Alice does not have enough balance to transfer 100"
-        })
+        then: "the correct response is received"
+        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        
+        and: "the transfer was not executed"
+        state.getAccountBalance("Alice", new VectorClock()).value() == 0
+        state.getAccountBalance("broker", new VectorClock()).value() == 1000
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && state.ledger[0].hasFailed()
     }
 
     def "transfer to non-existing account"() {
@@ -106,10 +118,15 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException && it.getMessage() == "NOT_FOUND: Account void does not exist"
-        })
+        then: "the correct response is received"
+        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        
+        and: "the transfer was not executed"
+        state.getAccountBalance("broker", new VectorClock()).value() == 1000
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && state.ledger[0].hasFailed()
     }
 
     def "transfer non-positive amount"() {
@@ -124,11 +141,16 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage() == "INVALID_ARGUMENT: Transfers with non-positive amount are not allowed"
-        })
+        then: "the correct response is received"
+        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        
+        and: "the transfer was not executed"
+        state.getAccountBalance("broker", new VectorClock()).value() == 1000
+        state.getAccountBalance("Alice", new VectorClock()).value() == 0
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && state.ledger[0].hasFailed()
 
         where:
         amount << [0, -100]
@@ -143,11 +165,15 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "an exception is thrown"
-        1 * observer.onError({
-            it instanceof StatusRuntimeException
-                    && it.getMessage() == "INVALID_ARGUMENT: Transfers from an account to itself are not allowed"
-        })
+        then: "the correct response is received"
+        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        
+        and: "the transfer was not executed"
+        state.getAccountBalance("broker", new VectorClock()).value() == 1000
+
+        and: "the ledger is updated correctly"
+        state.ledger[0].isStable() && state.ledger[0].hasFailed()
     }
 
     def "get balance for existing account"() {
