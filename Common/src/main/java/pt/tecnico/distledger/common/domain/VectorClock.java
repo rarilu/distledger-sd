@@ -102,7 +102,7 @@ public final class VectorClock implements Cloneable {
 
   /** Converts the vector clock to a list of timestamps. */
   public List<Integer> toList() {
-    return this.timeStamps;
+    return new ArrayList<>(this.timeStamps);
   }
 
   /**
