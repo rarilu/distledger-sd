@@ -20,7 +20,7 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
 public class OperationExecutor implements OperationVisitor {
   private final ServerState state;
 
-  // This is used to store the timestamp when the last operation was addded to the ledger, to be
+  // This is used to store the timestamp of when the last operation was added to the ledger, to be
   // later used
   // Safety: this is a ThreadLocal so that it isn't changed between when it is executed and when it
   // is used
