@@ -4,6 +4,7 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest;
@@ -26,6 +27,12 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
   private final ServerState state;
   private final AtomicBoolean active;
   private final CrossServerService crossServerService;
+
+  /**
+   * Makes use of the VectorClock structure and functionality to keep track of the ledger indices of
+   * the operations which were sent to each server in the last gossip.
+   */
+  private final VectorClock lastIndicesGossiped = new VectorClock();
 
   /** Creates a new Admin service. */
   public AdminServiceImpl(
@@ -56,12 +63,18 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
     Logger.debug(request + "\n");
 
     try {
-      this.crossServerService.propagateState(
-          server -> {
-            LedgerStateGenerator generator = new LedgerStateGenerator();
-            this.state.visitLedger(generator);
-            return generator;
-          });
+      synchronized (this.lastIndicesGossiped) {
+        this.crossServerService.propagateState(
+            server -> {
+              LedgerStateGenerator generator = new LedgerStateGenerator();
+              this.state
+                  .visitLedger(generator, this.lastIndicesGossiped.get(server.id()))
+                  .ifPresent(
+                      lastIndexVisited ->
+                          this.lastIndicesGossiped.set(server.id(), lastIndexVisited));
+              return generator;
+            });
+      }
 
       responseObserver.onNext(GossipResponse.getDefaultInstance());
       responseObserver.onCompleted();
