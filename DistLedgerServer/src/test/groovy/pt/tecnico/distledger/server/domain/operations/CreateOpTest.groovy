@@ -11,6 +11,7 @@ import pt.tecnico.distledger.server.visitors.OperationExecutor
 class CreateOpTest extends Specification {
     def state
     def executor
+    def ts = new VectorClock()
 
     def setup() {
         state = new ServerState(0)
@@ -19,7 +20,7 @@ class CreateOpTest extends Specification {
 
     def "create a new account"() {
         when: "a new account is created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         then: "there are exactly two accounts"
         state.getAccounts().size() == 2
@@ -30,10 +31,10 @@ class CreateOpTest extends Specification {
 
     def "create a duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "an account with the same name is created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         then: "an exception is thrown"
         thrown(AccountAlreadyExistsException)

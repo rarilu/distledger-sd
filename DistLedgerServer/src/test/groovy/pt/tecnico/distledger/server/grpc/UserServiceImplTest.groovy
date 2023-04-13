@@ -48,7 +48,7 @@ class UserServiceImplTest extends Specification {
 
     def "create duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
 
         when: "the account is created again"
         service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
@@ -62,7 +62,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -79,7 +79,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts with insufficient funds"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -114,7 +114,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer non-positive amount"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
 
         when: "transfer non-positive amount"
         service.transferTo(TransferToRequest.newBuilder()
@@ -152,11 +152,11 @@ class UserServiceImplTest extends Specification {
 
     def "get balance for existing account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
 
         and: "with a given balance"
         if (balance > 0) {
-            executor.execute(new TransferOp("broker", "Alice", balance, new VectorClock()))
+            executor.execute(new TransferOp("broker", "Alice", balance, new VectorClock(), new VectorClock()))
         }
 
         when: "get balance for account"

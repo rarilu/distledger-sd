@@ -16,6 +16,7 @@ import pt.tecnico.distledger.server.visitors.OperationExecutor
 class TransferOpTest extends Specification {
     def state
     def executor
+    def ts = new VectorClock()
 
     def setup() {
         state = new ServerState(0)
@@ -24,10 +25,10 @@ class TransferOpTest extends Specification {
 
     def "transfer from broker to a new user"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "a transfer is made from the broker to the new user"
-        executor.execute(new TransferOp("broker", "Alice", 100, new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", 100, ts, ts))
 
         then: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 900
@@ -36,10 +37,10 @@ class TransferOpTest extends Specification {
 
     def "transfer all of the balance to a new user"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "a transfer is made from the broker to the new user"
-        executor.execute(new TransferOp("broker", "Alice", 1000, new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", 1000, ts, ts))
 
         then: "the accounts have the correct balance"
         state.getAccounts().get("broker").getBalance() == 0
@@ -48,10 +49,10 @@ class TransferOpTest extends Specification {
 
     def "transfer from non-existing account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "a transfer is made from a non-existing account"
-        executor.execute(new TransferOp("void", "Alice", 100, new VectorClock()))
+        executor.execute(new TransferOp("void", "Alice", 100, ts, ts))
 
         then: "an exception is thrown"
         thrown(UnknownAccountException)
@@ -63,7 +64,7 @@ class TransferOpTest extends Specification {
 
     def "transfer to non-existing account"() {
         when: "a transfer is made to a non-existing account"
-        executor.execute(new TransferOp("broker", "void", 100, new VectorClock()))
+        executor.execute(new TransferOp("broker", "void", 100, ts, ts))
 
         then: "an exception is thrown"
         thrown(UnknownAccountException)
@@ -74,10 +75,10 @@ class TransferOpTest extends Specification {
 
     def "transfer without enough balance"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "a too large transfer is made from the broker to the new user"
-        executor.execute(new TransferOp("broker", "Alice", 1001, new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", 1001, ts, ts))
 
         then: "an exception is thrown"
         thrown(NotEnoughBalanceException)
@@ -89,7 +90,7 @@ class TransferOpTest extends Specification {
 
     def "transfer from account to itself"() {
         when: "a transfer is made from the broker to itself"
-        executor.execute(new TransferOp("broker", "broker", 100, new VectorClock()))
+        executor.execute(new TransferOp("broker", "broker", 100, ts, ts))
 
         then: "an exception is thrown"
         thrown(NopTransferException)
@@ -100,10 +101,10 @@ class TransferOpTest extends Specification {
 
     def "transfer non-positive amount"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
+        executor.execute(new CreateOp("Alice", ts, ts))
 
         when: "a transfer is made with a non-positive amount"
-        executor.execute(new TransferOp("broker", "Alice", -100, new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", -100, ts, ts))
 
         then: "an exception is thrown"
         thrown(NonPositiveTransferException)

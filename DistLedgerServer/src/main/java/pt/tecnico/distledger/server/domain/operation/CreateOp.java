@@ -5,8 +5,8 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 /** Represents an account creation operation. */
 public class CreateOp extends Operation {
-  public CreateOp(String userId, VectorClock prevTimeStamp) {
-    super(userId, prevTimeStamp);
+  public CreateOp(String userId, VectorClock prevTimeStamp, VectorClock timeStamp) {
+    super(userId, prevTimeStamp, timeStamp);
   }
 
   @Override
