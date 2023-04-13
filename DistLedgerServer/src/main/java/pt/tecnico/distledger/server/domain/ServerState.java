@@ -74,11 +74,14 @@ public class ServerState {
       op.setStable();
       this.execute(op);
 
-      // Add it to the ledger, before the first unstable operation
-      int index = this.firstUnstable.getAndIncrement();
-
       // Safety: the ledger must be locked to avoid concurrent modifications
+      // If the firstUnstable index were to be incremented outside of the synchronized block,
+      // it would be possible for another thread to add an operation to the ledger and it would
+      // be within the slice considered stable, which could cause some unexpected issues.
       synchronized (this.ledger) {
+        // Add it to the ledger, before the first unstable operation
+        int index = this.firstUnstable.getAndIncrement();
+
         if (index < this.ledger.size()) {
           // Swap the operation with the first unstable operation, if it's not already there
           this.ledger.add(this.ledger.get(index));
