@@ -30,7 +30,8 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
 
   /**
    * Makes use of the VectorClock structure and functionality to keep track of the ledger indices of
-   * the operations which were sent to each server in the last gossip.
+   * the stable operations which were sent to each server in the last gossip. Unstable operations
+   * are not tracked and will always be sent in each gossip.
    */
   private final VectorClock lastIndicesGossiped = new VectorClock();
 
