@@ -193,15 +193,22 @@ public class ServerState {
     Optional<Account> account;
     VectorClock timeStamp;
 
-    synchronized (this.valueTimeStamp) {
-      switch (VectorClock.compare(prevTimeStamp, this.valueTimeStamp)) {
-        case BEFORE:
-        case EQUAL:
+    while (true) {
+      synchronized (this.valueTimeStamp) {
+        VectorClock.Order order = VectorClock.compare(prevTimeStamp, this.valueTimeStamp);
+
+        if (order == Order.BEFORE || order == Order.EQUAL) {
           account = Optional.ofNullable(this.accounts.get(userId));
           timeStamp = new VectorClock(this.valueTimeStamp);
           break;
-        default:
-          throw new OutdatedStateException(prevTimeStamp, this.valueTimeStamp);
+        }
+
+        try {
+          this.valueTimeStamp.wait();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new OutdatedStateException(prevTimeStamp);
+        }
       }
     }
 
@@ -234,6 +241,7 @@ public class ServerState {
     // Merge the operation's timestamp with the current value timestamp
     synchronized (this.valueTimeStamp) {
       this.valueTimeStamp.merge(op.getTimeStamp());
+      this.valueTimeStamp.notifyAll();
     }
   }
 
