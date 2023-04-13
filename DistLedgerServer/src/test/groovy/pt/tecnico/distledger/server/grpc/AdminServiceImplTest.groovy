@@ -17,12 +17,17 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipRequest
+import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipResponse
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
+import pt.tecnico.distledger.common.grpc.NamingService
 
 class AdminServiceImplTest extends Specification {
     def executor
     def active
+    def namingService
+    def crossServerService
     def service
     def observer
 
@@ -30,7 +35,12 @@ class AdminServiceImplTest extends Specification {
         def state = new ServerState(0)
         executor = new OperationExecutor(state)
         active = new AtomicBoolean(true)
-        service = new AdminServiceImpl(state, active)
+
+        namingService = Mock(NamingService)
+        namingService.lookup(*_) >> []
+
+        crossServerService = new CrossServerService(namingService)
+        service = new AdminServiceImpl(state, active, crossServerService)
         observer = Mock(StreamObserver)
     }
 
