@@ -72,7 +72,7 @@ public class ServerState {
   }
 
   public void visitLedger(OperationVisitor visitor) {
-    visitLedger(visitor, 0);
+    this.visitLedger(visitor, 0);
   }
 
   /**
