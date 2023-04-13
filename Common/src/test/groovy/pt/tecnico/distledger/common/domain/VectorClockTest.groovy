@@ -2,6 +2,8 @@ package pt.tecnico.distledger.common.domain
 
 import spock.lang.Specification
 
+import java.util.List
+
 class VectorClockTest extends Specification {
     def "increment is done correctly"() {
         given: "a vector clock"
@@ -15,14 +17,14 @@ class VectorClockTest extends Specification {
         and: "toString is called"
         def string = clock.toString()
 
-        and: "toArray is called"
-        def array = clock.toArray()
+        and: "toList is called"
+        def list = clock.toList()
 
         then: "the string is correct"
         string == "(1, 0, 2)"
 
         and: "the array is correct"
-        array == [1, 0, 2]
+        list == List.of(1, 0, 2)
     }
 
     def "merge is done correctly"() {
