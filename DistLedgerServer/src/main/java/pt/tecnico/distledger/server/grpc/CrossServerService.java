@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.grpc;
 
+import java.util.Optional;
 import java.util.function.Function;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.grpc.BaseService;
@@ -51,14 +52,16 @@ public class CrossServerService
    *
    * @param generatorFactory a function that returns a {@link LedgerStateGenerator} for a given
    *     server entry. This can be used for the caller to control what operations the generator will
-   *     visit, and, thus, what state will be propagated to each server.
+   *     visit, and, thus, what state will be propagated to each server. If {@code null} is
+   *     returned, no propagation is attempted.
    * @throws io.grpc.StatusRuntimeException if a Naming Service lookup operation fails.
    */
   public void propagateState(Function<NamingService.Entry, LedgerStateGenerator> generatorFactory) {
     this.stubCache.forEachServerInService(
         entry -> {
           try {
-            this.propagateStateToServer(entry.qualifier(), generatorFactory.apply(entry));
+            Optional.ofNullable(generatorFactory.apply(entry))
+                .ifPresent(generator -> this.propagateStateToServer(entry.qualifier(), generator));
           } catch (FailedPropagationException e) {
             Logger.error(
                 "Failed to propagate state to server " + entry.qualifier() + ": " + e.getMessage());
