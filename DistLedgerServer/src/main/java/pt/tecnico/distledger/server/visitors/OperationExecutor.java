@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.server.visitors;
 
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
@@ -18,13 +19,15 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
  */
 public class OperationExecutor implements OperationVisitor {
   private final ServerState state;
+  ThreadLocal<VectorClock> lastTimestamp = new ThreadLocal<>();
 
   public OperationExecutor(ServerState state) {
     this.state = state;
   }
 
-  public void execute(Operation op) {
+  public VectorClock execute(Operation op) {
     op.accept(this);
+    return this.lastTimestamp.get();
   }
 
   @Override
@@ -47,7 +50,7 @@ public class OperationExecutor implements OperationVisitor {
       }
 
       try {
-        this.state.addToLedger(op);
+        lastTimestamp.set(this.state.addToLedger(op));
       } catch (RuntimeException e) {
         // If the operation failed to be added to the ledger, we need to remove the account from
         // the map, otherwise it would be in an inconsistent state
@@ -104,7 +107,7 @@ public class OperationExecutor implements OperationVisitor {
         // No need to catch and rethrow the exception here, because we haven't made any changes to
         // the state yet, so if the operation fails to be added to the ledger, we can just let the
         // exception bubble up
-        this.state.addToLedger(op);
+        lastTimestamp.set(this.state.addToLedger(op));
 
         // Transfer the balance
         fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());

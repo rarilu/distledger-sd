@@ -54,9 +54,9 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
 
         and: "the account balances are correct"
         state.getAccounts().size() == 3
-        state.getAccountBalance("Alice", new VectorClock()) == 100
-        state.getAccountBalance("Bob", new VectorClock()) == 0
-        state.getAccountBalance("broker", new VectorClock()) == 900
+        state.getAccountBalance("Alice", new VectorClock()).value() == 100
+        state.getAccountBalance("Bob", new VectorClock()).value() == 0
+        state.getAccountBalance("broker", new VectorClock()).value() == 900
     }
 
     def "propagate state with invalid operation"() {

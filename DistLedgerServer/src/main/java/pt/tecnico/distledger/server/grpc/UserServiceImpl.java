@@ -4,6 +4,7 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.BalanceResponse;
@@ -13,6 +14,7 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest;
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.domain.Stamped;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
@@ -56,9 +58,13 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.executor.execute(
-          new CreateOp(request.getUserId(), ProtoUtils.fromProto(request.getPrevTS())));
-      responseObserver.onNext(CreateAccountResponse.getDefaultInstance());
+      VectorClock valueTimestamp =
+          this.executor.execute(
+              new CreateOp(request.getUserId(), ProtoUtils.fromProto(request.getPrevTS())));
+      responseObserver.onNext(
+          CreateAccountResponse.newBuilder()
+              .setValueTS(ProtoUtils.toProto(valueTimestamp))
+              .build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
@@ -87,13 +93,15 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      this.executor.execute(
-          new TransferOp(
-              request.getAccountFrom(),
-              request.getAccountTo(),
-              request.getAmount(),
-              ProtoUtils.fromProto(request.getPrevTS())));
-      responseObserver.onNext(TransferToResponse.getDefaultInstance());
+      VectorClock valueTimestamp =
+          this.executor.execute(
+              new TransferOp(
+                  request.getAccountFrom(),
+                  request.getAccountTo(),
+                  request.getAmount(),
+                  ProtoUtils.fromProto(request.getPrevTS())));
+      responseObserver.onNext(
+          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(valueTimestamp)).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
@@ -129,10 +137,14 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      final int balance =
+      final Stamped<Integer> balance =
           this.state.getAccountBalance(
               request.getUserId(), ProtoUtils.fromProto(request.getPrevTS()));
-      responseObserver.onNext(BalanceResponse.newBuilder().setValue(balance).build());
+      responseObserver.onNext(
+          BalanceResponse.newBuilder()
+              .setValue(balance.value())
+              .setValueTS(ProtoUtils.toProto(balance.timeStamp()))
+              .build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(BALANCE_FAILED + e.getMessage());

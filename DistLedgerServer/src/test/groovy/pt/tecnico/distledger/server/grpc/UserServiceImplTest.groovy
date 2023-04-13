@@ -11,6 +11,8 @@ import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor
+
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountRequest
 import pt.tecnico.distledger.contract.user.UserDistLedger.CreateAccountResponse
 import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToRequest
@@ -40,7 +42,8 @@ class UserServiceImplTest extends Specification {
         service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
 
         then: "the correct response is received"
-        1 * observer.onNext(CreateAccountResponse.getDefaultInstance())
+        1 * observer.onNext(CreateAccountResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.getDefaultInstance()).build())
     }
 
     def "create duplicate account"() {
@@ -70,7 +73,8 @@ class UserServiceImplTest extends Specification {
                 observer)
 
         then: "the correct response is received"
-        1 * observer.onNext(TransferToResponse.getDefaultInstance())
+        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.getDefaultInstance()).build())
     }
 
     def "transfer between accounts with insufficient funds"() {
@@ -159,7 +163,8 @@ class UserServiceImplTest extends Specification {
         service.balance(BalanceRequest.newBuilder().setUserId("Alice").build(), observer)
 
         then: "the correct response is received"
-        1 * observer.onNext(BalanceResponse.newBuilder().setValue(balance).build())
+        1 * observer.onNext(BalanceResponse.newBuilder().setValue(balance).setValueTS(
+            DistLedgerCommonDefinitions.VectorClock.getDefaultInstance()).build())
 
         where:
         balance << [0, 100]

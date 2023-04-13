@@ -25,14 +25,19 @@ public class ServerState {
   }
 
   /** Register a given operation in the ledger. */
-  public void addToLedger(Operation op) {
+  public VectorClock addToLedger(Operation op) {
+    VectorClock timestamp;
+
     synchronized (this.valueTimestamp) {
       this.valueTimestamp.merge(op.getPrevTimestamp());
+      timestamp = new VectorClock(this.valueTimestamp);
+      timestamp.mergeSingle(op.getPrevTimestamp(), this.id);
     }
 
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
+    return timestamp;
   }
 
   /** Visit all operations in the ledger, using the specified visitor. */
@@ -50,21 +55,27 @@ public class ServerState {
    *
    * <p>Safety: prevTS must not be written to during execution of this method
    */
-  public int getAccountBalance(String userId, VectorClock prevTimestamp) {
+  public Stamped<Integer> getAccountBalance(String userId, VectorClock prevTimestamp) {
     Optional<Account> account;
+    VectorClock timestamp;
 
     synchronized (this.valueTimestamp) {
       switch (VectorClock.compare(prevTimestamp, this.valueTimestamp)) {
         case BEFORE:
         case EQUAL:
           account = Optional.ofNullable(this.accounts.get(userId));
+          timestamp = new VectorClock(this.valueTimestamp);
           break;
         default:
           throw new OutdatedStateException(prevTimestamp, this.valueTimestamp);
       }
     }
 
-    return account.map(Account::getBalance).orElseThrow(() -> new UnknownAccountException(userId));
+    if (account.isPresent()) {
+      return new Stamped<>(account.get().getBalance(), timestamp);
+    } else {
+      throw new UnknownAccountException(userId);
+    }
   }
 
   /** Returns the current list of accounts. */
