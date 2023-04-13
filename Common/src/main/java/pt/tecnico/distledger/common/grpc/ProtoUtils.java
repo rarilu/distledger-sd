@@ -1,6 +1,5 @@
 package pt.tecnico.distledger.common.grpc;
 
-import java.util.Arrays;
 import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
 
@@ -11,7 +10,7 @@ public class ProtoUtils {
   /** Convert a VectorClock domain entity to a Proto object. */
   public static DistLedgerCommonDefinitions.VectorClock toProto(VectorClock vectorClock) {
     return DistLedgerCommonDefinitions.VectorClock.newBuilder()
-        .addAllValues(Arrays.stream(vectorClock.toArray()).boxed().toList())
+        .addAllValues(vectorClock.toList())
         .build();
   }
 

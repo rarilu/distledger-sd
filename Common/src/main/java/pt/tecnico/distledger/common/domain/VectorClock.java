@@ -1,6 +1,7 @@
 package pt.tecnico.distledger.common.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /** Vector clock implementation class. */
@@ -90,9 +91,9 @@ public final class VectorClock {
     this.timeStamps.set(replica, ts);
   }
 
-  /** Converts the vector clock to an array of timestamps. */
-  public int[] toArray() {
-    return this.timeStamps.stream().mapToInt(Integer::intValue).toArray();
+  /** Converts the vector clock to a list of timestamps. */
+  public List<Integer> toList() {
+    return this.timeStamps;
   }
 
   /**
