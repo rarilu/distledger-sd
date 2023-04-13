@@ -145,7 +145,7 @@ public class ServerState {
    *
    * @param visitor the visitor for each operation to accept.
    * @param startAtIndex the index to start visiting from.
-   * @return the index of the last operation visited, if any.
+   * @return the index of the last stable operation visited, if any.
    */
   public Optional<Integer> visitLedger(OperationVisitor visitor, int startAtIndex) {
     // Safety: prevent operations from being added to the ledger while we are
@@ -153,15 +153,28 @@ public class ServerState {
     // Operations themselves are thread-safe, so we don't need to lock them: the only mutable
     // operation state is atomic.
     synchronized (this.ledger) {
-      if (this.ledger.isEmpty()) {
-        return Optional.empty();
-      }
+      Optional<Integer> lastStable = Optional.empty();
+      boolean foundUnstable = false;
 
       for (int i = startAtIndex; i < this.ledger.size(); i++) {
-        this.ledger.get(i).accept(visitor);
+        // Safety: no need to lock the ledger, its a synchronized list
+        Operation op = this.ledger.get(i);
+
+        // If this operation is stable, mark it as the last stable operation
+        if (op.isStable()) {
+          // As soon as we find an unstable operation, we should not count any more stable
+          // operations after it - those operations are still being ordered.
+          if (!foundUnstable) {
+            lastStable = Optional.of(i);
+          }
+        } else {
+          foundUnstable = true;
+        }
+
+        op.accept(visitor);
       }
 
-      return Optional.of(this.ledger.size() - 1);
+      return lastStable;
     }
   }
 
