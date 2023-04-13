@@ -24,7 +24,12 @@ public class ServerState {
     this.accounts.put("broker", new Account(1000));
   }
 
-  /** Register a given operation in the ledger. */
+  /**
+   * Register a given operation in the ledger.
+   *
+   * @return the prev timestamp of the operation, merged with the current value timestamp at this
+   *     replica's slot.
+   */
   public VectorClock addToLedger(Operation op) {
     VectorClock timeStamp;
 
@@ -53,7 +58,8 @@ public class ServerState {
   }
 
   /**
-   * Returns the balance of the account with the given User ID.
+   * Returns the balance of the account with the given User ID, stamped with the current value
+   * timestamp.
    *
    * <p>Safety: prevTS must not be written to during execution of this method
    */
