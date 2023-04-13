@@ -19,7 +19,7 @@ import pt.tecnico.distledger.server.domain.operation.TransferOp;
  */
 public class OperationExecutor implements OperationVisitor {
   private final ServerState state;
-  ThreadLocal<VectorClock> lastTimestamp = new ThreadLocal<>();
+  ThreadLocal<VectorClock> lastTimeStamp = new ThreadLocal<>();
 
   public OperationExecutor(ServerState state) {
     this.state = state;
@@ -27,7 +27,7 @@ public class OperationExecutor implements OperationVisitor {
 
   public VectorClock execute(Operation op) {
     op.accept(this);
-    return this.lastTimestamp.get();
+    return this.lastTimeStamp.get();
   }
 
   @Override
@@ -50,7 +50,7 @@ public class OperationExecutor implements OperationVisitor {
       }
 
       try {
-        lastTimestamp.set(this.state.addToLedger(op));
+        lastTimeStamp.set(this.state.addToLedger(op));
       } catch (RuntimeException e) {
         // If the operation failed to be added to the ledger, we need to remove the account from
         // the map, otherwise it would be in an inconsistent state
@@ -107,7 +107,7 @@ public class OperationExecutor implements OperationVisitor {
         // No need to catch and rethrow the exception here, because we haven't made any changes to
         // the state yet, so if the operation fails to be added to the ledger, we can just let the
         // exception bubble up
-        lastTimestamp.set(this.state.addToLedger(op));
+        lastTimeStamp.set(this.state.addToLedger(op));
 
         // Transfer the balance
         fromAccount.setBalance(fromAccount.getBalance() - op.getAmount());

@@ -8,11 +8,11 @@ import pt.tecnico.distledger.common.domain.VectorClock;
  */
 public class OutdatedStateException extends RuntimeException {
   /** Creates a new exception with the given request and state timestamps. */
-  public OutdatedStateException(VectorClock requestTimestamp, VectorClock stateTimestamp) {
+  public OutdatedStateException(VectorClock requestTimeStamp, VectorClock stateTimeStamp) {
     super(
         "Request has timestamp "
-            + requestTimestamp
+            + requestTimeStamp
             + ", but the state timestamp is still "
-            + stateTimestamp);
+            + stateTimeStamp);
   }
 }
