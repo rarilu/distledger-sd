@@ -14,7 +14,7 @@ public class TransferOp extends Operation {
    * @param fromUserId the user id of the account to transfer from
    * @param destUserId the user id of the account to transfer to
    * @param amount the amount to transfer
-   * @param prevTimeStamp Timestamp of the user when the operation was executed
+   * @param prevTimeStamp Client's timestamp when the operation was executed
    * @param timeStamp Unique timestamp of the operation
    */
   public TransferOp(
