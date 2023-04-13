@@ -14,7 +14,7 @@ import pt.tecnico.distledger.common.Logger;
  * @param <S> the type of the stub to be used by the service.
  */
 public abstract class BaseService<S> implements AutoCloseable {
-  private final StubCache<S> stubCache;
+  protected final StubCache<S> stubCache;
 
   protected BaseService(NamingService namingService, Function<Channel, S> stubFactory) {
     this.stubCache = new StubCache<>(namingService, stubFactory);
