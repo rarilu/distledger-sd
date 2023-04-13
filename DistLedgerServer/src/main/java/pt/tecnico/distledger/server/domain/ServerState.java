@@ -108,11 +108,9 @@ public class ServerState {
         Operation op = this.ledger.get(i);
 
         // Safety: we first sync on the operation, and check if it's stable. If it was already
-        // marked
-        // as stable, we skip it since it means another thread is already executing it. If it's not
-        // stable, we can set it as stable and leave the synchronized block, since other threads
-        // will
-        // see it as stable and skip it.
+        // marked as stable, we skip it since it means another thread is already executing it.
+        // If it's not stable, we can set it as stable and leave the synchronized block, since
+        // other threads will see it as stable and skip it.
         synchronized (op) {
           // If the operation is already stable or can't be stabilized, skip it
           if (op.isStable() || !this.canStabilize(op)) {
