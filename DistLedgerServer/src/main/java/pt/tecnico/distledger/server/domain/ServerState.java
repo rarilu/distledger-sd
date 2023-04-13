@@ -79,11 +79,9 @@ public class ServerState {
       }
     }
 
-    if (account.isPresent()) {
-      return new Stamped<>(account.get().getBalance(), timeStamp);
-    } else {
-      throw new UnknownAccountException(userId);
-    }
+    return account
+        .map(acc -> new Stamped<>(acc.getBalance(), timeStamp))
+        .orElseThrow(() -> new UnknownAccountException(userId));
   }
 
   /** Returns the current list of accounts. */
