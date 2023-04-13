@@ -15,16 +15,10 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.Stamped;
-import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
-import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
-import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
-import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
-import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 /** Implements the User service, handling gRPC requests. */
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
@@ -34,7 +28,6 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
 
   private final ServerState state;
   private final AtomicBoolean active;
-  private final OperationExecutor executor;
 
   /**
    * Creates a new UserServiceImpl, with an associated {@link OperationExecutor}.
@@ -45,7 +38,6 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
   public UserServiceImpl(ServerState state, AtomicBoolean active) {
     this.state = state;
     this.active = active;
-    this.executor = new OperationExecutor(state);
   }
 
   @Override
@@ -58,28 +50,20 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      VectorClock valueTimeStamp =
-          this.executor.execute(
-              new CreateOp(
-                  request.getUserId(),
-                  ProtoUtils.fromProto(request.getPrevTS()),
-                  new VectorClock()));
+
+      VectorClock prevTimeStamp = ProtoUtils.fromProto(request.getPrevTS());
+      VectorClock timeStamp = this.state.generateTimeStamp(prevTimeStamp);
+      if (this.state.addToLedger(
+          new CreateOp(request.getUserId(), prevTimeStamp, timeStamp), false)) {
+        this.state.stabilize();
+      }
       responseObserver.onNext(
-          CreateAccountResponse.newBuilder()
-              .setValueTS(ProtoUtils.toProto(valueTimeStamp))
-              .build());
+          CreateAccountResponse.newBuilder().setValueTS(ProtoUtils.toProto(timeStamp)).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
-    } catch (AccountAlreadyExistsException e) {
-      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
-    } catch (FailedPropagationException e) {
-      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
-      responseObserver.onError(Status.ABORTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
@@ -96,36 +80,25 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      VectorClock valueTimeStamp =
-          this.executor.execute(
-              new TransferOp(
-                  request.getAccountFrom(),
-                  request.getAccountTo(),
-                  request.getAmount(),
-                  ProtoUtils.fromProto(request.getPrevTS()),
-                  new VectorClock()));
+      VectorClock prevTimeStamp = ProtoUtils.fromProto(request.getPrevTS());
+      VectorClock timeStamp = this.state.generateTimeStamp(prevTimeStamp);
+      if (this.state.addToLedger(
+          new TransferOp(
+              request.getAccountFrom(),
+              request.getAccountTo(),
+              request.getAmount(),
+              prevTimeStamp,
+              timeStamp),
+          false)) {
+        this.state.stabilize();
+      }
       responseObserver.onNext(
-          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(valueTimeStamp)).build());
+          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(timeStamp)).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
-    } catch (NonPositiveTransferException | NopTransferException e) {
-      Logger.debug(TRANSFER_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
-    } catch (UnknownAccountException e) {
-      Logger.debug(TRANSFER_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
-    } catch (NotEnoughBalanceException e) {
-      Logger.debug(TRANSFER_FAILED + e.getMessage());
-      responseObserver.onError(
-          Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
-    } catch (FailedPropagationException e) {
-      Logger.debug(TRANSFER_FAILED + e.getMessage());
-      responseObserver.onError(Status.ABORTED.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());

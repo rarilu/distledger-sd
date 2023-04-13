@@ -15,7 +15,6 @@ import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
-import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 /** Implements the CrossServer service, handling gRPC requests. */
 public class DistLedgerCrossServerServiceImpl
@@ -24,7 +23,7 @@ public class DistLedgerCrossServerServiceImpl
   private static final String PARSE_FAILED = "Failed to create operation from request";
 
   private final AtomicBoolean active;
-  private final OperationExecutor executor;
+  private final ServerState state;
 
   /**
    * Creates a new DistLedgerCrossServerServiceImpl.
@@ -33,8 +32,8 @@ public class DistLedgerCrossServerServiceImpl
    * @param active This server's active flag
    */
   public DistLedgerCrossServerServiceImpl(ServerState state, AtomicBoolean active) {
+    this.state = state;
     this.active = active;
-    this.executor = new OperationExecutor(state);
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
@@ -69,10 +68,18 @@ public class DistLedgerCrossServerServiceImpl
       List<Operation> operations =
           request.getState().getLedgerList().stream().map(this::parseOperation).toList();
 
-      // Safety: the operations are executed and stored in the ledger in the same order they were
-      // received. Since the A server always waits for a response before continuing, we don't
-      // need to worry about concurrent calls to propagateState.
-      operations.forEach(op -> op.accept(executor));
+      // Then we add the operations to the ledger.
+      boolean anyStabilized = false;
+      for (Operation op : operations) {
+        if (this.state.addToLedger(op, true)) {
+          anyStabilized = true;
+        }
+      }
+
+      // If any operation was stabilized, other operations may be able to be stabilized as well.
+      if (anyStabilized) {
+        this.state.stabilize();
+      }
 
       responseObserver.onNext(PropagateStateResponse.getDefaultInstance());
       responseObserver.onCompleted();
