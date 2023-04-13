@@ -1,5 +1,6 @@
 package pt.tecnico.distledger.server.grpc;
 
+import java.util.function.Function;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.grpc.BaseService;
 import pt.tecnico.distledger.common.grpc.NamingService;
@@ -23,16 +24,16 @@ public class CrossServerService
    * Handle the PropagateState request. Uses the filled LedgerStateGenerator to build the
    * LedgerState proto and send it to the server.
    *
-   * @throws FailedPropagationException if the gRPC call fails
+   * @throws FailedPropagationException if the gRPC call fails.
    */
-  public void propagateState(String server, LedgerStateGenerator generator) {
+  private void propagateStateToServer(String qualifier, LedgerStateGenerator generator) {
     PropagateStateRequest request =
         PropagateStateRequest.newBuilder().setState(generator.build()).build();
     try {
       Logger.debug("Sending request: " + request);
 
       this.makeRequestWithRetryInvalidatingStubCache(
-              server,
+              qualifier,
               request,
               DistLedgerCrossServerServiceGrpc.DistLedgerCrossServerServiceBlockingStub
                   ::propagateState,
@@ -41,5 +42,28 @@ public class CrossServerService
     } catch (RuntimeException e) {
       throw new FailedPropagationException(e);
     }
+  }
+
+  /**
+   * Propagates (a subset of) the state to all servers in this service.
+   *
+   * <p>If any individual propagation fails, the exception is logged and the propagation continues.
+   *
+   * @param generatorFactory a function that returns a {@link LedgerStateGenerator} for a given
+   *     server entry. This can be used for the caller to control what operations the generator will
+   *     visit, and, thus, what state will be propagated to each server.
+   * @throws io.grpc.StatusRuntimeException if a Naming Service lookup operation fails.
+   */
+  public void propagateState(Function<NamingService.Entry, LedgerStateGenerator> generatorFactory) {
+    this.stubCache.forEachServerInService(
+        entry -> {
+          try {
+            this.propagateStateToServer(entry.qualifier(), generatorFactory.apply(entry));
+          } catch (FailedPropagationException e) {
+            Logger.error(
+                "Failed to propagate state to server " + entry.qualifier() + ": " + e.getMessage());
+            // continue propagating to other servers; individual propagation failure is not critical
+          }
+        });
   }
 }
