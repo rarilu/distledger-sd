@@ -40,12 +40,15 @@ public class DistLedgerCrossServerServiceImpl
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
     return switch (operation.getType()) {
       case OP_CREATE_ACCOUNT -> new CreateOp(
-          operation.getUserId(), ProtoUtils.fromProto(operation.getPrevTS()));
+          operation.getUserId(),
+          ProtoUtils.fromProto(operation.getPrevTS()),
+          ProtoUtils.fromProto(operation.getTS()));
       case OP_TRANSFER_TO -> new TransferOp(
           operation.getUserId(),
           operation.getDestUserId(),
           operation.getAmount(),
-          ProtoUtils.fromProto(operation.getPrevTS()));
+          ProtoUtils.fromProto(operation.getPrevTS()),
+          ProtoUtils.fromProto(operation.getTS()));
       default -> throw new IllegalArgumentException(PARSE_FAILED);
     };
   }

@@ -60,7 +60,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       }
       VectorClock valueTimeStamp =
           this.executor.execute(
-              new CreateOp(request.getUserId(), ProtoUtils.fromProto(request.getPrevTS())));
+              new CreateOp(
+                  request.getUserId(),
+                  ProtoUtils.fromProto(request.getPrevTS()),
+                  new VectorClock()));
       responseObserver.onNext(
           CreateAccountResponse.newBuilder()
               .setValueTS(ProtoUtils.toProto(valueTimeStamp))
@@ -99,7 +102,8 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
                   request.getAccountFrom(),
                   request.getAccountTo(),
                   request.getAmount(),
-                  ProtoUtils.fromProto(request.getPrevTS())));
+                  ProtoUtils.fromProto(request.getPrevTS()),
+                  new VectorClock()));
       responseObserver.onNext(
           TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(valueTimeStamp)).build());
       responseObserver.onCompleted();

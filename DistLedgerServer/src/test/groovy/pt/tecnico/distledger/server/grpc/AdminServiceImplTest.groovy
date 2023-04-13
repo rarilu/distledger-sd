@@ -104,9 +104,9 @@ class AdminServiceImplTest extends Specification {
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
         and: "a server state with some operations"
-        executor.execute(new CreateOp("Alice", new VectorClock()))
-        executor.execute(new TransferOp("broker", "Alice", 100, new VectorClock()))
-        executor.execute(new TransferOp("Alice", "broker", 100, new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new TransferOp("broker", "Alice", 100, new VectorClock(), new VectorClock()))
+        executor.execute(new TransferOp("Alice", "broker", 100, new VectorClock(), new VectorClock()))
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)
