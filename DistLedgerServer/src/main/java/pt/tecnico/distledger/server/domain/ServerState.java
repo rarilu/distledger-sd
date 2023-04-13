@@ -17,7 +17,7 @@ public class ServerState {
   private final int id;
   private final List<Operation> ledger = Collections.synchronizedList(new ArrayList<>());
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
-  private final VectorClock valueTimestamp = new VectorClock();
+  private final VectorClock valueTimeStamp = new VectorClock();
 
   public ServerState(int id) {
     this.id = id;
@@ -26,19 +26,19 @@ public class ServerState {
 
   /** Register a given operation in the ledger. */
   public VectorClock addToLedger(Operation op) {
-    VectorClock timestamp;
+    VectorClock timeStamp;
 
     // Safety: it's okay do this without locking the ledger since the order in which the clock is merged doesn't matter: the end result is the same
-    synchronized (this.valueTimestamp) {
-      this.valueTimestamp.merge(op.getPrevTimestamp());
-      timestamp = new VectorClock(this.valueTimestamp);
-      timestamp.mergeSingle(op.getPrevTimestamp(), this.id);
+    synchronized (this.valueTimeStamp) {
+      this.valueTimeStamp.merge(op.getPrevTimeStamp());
+      timeStamp = new VectorClock(this.valueTimeStamp);
+      timeStamp.mergeSingle(op.getPrevTimeStamp(), this.id);
     }
 
     // Safety: synchronized list, it's okay to add to it without a synchronized
     // block
     this.ledger.add(op);
-    return timestamp;
+    return timeStamp;
   }
 
   /** Visit all operations in the ledger, using the specified visitor. */
@@ -56,24 +56,24 @@ public class ServerState {
    *
    * <p>Safety: prevTS must not be written to during execution of this method
    */
-  public Stamped<Integer> getAccountBalance(String userId, VectorClock prevTimestamp) {
+  public Stamped<Integer> getAccountBalance(String userId, VectorClock prevTimeStamp) {
     Optional<Account> account;
-    VectorClock timestamp;
+    VectorClock timeStamp;
 
-    synchronized (this.valueTimestamp) {
-      switch (VectorClock.compare(prevTimestamp, this.valueTimestamp)) {
+    synchronized (this.valueTimeStamp) {
+      switch (VectorClock.compare(prevTimeStamp, this.valueTimeStamp)) {
         case BEFORE:
         case EQUAL:
           account = Optional.ofNullable(this.accounts.get(userId));
-          timestamp = new VectorClock(this.valueTimestamp);
+          timeStamp = new VectorClock(this.valueTimeStamp);
           break;
         default:
-          throw new OutdatedStateException(prevTimestamp, this.valueTimestamp);
+          throw new OutdatedStateException(prevTimeStamp, this.valueTimeStamp);
       }
     }
 
     if (account.isPresent()) {
-      return new Stamped<>(account.get().getBalance(), timestamp);
+      return new Stamped<>(account.get().getBalance(), timeStamp);
     } else {
       throw new UnknownAccountException(userId);
     }

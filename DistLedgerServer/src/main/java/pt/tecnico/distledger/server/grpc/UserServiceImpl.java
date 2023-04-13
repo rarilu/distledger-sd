@@ -58,12 +58,12 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      VectorClock valueTimestamp =
+      VectorClock valueTimeStamp =
           this.executor.execute(
               new CreateOp(request.getUserId(), ProtoUtils.fromProto(request.getPrevTS())));
       responseObserver.onNext(
           CreateAccountResponse.newBuilder()
-              .setValueTS(ProtoUtils.toProto(valueTimestamp))
+              .setValueTS(ProtoUtils.toProto(valueTimeStamp))
               .build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
@@ -93,7 +93,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
-      VectorClock valueTimestamp =
+      VectorClock valueTimeStamp =
           this.executor.execute(
               new TransferOp(
                   request.getAccountFrom(),
@@ -101,7 +101,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
                   request.getAmount(),
                   ProtoUtils.fromProto(request.getPrevTS())));
       responseObserver.onNext(
-          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(valueTimestamp)).build());
+          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(valueTimeStamp)).build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
