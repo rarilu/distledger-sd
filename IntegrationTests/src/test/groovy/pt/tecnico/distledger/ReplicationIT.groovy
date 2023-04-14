@@ -321,4 +321,65 @@ class ReplicationIT extends BaseIT {
             "  }\n" +
             "}"
     }
+
+    def "operation fails in one replica and is propagated correctly"() {
+        given: "an account is created on replica A"
+        runUser(0, "createAccount A Alice")
+
+        when: "a transfer is made on replica B"
+        runUser(1, "transferTo B broker Alice 100")
+
+        then: "the operation fails on replica B"
+        runAdmin("getLedgerState B") == "OK\n" +
+            "ledgerState {\n" +
+            "  ledger {\n" +
+            "    type: OP_TRANSFER_TO\n" +
+            "    userId: \"broker\"\n" +
+            "    destUserId: \"Alice\"\n" +
+            "    amount: 100\n" +
+            "    prevTS {\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "    failed: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    replicaId: 1\n" +
+            "  }\n" +
+            "}"
+
+        when: "replica B gossips"
+        runAdmin("gossip B")
+
+        then: "the operation is also marked as failed on replica A"
+        runAdmin("getLedgerState A") == "OK\n" +
+            "ledgerState {\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Alice\"\n" +
+            "    prevTS {\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_TRANSFER_TO\n" +
+            "    userId: \"broker\"\n" +
+            "    destUserId: \"Alice\"\n" +
+            "    amount: 100\n" +
+            "    prevTS {\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "    failed: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    replicaId: 1\n" +
+            "  }\n" +
+            "}"
+    }
 }
