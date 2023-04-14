@@ -19,16 +19,16 @@ public abstract class BaseCommandParser {
   /** Reads a line from stdin. */
   private Optional<String> readLine() throws IOException {
     int c;
-    String line = "";
+    StringBuilder line = new StringBuilder();
 
     while ((c = System.in.read()) != -1 && (char) c != '\n') {
-      line += (char) c;
+      line.append((char) c);
     }
 
-    if (c == -1 && line.isEmpty()) {
+    if (c == -1 && (line.length() == 0)) {
       return Optional.empty();
     } else {
-      return Optional.of(line);
+      return Optional.of(line.toString());
     }
   }
 
