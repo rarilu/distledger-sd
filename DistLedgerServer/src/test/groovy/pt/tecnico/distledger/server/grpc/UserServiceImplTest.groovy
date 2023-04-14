@@ -225,4 +225,25 @@ class UserServiceImplTest extends Specification {
         where: "method is any void function of UserServiceImpl"
         method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
     }
+
+    def "catch runtime exceptions"() {
+        given: "a state that throws an exception when used"
+        def state = Mock(ServerState, constructorArgs:[0])
+        state.getAccountBalance(_, _) >> { throw new RuntimeException("Unknown error") }
+        state.generateTimeStamp(_) >> { throw new RuntimeException("Unknown error") }
+
+        and: "a service with the mocked state"
+        def service = new UserServiceImpl(state, active)
+
+        when: "a method is called"
+        method.invoke(service, method.getParameterTypes()[0].getDefaultInstance(), observer)
+
+        then: "method fails with RuntimeException"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException && it.getMessage() == "UNKNOWN: Unknown error"
+        })
+
+        where: "method is any void function of UserServiceImpl"
+        method << UserServiceImpl.class.getDeclaredMethods().findAll { it.getReturnType() == void.class }
+    }
 }
