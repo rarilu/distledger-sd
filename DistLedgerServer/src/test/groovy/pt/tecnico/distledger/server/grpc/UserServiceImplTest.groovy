@@ -52,7 +52,7 @@ class UserServiceImplTest extends Specification {
 
     def "create duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
 
         when: "the account is created again"
         service.createAccount(CreateAccountRequest.newBuilder().setUserId("Alice").build(), observer)
@@ -67,7 +67,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -87,7 +87,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer between accounts with insufficient funds"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
 
         when: "transfer between accounts"
         service.transferTo(TransferToRequest.newBuilder()
@@ -131,7 +131,7 @@ class UserServiceImplTest extends Specification {
 
     def "transfer non-positive amount"() {
         given: "an accounts already created"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
 
         when: "transfer non-positive amount"
         service.transferTo(TransferToRequest.newBuilder()
@@ -182,11 +182,11 @@ class UserServiceImplTest extends Specification {
 
     def "get balance for existing account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock()))
+        executor.execute(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
 
         and: "with a given balance"
         if (balance > 0) {
-            executor.execute(new TransferOp("broker", "Alice", balance, new VectorClock(), new VectorClock()))
+            executor.execute(new TransferOp("broker", "Alice", balance, new VectorClock(), new VectorClock(), 0))
         }
 
         when: "get balance for account"
@@ -230,7 +230,7 @@ class UserServiceImplTest extends Specification {
         given: "a state that throws an exception when used"
         def state = Mock(ServerState, constructorArgs:[0])
         state.getAccountBalance(_, _) >> { throw new RuntimeException("Unknown error") }
-        state.generateTimeStamp(_) >> { throw new RuntimeException("Unknown error") }
+        state.generateTimeStamp() >> { throw new RuntimeException("Unknown error") }
 
         and: "a service with the mocked state"
         def service = new UserServiceImpl(state, active)

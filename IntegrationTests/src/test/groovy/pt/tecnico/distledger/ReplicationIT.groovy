@@ -38,10 +38,10 @@ class ReplicationIT extends BaseIT {
                 "    userId: \"Alice\"\n" +
                 "    prevTS {\n" +
                 "    }\n" +
-                "    TS {\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    stable: true\n" +
                 "  }\n" +
                 "}"
     }
@@ -70,10 +70,11 @@ class ReplicationIT extends BaseIT {
                 "    prevTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    TS {\n" +
-                "      values: 1\n" +
+                "    replicaTS {\n" +
+                "      values: 0\n" +
                 "      values: 1\n" +
                 "    }\n" +
+                "    replicaId: 1\n" +
                 "  }\n" +
                 "}"
 
@@ -97,10 +98,10 @@ class ReplicationIT extends BaseIT {
                 "    userId: \"Alice\"\n" +
                 "    prevTS {\n" +  
                 "    }\n" +
-                "    TS {\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    stable: true\n" +
                 "  }\n" +
                 "  ledger {\n" +
                 "    type: OP_TRANSFER_TO\n" +
@@ -110,11 +111,12 @@ class ReplicationIT extends BaseIT {
                 "    prevTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    TS {\n" +
-                "      values: 1\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
+                "      values: 0\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    stable: true\n" +
+                "    replicaId: 1\n" +
                 "  }\n" +
                 "}"
 
@@ -181,10 +183,10 @@ class ReplicationIT extends BaseIT {
             "    userId: \"Alice\"\n" +
             "    prevTS {\n" +
             "    }\n" +
-            "    TS {\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    stable: true\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -192,11 +194,12 @@ class ReplicationIT extends BaseIT {
             "    prevTS {\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    stable: true\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -205,11 +208,12 @@ class ReplicationIT extends BaseIT {
             "      values: 1\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 2\n" +
             "    }\n" +
-            "    stable: true\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "}"
 
@@ -223,11 +227,12 @@ class ReplicationIT extends BaseIT {
             "      values: 1\n" +
             "      values: 2\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
-            "      values: 2\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
+            "      values: 0\n" +
             "      values: 1\n" +
             "    }\n" +
+            "    replicaId: 2\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -235,10 +240,11 @@ class ReplicationIT extends BaseIT {
             "    prevTS {\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 1\n" +
             "    }\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -247,10 +253,11 @@ class ReplicationIT extends BaseIT {
             "      values: 1\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 2\n" +
             "    }\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "}"
         
@@ -265,10 +272,10 @@ class ReplicationIT extends BaseIT {
             "    userId: \"Alice\"\n" +
             "    prevTS {\n" +
             "    }\n" +
-            "    TS {\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    stable: true\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -276,11 +283,12 @@ class ReplicationIT extends BaseIT {
             "    prevTS {\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    stable: true\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -289,11 +297,12 @@ class ReplicationIT extends BaseIT {
             "      values: 1\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
             "      values: 2\n" +
             "    }\n" +
-            "    stable: true\n" +
+            "    replicaId: 1\n" +
             "  }\n" +
             "  ledger {\n" +
             "    type: OP_CREATE_ACCOUNT\n" +
@@ -302,12 +311,13 @@ class ReplicationIT extends BaseIT {
             "      values: 1\n" +
             "      values: 2\n" +
             "    }\n" +
-            "    TS {\n" +
-            "      values: 1\n" +
-            "      values: 2\n" +
+            "    stable: true\n" +
+            "    replicaTS {\n" +
+            "      values: 0\n" +
+            "      values: 0\n" +
             "      values: 1\n" +
             "    }\n" +
-            "    stable: true\n" +
+            "    replicaId: 2\n" +
             "  }\n" +
             "}"
     }

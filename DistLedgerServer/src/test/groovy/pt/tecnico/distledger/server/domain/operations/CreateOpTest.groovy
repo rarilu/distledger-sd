@@ -20,7 +20,7 @@ class CreateOpTest extends Specification {
 
     def "create a new account"() {
         when: "a new account is created"
-        executor.execute(new CreateOp("Alice", ts, ts))
+        executor.execute(new CreateOp("Alice", ts, ts, 0))
 
         then: "there are exactly two accounts"
         state.getAccounts().size() == 2
@@ -31,10 +31,10 @@ class CreateOpTest extends Specification {
 
     def "create a duplicate account"() {
         given: "an account already created"
-        executor.execute(new CreateOp("Alice", ts, ts))
+        executor.execute(new CreateOp("Alice", ts, ts, 0))
 
         when: "an account with the same name is created"
-        executor.execute(new CreateOp("Alice", ts, ts))
+        executor.execute(new CreateOp("Alice", ts, ts, 0))
 
         then: "an exception is thrown"
         thrown(AccountAlreadyExistsException)

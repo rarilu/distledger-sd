@@ -90,32 +90,33 @@ class AdminServiceImplTest extends Specification {
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Alice")
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .setStable(true)
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("broker")
                         .setDestUserId("Alice")
                         .setAmount(100)
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .setStable(true)
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("Alice")
                         .setDestUserId("broker")
                         .setAmount(100)
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .setStable(true)
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
+                        .setReplicaId(1)
                         .build(),
         ]
         def ledgerState = LedgerState.newBuilder().addAllLedger(operations).build()
 
         and: "a server state with some operations"
-        state.addToLedger(new CreateOp("Alice", new VectorClock(), new VectorClock()))
-        state.addToLedger(new TransferOp("broker", "Alice", 100, new VectorClock(), new VectorClock()))
-        state.addToLedger(new TransferOp("Alice", "broker", 100, new VectorClock(), new VectorClock()))
+        state.addToLedger(new CreateOp("Alice", new VectorClock(), new VectorClock(), 0))
+        state.addToLedger(new TransferOp("broker", "Alice", 100, new VectorClock(), new VectorClock(), 0))
+        state.addToLedger(new TransferOp("Alice", "broker", 100, new VectorClock(), new VectorClock(), 1))
 
         when: "get ledger state"
         service.getLedgerState(GetLedgerStateRequest.getDefaultInstance(), observer)

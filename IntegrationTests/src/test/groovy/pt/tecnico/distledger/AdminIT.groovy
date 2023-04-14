@@ -37,10 +37,10 @@ class AdminIT extends BaseIT {
                 "    userId: \"Alice\"\n" +
                 "    prevTS {\n" +
                 "    }\n" +
-                "    TS {\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    stable: true\n" +
                 "  }\n" +
                 "  ledger {\n" +
                 "    type: OP_TRANSFER_TO\n" +
@@ -50,10 +50,10 @@ class AdminIT extends BaseIT {
                 "    prevTS {\n" +
                 "      values: 1\n" +
                 "    }\n" +
-                "    TS {\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
                 "      values: 2\n" +
                 "    }\n" +
-                "    stable: true\n" +
                 "  }\n" +
                 "  ledger {\n" +
                 "    type: OP_TRANSFER_TO\n" +
@@ -63,10 +63,10 @@ class AdminIT extends BaseIT {
                 "    prevTS {\n" +
                 "      values: 2\n" +
                 "    }\n" +
-                "    TS {\n" +
+                "    stable: true\n" +
+                "    replicaTS {\n" +
                 "      values: 3\n" +
                 "    }\n" +
-                "    stable: true\n" +
                 "  }\n" +
                 "}"
     }
