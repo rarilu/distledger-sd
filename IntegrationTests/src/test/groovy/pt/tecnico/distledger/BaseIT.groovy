@@ -92,6 +92,10 @@ abstract class BaseIT extends Specification {
     }
 
     def prepareServers(List<String> qualifiers) {
+        prepareServers(qualifiers, true)
+    }
+
+    def prepareServers(List<String> qualifiers, boolean waitForStart) {
         for (i in 0..<qualifiers.size()) {
             // Prepare the server input and output stream
             def readServerStdin = new PipedInputStream()
@@ -106,8 +110,10 @@ abstract class BaseIT extends Specification {
             }
             
             // Wait for the server to start
-            while (!serverOutBufs[i].toString().endsWith("Press enter to shutdown\n")) {}
-            serverOutBufs[i].reset()
+            if (waitForStart) {
+                while (!serverOutBufs[i].toString().endsWith("Press enter to shutdown\n")) {}
+                serverOutBufs[i].reset()
+            }
         }
     }
 
@@ -131,29 +137,39 @@ abstract class BaseIT extends Specification {
         }
     }
 
+    def stopServer(int i) {
+        if (serverThreads[i].isAlive()) {
+            writeServerStdins[i].write("\n".getBytes())
+            serverThreads[i].join()
+        }
+        return serverOutBufs[i].toString()
+    }
+
+    def stopNamingServer() {
+        if (namingServerThread.isAlive()) {
+            writeNamingServerStdin.write("\n".getBytes())
+            namingServerThread.join()
+        }
+        return namingServerOutBuf.toString()
+    }
+
     def cleanup() {
         // Send input to the servers to shutdown
-        for (writeServerStdin in writeServerStdins) {
-            writeServerStdin.write("\n".getBytes())
-        }
-        for (serverThread in serverThreads) {
-            serverThread.join()
+        for (i in 0..<serverThreads.size()) {
+            stopServer(i)
         }
 
         // Send input to the naming server to shutdown
-        writeNamingServerStdin.write("\n".getBytes())
-        namingServerThread.join()
+        stopNamingServer()
 
         // Shutdown admin client
         writeAdminStdin.close()
         adminThread.join()
 
         // Shutdown user clients
-        for (writeUserStdin in writeUserStdins) {
-            writeUserStdin.close()
-        }
-        for (userThread in userThreads) {
-            userThread.join()
+        for (i in 0..<userThreads.size()) {
+            writeUserStdins[i].close()
+            userThreads[i].join()
         }
 
         System.setIn(initialStdin)
