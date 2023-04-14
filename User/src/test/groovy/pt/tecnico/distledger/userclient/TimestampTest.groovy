@@ -15,7 +15,7 @@ class TimestampTest extends BaseTest {
                 "timestamp\n" +
                 "balance B Alice\n" +
                 "timestamp\n" +
-                "exit\n");
+                "exit\n")
 
         and: "a mock server that returns responses with sample values"
         GrpcMock.stubFor(
