@@ -5,9 +5,10 @@ This solution supports any number of replicas, and replicas joining at any time.
 ## Server state
 
 Each replica stores:
-- A ledger, with operations that can be unstable, stable or failed;
-- A `valueTS` that tracks the stabilized operations in the state;
-- A `replicaTS` that tracks how many operations have been received from the client and how many operations received in other replicas it knows of.
+
+-   A ledger, with operations that can be unstable, stable or failed;
+-   A `valueTS` that tracks the stabilized operations in the state;
+-   A `replicaTS` that tracks how many operations have been received from the client and how many operations received in other replicas it knows of.
 
 ## Balance queries
 
@@ -17,7 +18,7 @@ In the response, we send the replica's `valueTS` to be merged with the client's 
 
 ## Client operations
 
-When an operation is received from the client, the receiving replica's `replicaTS` is incremented and it is added to the ledger as unstable.
+When an operation is received from the client, the receiving replica's `replicaTS` is incremented, and it is added to the ledger as unstable.
 Then, if its prevTS "happened-before" or is equal to the receiving replica's `valueTS`, it is executed, stabilized, and the replica's `valueTS` is merged with the TS (calculated as explained below). If not, it remains unstable.
 
 When a replica's `valueTS` increases, we retry to stabilize every unstable operation in the ledger.
