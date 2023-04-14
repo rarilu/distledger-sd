@@ -4,7 +4,7 @@ class ReplicationIT extends BaseIT {
     def output
 
     def setup() {
-        prepareServers(['A', 'B'])
+        prepareServers(['A', 'B', 'C'])
         prepareUsers(2)
     }
 
@@ -71,7 +71,7 @@ class ReplicationIT extends BaseIT {
                 "      values: 1\n" +
                 "    }\n" +
                 "    TS {\n" +
-                "      values: 0\n" +
+                "      values: 1\n" +
                 "      values: 1\n" +
                 "    }\n" +
                 "  }\n" +
@@ -111,7 +111,7 @@ class ReplicationIT extends BaseIT {
                 "      values: 1\n" +
                 "    }\n" +
                 "    TS {\n" +
-                "      values: 0\n" +
+                "      values: 1\n" +
                 "      values: 1\n" +
                 "    }\n" +
                 "    stable: true\n" +
@@ -157,5 +157,158 @@ class ReplicationIT extends BaseIT {
 
         and: "the second user's balance is correct"
         runUser(1, "balance B Bob") == "OK\nvalue: 100"
+    }
+
+    def "alice bob barbara charlie"() {
+        given: "a user creates one account on replica A"
+        runUser("createAccount A Alice")
+
+        and: "the user creates two accounts on replica B"
+        runUser("createAccount B Bob")
+        runUser("createAccount B Barbara")
+
+        and: "the user creates one account on replica C"
+        runUser("createAccount C Charlie")
+
+        when: "replica B gossips"
+        runAdmin("gossip B")
+
+        then: "the ledger's state on replica A is correct"
+        runAdmin("getLedgerState A") == "OK\n" +
+            "ledgerState {\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Alice\"\n" +
+            "    prevTS {\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Bob\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Barbara\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "}"
+
+        and: "the ledger's state on replica C is correct"
+        runAdmin("getLedgerState C") == "OK\n" +
+            "ledgerState {\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Charlie\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Bob\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Barbara\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "    }\n" +
+            "  }\n" +
+            "}"
+        
+        when: "replica A gossips"
+        runAdmin("gossip A")
+
+        then: "the ledger's state on replica C is correct"
+        runAdmin("getLedgerState C") == "OK\n" +
+            "ledgerState {\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Alice\"\n" +
+            "    prevTS {\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Bob\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Barbara\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "  ledger {\n" +
+            "    type: OP_CREATE_ACCOUNT\n" +
+            "    userId: \"Charlie\"\n" +
+            "    prevTS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "    }\n" +
+            "    TS {\n" +
+            "      values: 1\n" +
+            "      values: 2\n" +
+            "      values: 1\n" +
+            "    }\n" +
+            "    stable: true\n" +
+            "  }\n" +
+            "}"
     }
 }

@@ -3,10 +3,13 @@ package pt.tecnico.distledger.server.grpc;
 import java.util.Optional;
 import java.util.function.Function;
 import pt.tecnico.distledger.common.Logger;
+import pt.tecnico.distledger.common.domain.VectorClock;
 import pt.tecnico.distledger.common.grpc.BaseService;
 import pt.tecnico.distledger.common.grpc.NamingService;
+import pt.tecnico.distledger.common.grpc.ProtoUtils;
 import pt.tecnico.distledger.contract.distledgerserver.CrossServerDistLedger.PropagateStateRequest;
 import pt.tecnico.distledger.contract.distledgerserver.DistLedgerCrossServerServiceGrpc;
+import pt.tecnico.distledger.server.domain.Stamped;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
@@ -27,12 +30,18 @@ public class CrossServerService
    *
    * @param qualifier the target server's qualifier.
    * @param generator the populated LedgerStateGenerator to propagate.
+   * @param replicaTimeStamp the replica's vector clock.
    * @param ownId this server's ID.
    * @throws FailedPropagationException if the gRPC call fails.
    */
-  private void propagateStateToServer(String qualifier, LedgerStateGenerator generator, int ownId) {
+  private void propagateStateToServer(
+      String qualifier, LedgerStateGenerator generator, VectorClock replicaTimeStamp, int ownId) {
     PropagateStateRequest request =
-        PropagateStateRequest.newBuilder().setState(generator.build()).setId(ownId).build();
+        PropagateStateRequest.newBuilder()
+            .setState(generator.build())
+            .setReplicaTS(ProtoUtils.toProto(replicaTimeStamp))
+            .setId(ownId)
+            .build();
     try {
       Logger.debug("Sending request: " + request);
 
@@ -61,7 +70,7 @@ public class CrossServerService
    * @throws io.grpc.StatusRuntimeException if a Naming Service lookup operation fails.
    */
   public void propagateState(
-      Function<NamingService.Entry, LedgerStateGenerator> generatorFactory, int ownId) {
+      Function<NamingService.Entry, Stamped<LedgerStateGenerator>> generatorFactory, int ownId) {
     this.stubCache.forEachServerInService(
         entry -> {
           if (entry.id() == ownId) {
@@ -71,7 +80,9 @@ public class CrossServerService
           try {
             Optional.ofNullable(generatorFactory.apply(entry))
                 .ifPresent(
-                    generator -> this.propagateStateToServer(entry.qualifier(), generator, ownId));
+                    generator ->
+                        this.propagateStateToServer(
+                            entry.qualifier(), generator.value(), generator.timeStamp(), ownId));
           } catch (FailedPropagationException e) {
             Logger.error(
                 "Failed to propagate state to server "
@@ -94,7 +105,8 @@ public class CrossServerService
    * @param ownId this server's assigned ID
    */
   public void sendStartupBeacon(int ownId) {
-    this.propagateState(entry -> new LedgerStateGenerator(), ownId);
+    this.propagateState(
+        entry -> new Stamped<>(new LedgerStateGenerator(), new VectorClock()), ownId);
   }
 
   /**

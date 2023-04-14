@@ -50,25 +50,43 @@ public class ServerState {
   }
 
   /**
+   * Adds to the ledger a list operations received from a gossip message.
+   *
+   * @param operations the list of operations received from a gossip message.
+   * @param timeStamp the timestamp of the gossip message.
+   * @return true if any operation was stabilized, false otherwise.
+   */
+  public boolean addToLedger(List<Operation> operations, VectorClock timeStamp) {
+    boolean anyStabilized = false;
+
+    synchronized (this.replicaTimeStamp) {
+      for (Operation op : operations) {
+        // Check if the operation is a duplicate.
+        VectorClock.Order order = VectorClock.compare(op.getTimeStamp(), this.replicaTimeStamp);
+        if (order == Order.BEFORE || order == Order.EQUAL) {
+          continue;
+        }
+
+        // Not a duplicate, add it to the ledger.
+        if (this.addToLedger(op)) {
+          anyStabilized = true;
+        }
+      }
+
+      // Update the replica timestamp
+      this.replicaTimeStamp.merge(timeStamp);
+    }
+
+    return anyStabilized;
+  }
+
+  /**
    * Register a given operation in the ledger. If the operation can be executed immediately, it will
    * immediatelly be stabilized. Otherwise, it will be added to the ledger and stabilized later.
    *
-   * @param fromClient whether request came from client
    * @return true if it was immediately stabilized, false otherwise.
    */
-  public boolean addToLedger(Operation op, boolean fromClient) {
-    if (!fromClient) {
-      // Check if the operation is a duplicate
-      if (this.isDuplicate(op)) {
-        return false;
-      }
-
-      // Merge the replica timestamp with the operation timestamp
-      synchronized (this.replicaTimeStamp) {
-        this.replicaTimeStamp.merge(op.getTimeStamp());
-      }
-    }
-
+  public boolean addToLedger(Operation op) {
     // Check if the operation can be immediately executed
     if (this.canStabilize(op)) {
       // If it can, mark it as stable and execute it
@@ -147,36 +165,41 @@ public class ServerState {
    *
    * @param visitor the visitor for each operation to accept.
    * @param startAtIndex the index to start visiting from.
-   * @return the index of the last stable operation visited, if any.
+   * @return the index of the last stable operation visited, if any, stamped with the replica
+   *     timestamp
    */
-  public Optional<Integer> visitLedger(OperationVisitor visitor, int startAtIndex) {
-    // Safety: prevent operations from being added to the ledger while we are
-    // visiting it
-    // Operations themselves are thread-safe, so we don't need to lock them: the only mutable
-    // operation state is atomic.
-    synchronized (this.ledger) {
-      Optional<Integer> lastStable = Optional.empty();
-      boolean foundUnstable = false;
+  public Stamped<Optional<Integer>> visitLedger(OperationVisitor visitor, int startAtIndex) {
+    // Safety: we lock the replica timestamp to prevent it from being modified, since this method
+    // returns a snapshot of the ledger at a specific timestamp.
+    synchronized (this.replicaTimeStamp) {
+      // Safety: prevent operations from being added to the ledger while we are
+      // visiting it
+      // Operations themselves are thread-safe, so we don't need to lock them: the only mutable
+      // operation state is atomic.
+      synchronized (this.ledger) {
+        Optional<Integer> lastStable = Optional.empty();
+        boolean foundUnstable = false;
 
-      for (int i = startAtIndex; i < this.ledger.size(); i++) {
-        // Safety: no need to lock the ledger, its a synchronized list
-        Operation op = this.ledger.get(i);
+        for (int i = startAtIndex; i < this.ledger.size(); i++) {
+          // Safety: no need to lock the ledger, its a synchronized list
+          Operation op = this.ledger.get(i);
 
-        // If this operation is stable, mark it as the last stable operation
-        if (op.isStable()) {
-          // As soon as we find an unstable operation, we should not count any more stable
-          // operations after it - those operations are still being ordered.
-          if (!foundUnstable) {
-            lastStable = Optional.of(i);
+          // If this operation is stable, mark it as the last stable operation
+          if (op.isStable()) {
+            // As soon as we find an unstable operation, we should not count any more stable
+            // operations after it - those operations are still being ordered.
+            if (!foundUnstable) {
+              lastStable = Optional.of(i);
+            }
+          } else {
+            foundUnstable = true;
           }
-        } else {
-          foundUnstable = true;
+
+          op.accept(visitor);
         }
 
-        op.accept(visitor);
+        return new Stamped<>(lastStable, new VectorClock(this.replicaTimeStamp));
       }
-
-      return lastStable;
     }
   }
 
@@ -251,16 +274,6 @@ public class ServerState {
     VectorClock.Order order;
     synchronized (this.valueTimeStamp) {
       order = VectorClock.compare(op.getPrevTimeStamp(), this.valueTimeStamp);
-    }
-
-    return order == Order.BEFORE || order == Order.EQUAL;
-  }
-
-  /** Checks if an operation is a duplicate. */
-  private boolean isDuplicate(Operation op) {
-    VectorClock.Order order;
-    synchronized (this.replicaTimeStamp) {
-      order = VectorClock.compare(op.getTimeStamp(), this.replicaTimeStamp);
     }
 
     return order == Order.BEFORE || order == Order.EQUAL;

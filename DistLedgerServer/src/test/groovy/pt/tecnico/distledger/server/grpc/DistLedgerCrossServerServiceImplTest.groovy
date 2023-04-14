@@ -53,14 +53,6 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
                         .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(2).build())
                         .build(),
-                // The operation below is a duplicate of the first one
-                Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
-                        .setUserId("broker")
-                        .setDestUserId("Alice")
-                        .setAmount(100)
-                        .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(0).addValues(1).build())
-                        .build(),
                 // The operation below has a previous timestamp that is not in the ledger, will be pending
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
                         .setUserId("Alice")

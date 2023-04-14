@@ -2,6 +2,7 @@ package pt.tecnico.distledger.server.grpc;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.common.domain.VectorClock;
@@ -15,6 +16,7 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipRequest;
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipResponse;
 import pt.tecnico.distledger.contract.admin.AdminServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
+import pt.tecnico.distledger.server.domain.Stamped;
 import pt.tecnico.distledger.server.visitors.LedgerStateGenerator;
 
 /** Implements the Admin service, handling gRPC requests. */
@@ -68,12 +70,14 @@ public class AdminServiceImpl extends AdminServiceGrpc.AdminServiceImplBase {
         this.crossServerService.propagateState(
             server -> {
               LedgerStateGenerator generator = new LedgerStateGenerator();
-              this.state
-                  .visitLedger(generator, this.lastIndicesGossiped.get(server.id()))
+              Stamped<Optional<Integer>> stamped =
+                  this.state.visitLedger(generator, this.lastIndicesGossiped.get(server.id()));
+              stamped
+                  .value()
                   .ifPresent(
                       lastIndexVisited ->
                           this.lastIndicesGossiped.set(server.id(), lastIndexVisited));
-              return generator;
+              return new Stamped<>(generator, stamped.timeStamp());
             },
             this.state.getId());
       }
