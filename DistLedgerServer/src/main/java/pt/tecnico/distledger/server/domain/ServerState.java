@@ -31,22 +31,17 @@ public class ServerState {
   }
 
   /**
-   * Generates a new unique timestamp for an operation received in this replica from a client.
-   * Increments the timestamp of this replica and merges it with the timestamp of the client.
+   * Generates a new replica timestamp for an operation received in this replica from a client.
+   * Increments the timestamp of this replica.
    *
-   * @param prevTimeStamp the timestamp of the client when it sent the operation
-   * @return the new timestamp.
+   * @return the new replica timestamp.
    */
-  public VectorClock generateTimeStamp(VectorClock prevTimeStamp) {
-    VectorClock timeStamp = new VectorClock(prevTimeStamp);
-
+  public VectorClock generateTimeStamp() {
     // Safety: the timestamp is locked to avoid concurrent increments
     synchronized (this.replicaTimeStamp) {
       this.replicaTimeStamp.increment(this.id);
-      timeStamp.mergeSingle(this.replicaTimeStamp, this.id);
+      return new VectorClock(this.replicaTimeStamp);
     }
-
-    return timeStamp;
   }
 
   /**
@@ -62,7 +57,8 @@ public class ServerState {
     synchronized (this.replicaTimeStamp) {
       for (Operation op : operations) {
         // Check if the operation is a duplicate.
-        VectorClock.Order order = VectorClock.compare(op.getTimeStamp(), this.replicaTimeStamp);
+        VectorClock.Order order =
+            VectorClock.compare(op.getReplicaTimeStamp(), this.replicaTimeStamp);
         if (order == Order.BEFORE || order == Order.EQUAL) {
           continue;
         }

@@ -17,8 +17,9 @@ public class TransferOp extends Operation {
    * @param fromUserId the user id of the account to transfer from
    * @param destUserId the user id of the account to transfer to
    * @param amount the amount to transfer
-   * @param prevTimeStamp Client's timestamp when the operation was executed
-   * @param timeStamp Unique timestamp of the operation
+   * @param prevTimeStamp Client's timestamp when the operation was received
+   * @param replicaTimeStamp Timestamp of the replica when the operation was received
+   * @param replicaId Id of the replica that received the operation
    * @throws NonPositiveTransferException if the amount is not positive
    * @throws NopTransferException if the source and destination accounts are the same
    */
@@ -27,8 +28,9 @@ public class TransferOp extends Operation {
       String destUserId,
       int amount,
       VectorClock prevTimeStamp,
-      VectorClock timeStamp) {
-    super(fromUserId, prevTimeStamp, timeStamp);
+      VectorClock replicaTimeStamp,
+      int replicaId) {
+    super(fromUserId, prevTimeStamp, replicaTimeStamp, replicaId);
     this.destUserId = destUserId;
     this.amount = amount;
 

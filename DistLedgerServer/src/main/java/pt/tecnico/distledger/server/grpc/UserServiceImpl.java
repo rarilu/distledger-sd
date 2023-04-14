@@ -21,6 +21,7 @@ import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException
 import pt.tecnico.distledger.server.domain.exceptions.SystemAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
+import pt.tecnico.distledger.server.domain.operation.Operation;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
 import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
@@ -56,12 +57,17 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       }
 
       VectorClock prevTimeStamp = ProtoUtils.fromProto(request.getPrevTS());
-      VectorClock timeStamp = this.state.generateTimeStamp(prevTimeStamp);
-      if (this.state.addToLedger(new CreateOp(request.getUserId(), prevTimeStamp, timeStamp))) {
+      VectorClock replicaTimeStamp = this.state.generateTimeStamp();
+      Operation op =
+          new CreateOp(request.getUserId(), prevTimeStamp, replicaTimeStamp, this.state.getId());
+      if (this.state.addToLedger(op)) {
         this.state.stabilize();
       }
+
       responseObserver.onNext(
-          CreateAccountResponse.newBuilder().setValueTS(ProtoUtils.toProto(timeStamp)).build());
+          CreateAccountResponse.newBuilder()
+              .setValueTS(ProtoUtils.toProto(op.getTimeStamp()))
+              .build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
@@ -88,18 +94,22 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
         throw new ServerUnavailableException();
       }
       VectorClock prevTimeStamp = ProtoUtils.fromProto(request.getPrevTS());
-      VectorClock timeStamp = this.state.generateTimeStamp(prevTimeStamp);
-      if (this.state.addToLedger(
+      VectorClock replicaTimeStamp = this.state.generateTimeStamp();
+      Operation op =
           new TransferOp(
               request.getAccountFrom(),
               request.getAccountTo(),
               request.getAmount(),
               prevTimeStamp,
-              timeStamp))) {
+              replicaTimeStamp,
+              this.state.getId());
+      if (this.state.addToLedger(op)) {
         this.state.stabilize();
       }
       responseObserver.onNext(
-          TransferToResponse.newBuilder().setValueTS(ProtoUtils.toProto(timeStamp)).build());
+          TransferToResponse.newBuilder()
+              .setValueTS(ProtoUtils.toProto(op.getTimeStamp()))
+              .build());
       responseObserver.onCompleted();
     } catch (ServerUnavailableException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());

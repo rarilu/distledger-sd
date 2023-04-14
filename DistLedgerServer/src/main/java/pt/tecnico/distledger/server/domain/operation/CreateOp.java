@@ -7,8 +7,9 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 /** Represents an account creation operation. */
 public class CreateOp extends Operation {
   /** Creates a new account creation operation. */
-  public CreateOp(String userId, VectorClock prevTimeStamp, VectorClock timeStamp) {
-    super(userId, prevTimeStamp, timeStamp);
+  public CreateOp(
+      String userId, VectorClock prevTimeStamp, VectorClock replicaTimeStamp, int replicaId) {
+    super(userId, prevTimeStamp, replicaTimeStamp, replicaId);
 
     if (userId.equals("broker")) {
       throw new SystemAccountException(userId);
