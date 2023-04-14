@@ -10,8 +10,8 @@ public abstract class Operation {
   private final VectorClock prevTimeStamp;
   private final VectorClock replicaTimeStamp;
   private final int replicaId;
-  private AtomicBoolean stable = new AtomicBoolean(false);
-  private AtomicBoolean failed = new AtomicBoolean(false);
+  private final AtomicBoolean stable = new AtomicBoolean(false);
+  private final AtomicBoolean failed = new AtomicBoolean(false);
 
   protected Operation(
       String userId, VectorClock prevTimeStamp, VectorClock replicaTimeStamp, int replicaId) {
