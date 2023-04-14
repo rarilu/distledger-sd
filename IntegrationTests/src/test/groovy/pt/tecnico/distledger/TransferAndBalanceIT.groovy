@@ -56,7 +56,8 @@ class TransferAndBalanceIT extends BaseIT {
 
     def "transfer without enough balance"() {
         given: "an account with money"
-        runUser("createAccount A Alice\ntransferTo A broker Alice 1000")
+        runUser("createAccount A Alice")
+        runUser("transferTo A broker Alice 1000")
 
         when: "the user transfers more money than they have"
         def output = runUser("transferTo A Alice broker 1001")
