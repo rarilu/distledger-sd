@@ -29,8 +29,9 @@ public class ServiceEntry {
   public int registerServer(String qualifier, String target) {
     // Add the target to the set of registered targets, and throw an exception if it was already
     // present
-    if (!this.targets.add(target)) {
-      throw new DuplicateServerEntryException(this.name, target);
+    if (!this.targets.add(target) || this.servers.containsKey(qualifier)) {
+      this.targets.remove(target); // remove target if it was added
+      throw new DuplicateServerEntryException(this.name, qualifier, target);
     }
 
     int id = this.nextId.getAndIncrement();
@@ -58,8 +59,8 @@ public class ServiceEntry {
     // Safety: no need to synchronize while iterating the concurrent map; standard says it's safe
     for (List<ServerEntry> serverEntries : this.servers.values()) {
       if (serverEntries.removeIf(serverEntry -> target.equals(serverEntry.target()))) {
-        // Remove the target from the set of registered targets
-        this.targets.remove(target);
+        this.targets.remove(target); // remove the target from the set of registered targets
+        this.servers.values().removeIf(List::isEmpty);
         return;
       }
     }
