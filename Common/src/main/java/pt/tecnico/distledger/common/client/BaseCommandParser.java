@@ -1,9 +1,10 @@
 package pt.tecnico.distledger.common.client;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.function.Supplier;
+import pt.tecnico.distledger.common.Logger;
 
 /** Base code for parsing user input and executing corresponding commands. */
 public abstract class BaseCommandParser {
@@ -15,6 +16,22 @@ public abstract class BaseCommandParser {
 
   protected abstract void printUsage();
 
+  /** Reads a line from stdin because Scanner sucks. */
+  private Optional<String> readLine() throws IOException {
+    int c;
+    String line = "";
+
+    while ((c = System.in.read()) != -1 && (char) c != '\n') {
+      line += (char) c;
+    }
+
+    if (c == -1 && line.isEmpty()) {
+      return Optional.empty();
+    } else {
+      return Optional.of(line);
+    }
+  }
+
   /**
    * Parses the input from the user and executes the corresponding commands, in a loop until an
    * explicit exit instruction or the end of user input.
@@ -22,21 +39,22 @@ public abstract class BaseCommandParser {
   public void parseInput() {
     boolean exit = false;
 
-    try (final Scanner scanner = new Scanner(System.in)) {
-      while (!exit) {
-        try {
-          System.out.print("> ");
-          String line = scanner.nextLine().trim();
-          String cmd = line.split(SPACE)[0];
+    while (!exit) {
+      try {
+        System.out.print("> ");
+        String line = this.readLine().map(String::trim).orElseThrow(NoSuchElementException::new);
+        String cmd = line.split(SPACE)[0];
 
-          switch (cmd) {
-            case HELP -> this.printUsage();
-            case EXIT -> exit = true;
-            default -> this.dispatchCommand(cmd, line);
-          }
-        } catch (NoSuchElementException e) {
-          exit = true;
+        switch (cmd) {
+          case HELP -> this.printUsage();
+          case EXIT -> exit = true;
+          default -> this.dispatchCommand(cmd, line);
         }
+      } catch (NoSuchElementException e) {
+        exit = true; // End of user input
+      } catch (IOException e) {
+        Logger.error("Error reading from stdin: " + e.getMessage());
+        exit = true;
       }
     }
   }
