@@ -4,8 +4,6 @@ import pt.tecnico.distledger.common.Logger;
 import pt.tecnico.distledger.server.domain.Account;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.exceptions.AccountAlreadyExistsException;
-import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
-import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NotEnoughBalanceException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
@@ -39,16 +37,6 @@ public class OperationExecutor implements OperationVisitor {
 
   @Override
   public void visit(TransferOp op) {
-    // Check if the amount is positive
-    if (op.getAmount() <= 0) {
-      throw new NonPositiveTransferException();
-    }
-
-    final int order = op.getUserId().compareTo(op.getDestUserId());
-    if (order == 0) {
-      throw new NopTransferException();
-    }
-
     // Get the accounts, and do an initial check to see if they exist
     final Account fromAccount = this.state.getAccounts().get(op.getUserId());
     if (fromAccount == null) {
@@ -72,6 +60,7 @@ public class OperationExecutor implements OperationVisitor {
     // Liveness: accounts never transfer to themselves, which is checked before the sync block, so
     // no deadlock can occur by locking the same account twice (basically a special case of the
     // previous point)
+    final int order = op.getUserId().compareTo(op.getDestUserId());
     synchronized (order > 0 ? fromAccount : destAccount) {
       synchronized (order > 0 ? destAccount : fromAccount) {
         // Check if the account has enough balance
