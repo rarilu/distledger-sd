@@ -48,14 +48,14 @@ class NamingServiceImplTest extends Specification {
         1 * observer.onNext(RegisterResponse.newBuilder().setAssignedId(1).build())
     }
 
-    def "register an already registered server"() {
+    def "register an already registered server (same target)"() {
         given: "a server already registered"
         state.registerServer("DistLedger", "A", "localhost:2000")
 
         when: "the server is registered again"
         service.register(RegisterRequest.newBuilder()
                 .setService("DistLedger")
-                .setQualifier("A")
+                .setQualifier("B")
                 .setTarget("localhost:2000")
                 .build(),
                 observer)
@@ -65,7 +65,28 @@ class NamingServiceImplTest extends Specification {
             it instanceof StatusRuntimeException
                     && it.getMessage() ==
                     "ALREADY_EXISTS: " +
-                    "An entry for server with target localhost:2000 and service DistLedger already exists"
+                    "An entry in service DistLedger for target localhost:2000 or qualifier B already exists"
+        })
+    }
+
+    def "register an already registered server (same qualifier)"() {
+        given: "a server already registered"
+        state.registerServer("DistLedger", "A", "localhost:2000")
+
+        when: "the server is registered again"
+        service.register(RegisterRequest.newBuilder()
+                .setService("DistLedger")
+                .setQualifier("A")
+                .setTarget("localhost:2001")
+                .build(),
+                observer)
+
+        then: "an exception is thrown"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException
+                    && it.getMessage() ==
+                    "ALREADY_EXISTS: " +
+                    "An entry in service DistLedger for target localhost:2001 or qualifier A already exists"
         })
     }
 

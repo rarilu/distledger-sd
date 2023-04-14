@@ -87,20 +87,19 @@ class NamingServerStateTest extends Specification {
     }
 
     def "lookup multiple servers"() {
-        given: "multiple servers already registered on one qualifier"
+        given: "multiple servers already registered on one service"
         namingServerState.registerServer("DistLedger", "A", "localhost:8000")
-        namingServerState.registerServer("DistLedger", "A", "localhost:8001")
-        namingServerState.registerServer("DistLedger", "A", "localhost:8002")
-
-        and: "multiple servers already registered on another qualifier"
-        namingServerState.registerServer("DistLedger", "B", "localhost:8003")
-        namingServerState.registerServer("DistLedger", "B", "localhost:8004")
+        namingServerState.registerServer("DistLedger", "B", "localhost:8001")
+        namingServerState.registerServer("DistLedger", "C", "localhost:8002")
 
         and: "multiple servers already registered on another service"
         namingServerState.registerServer("Other", "A", "localhost:8005")
         namingServerState.registerServer("Other", "B", "localhost:8006")
 
-        when: "a lookup for DistLedger A is performed"
+        when: "a lookup for DistLedger is performed"
+        def distledger = namingServerState.lookup("DistLedger")
+
+        and: "a lookup for Distledger A is performed"
         def distledgerA = namingServerState.lookup("DistLedger", "A")
 
         and: "a lookup for Other is performed"
@@ -108,14 +107,16 @@ class NamingServerStateTest extends Specification {
 
         and: "two lookups which should return no servers are performed"
         def none = namingServerState.lookup("None")
-        def distledgerC = namingServerState.lookup("Distledger", "C")
+        def distledgerD = namingServerState.lookup("DistLedger", "D")
 
         then: "the lookup returns the correct servers"
-        distledgerA == [new ServerEntry("A", "localhost:8000", 0),
-                        new ServerEntry("A", "localhost:8001", 1),
-                        new ServerEntry("A", "localhost:8002", 2)]
-        other == [new ServerEntry("A", "localhost:8005", 0), new ServerEntry("B", "localhost:8006", 1)]
+        distledger == [new ServerEntry("A", "localhost:8000", 0),
+                       new ServerEntry("B", "localhost:8001", 1),
+                       new ServerEntry("C", "localhost:8002", 2)]
+        distledgerA == [new ServerEntry("A", "localhost:8000", 0)]
+        other == [new ServerEntry("A", "localhost:8005", 0),
+                  new ServerEntry("B", "localhost:8006", 1)]
         none.isEmpty()
-        distledgerC.isEmpty()
+        distledgerD.isEmpty()
     }
 }
