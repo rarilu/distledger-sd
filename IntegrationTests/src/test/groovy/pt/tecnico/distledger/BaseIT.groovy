@@ -189,7 +189,23 @@ abstract class BaseIT extends Specification {
     }
 
     def runUser(int i, String input) {
+        dispatchUser(i, input)
+        return waitUser(i)
+    }
+
+    def dispatchUser(String input) {
+        dispatchUser(0, input)
+    }
+
+    def dispatchUser(int i, String input) {
         writeUserStdins[i].write((input + '\n').getBytes())
+    }
+
+    def waitUser() {
+        return waitUser(0)
+    }
+
+    def waitUser(int i) {
         while (!userOutBufs[i].toString().endsWith("\n\n> ")) {}
         def str = userOutBufs[i].toString().replace("\n\n> ", "")
         userOutBufs[i].reset()
