@@ -1,21 +1,26 @@
 package pt.tecnico.distledger
 
 class TransferAndBalanceIT extends BaseIT {
+    def setup() {
+        prepareServers(['A'])
+        prepareUsers(1)
+    }
+
     def "transfer a non-positive amount"() {
         given: "an empty account"
-        prepareUser("createAccount A Alice")
+        runUser("createAccount A Alice")
 
         when: "the user transfers a non-positive amount"
-        runUser("transferTo A broker Alice " + amount)
+        def output = runUser("transferTo A broker Alice " + amount)
 
         then: "the output is correct"
-        extractOutput() == "> OK\n\n> "
+        output == "OK"
 
         when: "the user checks the balance of the account"
-        runUser("balance A Alice")
+        output = runUser("balance A Alice")
 
         then: "the balance is correct"
-        extractOutput() == "> OK\nvalue: 0\n\n> "
+        output == "OK\nvalue: 0"
 
         where:
         amount << [0, -1]
@@ -23,98 +28,98 @@ class TransferAndBalanceIT extends BaseIT {
 
     def "transfer from an unknown account"() {
         when: "the user transfers money from an unknown account"
-        runUser("transferTo A Alice broker 1000")
+        def output = runUser("transferTo A Alice broker 1000")
 
         then: "the output is correct"
-        extractOutput() == "> OK\n\n> "
+        output == "OK"
 
         when: "the user checks the balance of the broker account"
-        runUser("balance A broker")
+        output = runUser("balance A broker")
 
         then: "the balance is correct"
-        extractOutput() == "> OK\nvalue: 1000\n\n> "
+        output == "OK\nvalue: 1000"
     }
 
     def "transfer to an unknown account"() {
         when: "the user transfers money to an unknown account"
-        runUser("transferTo A broker Alice 1000")
+        def output = runUser("transferTo A broker Alice 1000")
 
         then: "the output is correct"
-        extractOutput() == "> OK\n\n> "
+        output == "OK"
 
         when: "the user checks the balance of the broker account"
-        runUser("balance A broker")
+        output = runUser("balance A broker")
 
         then: "the balance is correct"
-        extractOutput() == "> OK\nvalue: 1000\n\n> "
+        output == "OK\nvalue: 1000"
     }
 
     def "transfer without enough balance"() {
         given: "an account with money"
-        prepareUser("createAccount A Alice\ntransferTo A broker Alice 1000")
+        runUser("createAccount A Alice\ntransferTo A broker Alice 1000")
 
         when: "the user transfers more money than they have"
-        runUser("transferTo A Alice broker 1001")
+        def output = runUser("transferTo A Alice broker 1001")
 
         then: "the output is correct"
-        extractOutput() == "> OK\n\n> "
+        output == "OK"
 
         when: "the user checks the balance of the account"
-        runUser("balance A Alice")
+        output = runUser("balance A Alice")
 
         then: "the balance is correct"
-        extractOutput() == "> OK\nvalue: 1000\n\n> "
+        output == "OK\nvalue: 1000"
     }
 
     def "transfer to same account"() {
         when: "the user transfers money to the same account"
-        runUser("transferTo A broker broker 1000")
+        def output = runUser("transferTo A broker broker 1000")
 
         then: "the output is correct"
-        extractOutput() == "> OK\n\n> "
+        output == "OK"
 
         when: "the user checks the balance of the account"
-        runUser("balance A broker")
+        output = runUser("balance A broker")
 
         then: "the balance is correct"
-        extractOutput() == "> OK\nvalue: 1000\n\n> "
+        output == "OK\nvalue: 1000"
     }
 
     def "transfer with inactive server"() {
         when: "the server is deactivated"
-        prepareAdmin("deactivate A")
+        runAdmin("deactivate A")
 
         and: "the user transfers money"
-        runUser("transferTo A broker Alice 1000")
+        def output = runUser("transferTo A broker Alice 1000")
 
         then: "the output is correct"
-        extractOutput() == "> Error: Server is unavailable\n\n> "
+        output == "Error: Server is unavailable"
     }
 
     def "balance of an account"() {
         when: "the user checks the balance of an account"
-        runUser("balance A broker")
+        def output = runUser("balance A broker")
 
         then: "the output is correct"
-        extractOutput() == "> OK\nvalue: 1000\n\n> "
+        output == "OK\nvalue: 1000"
     }
 
     def "balance of a non-existing account"() {
         when: "the user checks the balance of a non-existing account"
-        runUser("balance A Alice")
+        def output = runUser("balance A Alice")
 
         then: "the output is correct"
-        extractOutput() == "> Error: NOT_FOUND: Account Alice does not exist\n\n> "
+        output == "Error: NOT_FOUND: Account Alice does not exist"
     }
 
     def "balance of an account with inactive server"() {
         when: "the server is deactivated"
-        prepareAdmin("deactivate A")
+        runAdmin("deactivate A")
         
         and: "the user checks the balance of an account"
-        runUser("balance A broker")
+        def output = runUser("balance A broker")
 
         then: "the output is correct"
-        extractOutput() == "> Error: Server is unavailable\n\n> "
+        output == "Error: Server is unavailable"
     }
 }

@@ -1,24 +1,36 @@
 package pt.tecnico.distledger
 
 class AdminIT extends BaseIT {
+    def setup() {
+        prepareServers(['A'])
+        prepareUsers(1)
+    }
+
     def "admin checks an empty ledger state"() {
         when: "the admin checks the ledger state"
-        runAdmin("getLedgerState A")
+        def output = runAdmin("getLedgerState A")
 
         then: "the output is correct"
-        extractOutput() == "> OK\nledgerState {\n}\n\n> "
+        output == "OK\nledgerState {\n}"
+
+        when: "the admin checks the ledger state again"
+        output = runAdmin("getLedgerState A")
+
+        then: "the output is correct"
+        output == "OK\nledgerState {\n}"
     }
 
     def "admin checks a non-empty ledger state"() {
         given: "an account with money"
-        prepareUser("createAccount A Alice\ntransferTo A broker Alice 1000")
-        prepareUser("transferTo A Alice broker 1000")
+        runUser("createAccount A Alice")
+        runUser("transferTo A broker Alice 1000")
+        runUser("transferTo A Alice broker 1000")
 
         when: "the admin checks the ledger state"
-        runAdmin("getLedgerState A")
+        def output = runAdmin("getLedgerState A")
 
         then: "the output is correct"
-        extractOutput() == "> OK\n" +
+        output == "OK\n" +
                 "ledgerState {\n" +
                 "  ledger {\n" +
                 "    type: OP_CREATE_ACCOUNT\n" +
@@ -55,6 +67,6 @@ class AdminIT extends BaseIT {
                 "    }\n" +
                 "    stable: true\n" +
                 "  }\n" +
-                "}\n\n> "
+                "}"
     }
 }
