@@ -41,21 +41,22 @@ public class DistLedgerCrossServerServiceImpl
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
-    Operation op = switch (operation.getType()) {
-      case OP_CREATE_ACCOUNT -> new CreateOp(
-          operation.getUserId(),
-          ProtoUtils.fromProto(operation.getPrevTS()),
-          ProtoUtils.fromProto(operation.getReplicaTS()),
-          operation.getReplicaId());
-      case OP_TRANSFER_TO -> new TransferOp(
-          operation.getUserId(),
-          operation.getDestUserId(),
-          operation.getAmount(),
-          ProtoUtils.fromProto(operation.getPrevTS()),
-          ProtoUtils.fromProto(operation.getReplicaTS()),
-          operation.getReplicaId());
-      default -> throw new IllegalArgumentException(PARSE_FAILED);
-    };
+    Operation op =
+        switch (operation.getType()) {
+          case OP_CREATE_ACCOUNT -> new CreateOp(
+              operation.getUserId(),
+              ProtoUtils.fromProto(operation.getPrevTS()),
+              ProtoUtils.fromProto(operation.getReplicaTS()),
+              operation.getReplicaId());
+          case OP_TRANSFER_TO -> new TransferOp(
+              operation.getUserId(),
+              operation.getDestUserId(),
+              operation.getAmount(),
+              ProtoUtils.fromProto(operation.getPrevTS()),
+              ProtoUtils.fromProto(operation.getReplicaTS()),
+              operation.getReplicaId());
+          default -> throw new IllegalArgumentException(PARSE_FAILED);
+        };
 
     // May have failed already on the other server
     if (operation.getFailed()) {
