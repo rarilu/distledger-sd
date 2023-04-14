@@ -19,9 +19,11 @@ message Operation {
   string destUserId = 3;  // only for transferTo operations
   int32 amount = 4;  // only for transferTo operations
   VectorClock prevTS = 5; // last TS seen by initiating client
-  VectorClock TS = 6; // unique identifier for this operation
+  reserved 6; // was TS
   bool stable = 7; // whether the operation has been stabilized
   bool failed = 8; // whether the operation failed executing - an operation may not fail immediately when stabilized
+  VectorClock replicaTS = 9; // replica timestamp after receiving this operation
+  int32 replicaId = 10; // id of the replica that received this operation
 }
 
 message LedgerState {
