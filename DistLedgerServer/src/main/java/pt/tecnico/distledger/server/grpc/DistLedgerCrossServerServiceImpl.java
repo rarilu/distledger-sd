@@ -77,7 +77,7 @@ public class DistLedgerCrossServerServiceImpl
       // Then we add the operations to the ledger.
       boolean anyStabilized = false;
       for (Operation op : operations) {
-        if (this.state.addToLedger(op, true)) {
+        if (this.state.addToLedger(op, false)) {
           anyStabilized = true;
         }
       }

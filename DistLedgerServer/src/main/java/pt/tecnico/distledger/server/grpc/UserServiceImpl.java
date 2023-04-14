@@ -58,7 +58,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       VectorClock prevTimeStamp = ProtoUtils.fromProto(request.getPrevTS());
       VectorClock timeStamp = this.state.generateTimeStamp(prevTimeStamp);
       if (this.state.addToLedger(
-          new CreateOp(request.getUserId(), prevTimeStamp, timeStamp), false)) {
+          new CreateOp(request.getUserId(), prevTimeStamp, timeStamp), true)) {
         this.state.stabilize();
       }
       responseObserver.onNext(
@@ -97,7 +97,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
               request.getAmount(),
               prevTimeStamp,
               timeStamp),
-          false)) {
+          true)) {
         this.state.stabilize();
       }
       responseObserver.onNext(
