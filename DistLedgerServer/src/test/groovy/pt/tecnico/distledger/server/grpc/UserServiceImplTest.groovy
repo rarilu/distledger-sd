@@ -141,16 +141,18 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "the correct response is received"
-        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
-            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        then: "an exception is thrown"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Transfers with non-positive amount are not allowed"
+        })
         
         and: "the transfer was not executed"
         state.getAccountBalance("broker", new VectorClock()).value() == 1000
         state.getAccountBalance("Alice", new VectorClock()).value() == 0
 
-        and: "the ledger is updated correctly"
-        state.ledger[0].isStable() && state.ledger[0].hasFailed()
+        and: "the transfer was not added to the ledger"
+        state.ledger.size() == 0
 
         where:
         amount << [0, -100]
@@ -165,15 +167,17 @@ class UserServiceImplTest extends Specification {
                 .build(),
                 observer)
 
-        then: "the correct response is received"
-        1 * observer.onNext(TransferToResponse.newBuilder().setValueTS(
-            DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build()).build())
+        then: "an exception is thrown"
+        1 * observer.onError({
+            it instanceof StatusRuntimeException
+                    && it.getMessage() == "INVALID_ARGUMENT: Transfers from an account to itself are not allowed"
+        })
         
         and: "the transfer was not executed"
         state.getAccountBalance("broker", new VectorClock()).value() == 1000
 
-        and: "the ledger is updated correctly"
-        state.ledger[0].isStable() && state.ledger[0].hasFailed()
+        and: "the transfer was not added to the ledger"
+        state.ledger.size() == 0
     }
 
     def "get balance for existing account"() {

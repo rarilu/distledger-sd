@@ -14,7 +14,7 @@ class TransferAndBalanceIT extends BaseIT {
         def output = runUser("transferTo A broker Alice " + amount)
 
         then: "the output is correct"
-        output == "OK"
+        output == "Error: INVALID_ARGUMENT: Transfers with non-positive amount are not allowed"
 
         when: "the user checks the balance of the account"
         output = runUser("balance A Alice")
@@ -77,7 +77,7 @@ class TransferAndBalanceIT extends BaseIT {
         def output = runUser("transferTo A broker broker 1000")
 
         then: "the output is correct"
-        output == "OK"
+        output == "Error: INVALID_ARGUMENT: Transfers from an account to itself are not allowed"
 
         when: "the user checks the balance of the account"
         output = runUser("balance A broker")
