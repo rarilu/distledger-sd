@@ -78,7 +78,7 @@ public class ServerState {
 
   /**
    * Register a given operation in the ledger. If the operation can be executed immediately, it will
-   * immediatelly be stabilized. Otherwise, it will be added to the ledger and stabilized later.
+   * immediately be stabilized. Otherwise, it will be added to the ledger and stabilized later.
    *
    * @return true if it was immediately stabilized, false otherwise.
    */
@@ -90,8 +90,8 @@ public class ServerState {
       this.execute(op);
 
       // Safety: the ledger must be locked to avoid concurrent modifications
-      // If the firstUnstable index were to be incremented outside of the synchronized block,
-      // it would be possible for another thread to add an operation to the ledger and it would
+      // If the firstUnstable index were to be incremented outside the synchronized block,
+      // it would be possible for another thread to add an operation to the ledger, and it would
       // be within the slice considered stable, which could cause some unexpected issues.
       synchronized (this.ledger) {
         // Add it to the ledger, before the first unstable operation
@@ -177,7 +177,7 @@ public class ServerState {
         boolean foundUnstable = false;
 
         for (int i = startAtIndex; i < this.ledger.size(); i++) {
-          // Safety: no need to lock the ledger, its a synchronized list
+          // Safety: no need to lock the ledger, it's a synchronized list
           Operation op = this.ledger.get(i);
 
           // If this operation is stable, mark it as the last stable operation
