@@ -41,17 +41,17 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
                         .setDestUserId("Alice")
                         .setAmount(100)
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(0).addValues(1).build())
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(0).addValues(1).build())
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Alice")
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
                         .build(),
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Bob")
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.getDefaultInstance())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(2).build())
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(2).build())
                         .build(),
                 // The operation below has a previous timestamp that is not in the ledger, will be pending
                 Operation.newBuilder().setType(OperationType.OP_TRANSFER_TO)
@@ -59,13 +59,13 @@ class DistLedgerCrossServerServiceImplTest extends Specification {
                         .setDestUserId("broker")
                         .setAmount(50)
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(10).build())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(4).build())
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(4).build())
                         .build(),
                 // The operation below will fail
                 Operation.newBuilder().setType(OperationType.OP_CREATE_ACCOUNT)
                         .setUserId("Alice")
                         .setPrevTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(1).build())
-                        .setTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(5).build())
+                        .setReplicaTS(DistLedgerCommonDefinitions.VectorClock.newBuilder().addValues(5).build())
                         .build()
         ]
         def prop = LedgerState.newBuilder().addAllLedger(operations).build()
