@@ -34,7 +34,7 @@ public class ServiceEntry {
 
     int id = this.nextId.getAndIncrement();
     if (this.servers.putIfAbsent(qualifier, new ServerEntry(qualifier, target, id)) != null) {
-      // an entry is already present, do not override it
+      // An entry is already present, do not override it
       throw new DuplicateServerEntryException(this.name, qualifier, target);
     }
 
@@ -44,7 +44,7 @@ public class ServiceEntry {
   /** Deletes a server from the service entry. */
   public void deleteServer(String target) {
     if (this.servers.values().removeIf(serverEntry -> target.equals(serverEntry.target()))) {
-      this.targets.remove(target); // remove the target from the set of registered targets
+      this.targets.remove(target); // Remove the target from the set of registered targets
       return;
     }
 

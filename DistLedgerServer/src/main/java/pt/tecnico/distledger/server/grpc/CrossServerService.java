@@ -91,7 +91,7 @@ public class CrossServerService
                     + entry.target()
                     + "): "
                     + e.getMessage());
-            // continue propagating to other servers; individual propagation failure is not critical
+            // Continue propagating to other servers; individual propagation failure is not critical
           }
         });
   }
