@@ -225,15 +225,15 @@ public class ServerState {
     // Execute the operation, possibly concurrently with other threads
     try {
       op.accept(this.executor);
-
-      // Merge the operation's timestamp with the current value timestamp
-      synchronized (this.valueTimeStamp) {
-        this.valueTimeStamp.merge(op.getTimeStamp());
-      }
     } catch (RuntimeException e) {
       // If the operation fails, mark it as failed and log the error
       op.setFailed();
       System.err.println("Operation failed: " + e.getMessage());
+    }
+
+    // Merge the operation's timestamp with the current value timestamp
+    synchronized (this.valueTimeStamp) {
+      this.valueTimeStamp.merge(op.getTimeStamp());
     }
   }
 

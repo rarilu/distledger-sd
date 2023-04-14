@@ -61,6 +61,7 @@ class AdminIT extends BaseIT {
                 "    destUserId: \"broker\"\n" +
                 "    amount: 1000\n" +
                 "    prevTS {\n" +
+                "      values: 2\n" +
                 "    }\n" +
                 "    TS {\n" +
                 "      values: 3\n" +
