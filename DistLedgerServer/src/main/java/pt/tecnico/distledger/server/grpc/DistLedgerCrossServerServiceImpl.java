@@ -24,16 +24,20 @@ public class DistLedgerCrossServerServiceImpl
 
   private final AtomicBoolean active;
   private final ServerState state;
+  private CrossServerService crossServerService;
 
   /**
    * Creates a new DistLedgerCrossServerServiceImpl.
    *
    * @param state The server state
    * @param active This server's active flag
+   * @param crossServerService The server's cross server service instance
    */
-  public DistLedgerCrossServerServiceImpl(ServerState state, AtomicBoolean active) {
+  public DistLedgerCrossServerServiceImpl(
+      ServerState state, AtomicBoolean active, CrossServerService crossServerService) {
     this.state = state;
     this.active = active;
+    this.crossServerService = crossServerService;
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
@@ -62,6 +66,8 @@ public class DistLedgerCrossServerServiceImpl
       if (!active.get()) {
         throw new ServerUnavailableException();
       }
+
+      this.crossServerService.noticeServer(request.getId());
 
       // First we parse the operations from the request, to ensure we don't modify the state if
       // the request is invalid.

@@ -8,6 +8,8 @@ import "DistLedgerCommonDefinitions.proto";
 message PropagateStateRequest {
   LedgerState state = 1;
   VectorClock replicaTS = 2;
+  int32 id = 3; // Unique ID (within the service) of the replica that sent the request
+  // ^ needed for startup beacon gossiping, as the state will be an empty ledger and replicaTS will be empty
 }
 
 message PropagateStateResponse {}
