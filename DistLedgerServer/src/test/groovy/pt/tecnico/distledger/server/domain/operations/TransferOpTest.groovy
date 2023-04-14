@@ -1,9 +1,7 @@
 package pt.tecnico.distledger.server.domain.operations
 
 import spock.lang.Specification
-import java.util.concurrent.ConcurrentMap
 import pt.tecnico.distledger.common.domain.VectorClock
-import pt.tecnico.distledger.server.domain.Account
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
