@@ -35,10 +35,8 @@ public class NamingServerState {
   }
 
   /** Looks up the server entries for the given service and qualifier. */
-  public List<ServerEntry> lookup(String service, String qualifier) {
-    return Optional.ofNullable(this.services.get(service))
-        .map(s -> s.lookup(qualifier))
-        .orElse(List.of());
+  public Optional<ServerEntry> lookup(String service, String qualifier) {
+    return Optional.ofNullable(this.services.get(service)).flatMap(s -> s.lookup(qualifier));
   }
 
   /** Looks up the server entries for the given service. */

@@ -79,7 +79,11 @@ public class NamingServiceImpl extends NamingServiceGrpc.NamingServiceImplBase {
       if (request.getQualifier().isEmpty()) {
         entries = this.state.lookup(request.getService());
       } else {
-        entries = this.state.lookup(request.getService(), request.getQualifier());
+        entries =
+            this.state
+                .lookup(request.getService(), request.getQualifier())
+                .map(List::of)
+                .orElse(List.of());
       }
 
       responseObserver.onNext(
