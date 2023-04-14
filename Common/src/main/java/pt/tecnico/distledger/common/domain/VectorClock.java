@@ -6,6 +6,14 @@ import java.util.stream.Collectors;
 
 /** Vector clock implementation class. */
 public final class VectorClock {
+  /** Represents the possible results of a comparison between two vector clocks. */
+  public enum Order {
+    BEFORE,
+    EQUAL,
+    AFTER,
+    CONCURRENT
+  }
+
   private final ArrayList<Integer> timeStamps = new ArrayList<>();
 
   /** Creates a new vector clock with all timestamps set to 0. */
@@ -31,14 +39,6 @@ public final class VectorClock {
    */
   public VectorClock(VectorClock other) {
     this.timeStamps.addAll(other.timeStamps);
-  }
-
-  /** Represents the possible results of a comparison between two vector clocks. */
-  public enum Order {
-    BEFORE,
-    EQUAL,
-    AFTER,
-    CONCURRENT
   }
 
   /**
