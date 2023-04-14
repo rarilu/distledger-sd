@@ -17,9 +17,9 @@ public class TransferOp extends Operation {
    * @param fromUserId the user id of the account to transfer from
    * @param destUserId the user id of the account to transfer to
    * @param amount the amount to transfer
-   * @param prevTimeStamp Client's timestamp when the operation was received
-   * @param replicaTimeStamp Timestamp of the replica when the operation was received
-   * @param replicaId Id of the replica that received the operation
+   * @param prevTimeStamp the client's timestamp when the operation was received
+   * @param replicaTimeStamp the replicaTS when the operation was received
+   * @param replicaId the ID of the replica that received the operation
    * @throws NonPositiveTransferException if the amount is not positive
    * @throws NopTransferException if the source and destination accounts are the same
    */

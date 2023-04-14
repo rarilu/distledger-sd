@@ -87,9 +87,9 @@ public class DistLedgerCrossServerServiceImpl
       List<Operation> operations =
           request.getState().getLedgerList().stream().map(this::parseOperation).toList();
 
-      // Then, we add the operations to the ledger.
+      // Then, we add the operations to the ledger
       if (this.state.addToLedger(operations, ProtoUtils.fromProto(request.getReplicaTS()))) {
-        // If any operation was stabilized, other operations may be able to be stabilized as well.
+        // If any operation was stabilized, other operations may be able to be stabilized as well
         this.state.stabilize();
       }
 
