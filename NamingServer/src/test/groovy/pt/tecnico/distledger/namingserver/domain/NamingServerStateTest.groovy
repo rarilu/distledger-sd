@@ -27,7 +27,8 @@ class NamingServerStateTest extends Specification {
         namingServerState.registerServer("DistLedger", "A", "localhost:8000")
 
         then: "the lookup returns the server"
-        namingServerState.lookup("DistLedger", "A") == [new ServerEntry("A", "localhost:8000", 0)]
+        namingServerState.lookup("DistLedger", "A") ==
+                Optional.of(new ServerEntry("A", "localhost:8000", 0))
 
         when: "the server is deleted"
         namingServerState.deleteServer("DistLedger", "localhost:8000")
@@ -39,7 +40,8 @@ class NamingServerStateTest extends Specification {
         namingServerState.registerServer("DistLedger", "A", "localhost:8000")
 
         then: "the lookup returns the server"
-        namingServerState.lookup("DistLedger", "A") == [new ServerEntry("A", "localhost:8000", 1)]
+        namingServerState.lookup("DistLedger", "A") ==
+                Optional.of(new ServerEntry("A", "localhost:8000", 1))
     }
 
     def "register a server with multiple qualifiers"() {
@@ -113,7 +115,7 @@ class NamingServerStateTest extends Specification {
         distledger == [new ServerEntry("A", "localhost:8000", 0),
                        new ServerEntry("B", "localhost:8001", 1),
                        new ServerEntry("C", "localhost:8002", 2)]
-        distledgerA == [new ServerEntry("A", "localhost:8000", 0)]
+        distledgerA == Optional.of(new ServerEntry("A", "localhost:8000", 0))
         other == [new ServerEntry("A", "localhost:8005", 0),
                   new ServerEntry("B", "localhost:8006", 1)]
         none.isEmpty()
