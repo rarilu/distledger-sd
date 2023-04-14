@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Vector clock implementation class. */
-public final class VectorClock implements Cloneable {
-  private final ArrayList<Integer> timeStamps = new ArrayList<Integer>();
+public final class VectorClock {
+  private final ArrayList<Integer> timeStamps = new ArrayList<>();
 
   /** Creates a new vector clock with all timestamps set to 0. */
   public VectorClock() {}
