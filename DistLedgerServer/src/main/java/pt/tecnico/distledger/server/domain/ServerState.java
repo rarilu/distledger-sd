@@ -38,12 +38,11 @@ public class ServerState {
    * @return the new timestamp.
    */
   public VectorClock generateTimeStamp(VectorClock prevTimeStamp) {
-    VectorClock timeStamp;
+    VectorClock timeStamp = new VectorClock(prevTimeStamp);
 
     // Safety: the timestamp is locked to avoid concurrent increments
     synchronized (this.replicaTimeStamp) {
       this.replicaTimeStamp.increment(this.id);
-      timeStamp = new VectorClock(this.replicaTimeStamp);
       timeStamp.mergeSingle(this.replicaTimeStamp, this.id);
     }
 
@@ -54,18 +53,20 @@ public class ServerState {
    * Register a given operation in the ledger. If the operation can be executed immediately, it will
    * immediatelly be stabilized. Otherwise, it will be added to the ledger and stabilized later.
    *
-   * @param rejectDuplicates if true, will reject if TS <= replicaTS
+   * @param fromClient whether request came from client
    * @return true if it was immediately stabilized, false otherwise.
    */
-  public boolean addToLedger(Operation op, boolean rejectDuplicates) {
-    // Check if the operation is a duplicate
-    if (rejectDuplicates && this.isDuplicate(op)) {
-      return false;
-    }
+  public boolean addToLedger(Operation op, boolean fromClient) {
+    if (!fromClient) {
+      // Check if the operation is a duplicate
+      if (this.isDuplicate(op)) {
+        return false;
+      }
 
-    // Merge the replica timestamp with the operation timestamp
-    synchronized (this.replicaTimeStamp) {
-      this.replicaTimeStamp.merge(op.getTimeStamp());
+      // Merge the replica timestamp with the operation timestamp
+      synchronized (this.replicaTimeStamp) {
+        this.replicaTimeStamp.merge(op.getTimeStamp());
+      }
     }
 
     // Check if the operation can be immediately executed
