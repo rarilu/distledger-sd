@@ -53,7 +53,7 @@ abstract class BaseIT extends Specification {
         mockStdout = new ThreadLocalOutputStream(new ThreadLocal<OutputStream>() {
             @Override
             protected OutputStream initialValue() {
-                return initialStdout;
+                return initialStdout
             }
         })
         System.setOut(new PrintStream(mockStdout))
