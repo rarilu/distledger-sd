@@ -1,7 +1,7 @@
 package pt.tecnico.distledger.common.grpc
 
 import pt.tecnico.distledger.common.domain.VectorClock
-import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions;
+import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 
 import spock.lang.Specification
 
