@@ -2,8 +2,6 @@ package pt.tecnico.distledger.common.domain
 
 import spock.lang.Specification
 
-import java.util.List
-
 class VectorClockTest extends Specification {
     def "increment is done correctly"() {
         given: "a vector clock"

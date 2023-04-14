@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
-import pt.tecnico.distledger.server.grpc.exceptions.FailedPropagationException
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
 import pt.tecnico.distledger.server.visitors.OperationExecutor
@@ -28,7 +27,6 @@ class UserServiceImplTest extends Specification {
     def service
     def observer
     def executor
-    def ts = new VectorClock()
 
     def setup() {
         state = new ServerState(0)

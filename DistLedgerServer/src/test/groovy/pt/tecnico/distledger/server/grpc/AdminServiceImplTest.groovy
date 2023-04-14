@@ -9,7 +9,6 @@ import pt.tecnico.distledger.common.domain.VectorClock
 import pt.tecnico.distledger.server.domain.ServerState
 import pt.tecnico.distledger.server.domain.operation.CreateOp
 import pt.tecnico.distledger.server.domain.operation.TransferOp
-import pt.tecnico.distledger.server.visitors.OperationExecutor
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.LedgerState
 import pt.tecnico.distledger.contract.DistLedgerCommonDefinitions.Operation
@@ -18,8 +17,6 @@ import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.ActivateResponse
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.GetLedgerStateResponse
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipRequest
-import pt.tecnico.distledger.contract.admin.AdminDistLedger.GossipResponse
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateRequest
 import pt.tecnico.distledger.contract.admin.AdminDistLedger.DeactivateResponse
 import pt.tecnico.distledger.common.grpc.NamingService
