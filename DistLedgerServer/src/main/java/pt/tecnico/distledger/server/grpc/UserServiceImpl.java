@@ -18,6 +18,7 @@ import pt.tecnico.distledger.server.domain.Stamped;
 import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
+import pt.tecnico.distledger.server.domain.exceptions.SystemAccountException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
@@ -67,6 +68,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
+    } catch (SystemAccountException e) {
+      Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
