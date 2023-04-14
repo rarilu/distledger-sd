@@ -16,11 +16,6 @@ class ThreadLocalOutputStream extends OutputStream {
   }
 
   @Override
-  public void write(byte[] b, int off, int len) throws IOException {
-    stream.get().write(b, off, len);
-  }
-
-  @Override
   public void write(int b) throws IOException {
     stream.get().write(b);
   }
