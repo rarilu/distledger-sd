@@ -5,37 +5,39 @@ import pt.tecnico.distledger.userclient.UserClientMain
 import pt.tecnico.distledger.adminclient.AdminClientMain
 import pt.tecnico.distledger.namingserver.NamingServer
 import pt.tecnico.distledger.testing.ThreadLocalInputStream
+import pt.tecnico.distledger.testing.ThreadLocalOutputStream
 
 import spock.lang.Specification
 import spock.lang.Timeout
 
 abstract class BaseIT extends Specification {
-    def aPort = 2001
-    def bPort = 2002
+    def baseServerPort = 2000
 
     def initialStdin
     def initialStdout
-    def outBuf
-
     def mockStdin
+    def mockStdout
+
     def writeNamingServerStdin
-    def writeAServerStdin
-    def writeBServerStdin
+    def writeServerStdins = []
+    def writeAdminStdin
+    def writeUserStdins = []
+
+    def namingServerOutBuf
+    def serverOutBufs = []
+    def adminOutBuf
+    def userOutBufs = []
 
     def namingServerThread
-    def aServerThread
-    def bServerThread
+    def serverThreads = []
+    def adminThread
+    def userThreads = []
 
     @Timeout(5)
     def setup() {
-        initialStdin = System.in
-        initialStdout = System.out
-
-        outBuf = new ByteArrayOutputStream()
-        System.setOut(new PrintStream(outBuf))
-
         // A thread local is used to guarantee that the input is provided only to the current
         // thread - otherwise, the servers would shutdown
+        initialStdin = System.in
         mockStdin = new ThreadLocalInputStream(new ThreadLocal<InputStream>() {
             @Override
             protected InputStream initialValue() {
@@ -44,92 +46,137 @@ abstract class BaseIT extends Specification {
         })
         System.setIn(mockStdin)
 
-        // Prepare the server input streams
+
+        // A thread local is used to guarantee that the output is provided only to the current
+        // thread
+        initialStdout = System.out
+        mockStdout = new ThreadLocalOutputStream(new ThreadLocal<OutputStream>() {
+            @Override
+            protected OutputStream initialValue() {
+                return initialStdout;
+            }
+        })
+        System.setOut(new PrintStream(mockStdout))
+
+        // Prepare the naming server input and output stream
         def readNamingServerStdin = new PipedInputStream()
         writeNamingServerStdin = new PipedOutputStream(readNamingServerStdin)
-        def readAServerStdin = new PipedInputStream()
-        writeAServerStdin = new PipedOutputStream(readAServerStdin)
-        def readBServerStdin = new PipedInputStream()
-        writeBServerStdin = new PipedOutputStream(readBServerStdin)
+        namingServerOutBuf = new ByteArrayOutputStream()
 
-        // Start the naming server and set the input stream
+        // Start the naming server and set the input and output stream
         namingServerThread = Thread.start {
+            mockStdout.setStream(namingServerOutBuf)
             mockStdin.setStream(readNamingServerStdin)
             NamingServer.main(new String[] {})
         }
 
-        // Hacky way to wait for the naming server to start
-        def namingServerStartupMsg = "Naming Server started, listening on 5001\nPress enter to shutdown\n"
-        while (outBuf.size() != namingServerStartupMsg.length()) {}
-        outBuf.reset()
+        // Wait for naming server to start
+        while (!namingServerOutBuf.toString().endsWith("Press enter to shutdown\n")) {}
+        namingServerOutBuf.reset()
 
-        // Start the A server and set the input stream
-        aServerThread = Thread.start {
-            mockStdin.setStream(readAServerStdin)
-            ServerMain.main(new String[] { aPort.toString(), "A" })
+        // Prepare the admin client input and output stream
+        def readAdminStdin = new PipedInputStream()
+        writeAdminStdin = new PipedOutputStream(readAdminStdin)
+        adminOutBuf = new ByteArrayOutputStream()
+
+        // Start the admin client and set the input and output stream
+        adminThread = Thread.start {
+            mockStdout.setStream(adminOutBuf)
+            mockStdin.setStream(readAdminStdin)
+            AdminClientMain.main(new String[]{})
         }
 
-        // Hacky way to wait for the A server to start
-        def aServerStartupMsg = "Server started, listening on " + aPort.toString() + "\nPress enter to shutdown\n"
-        while (outBuf.size() != aServerStartupMsg.length()) {}
-        outBuf.reset()
+        // Wait for the admin client to start
+        while (!adminOutBuf.toString().endsWith("> ")) {}
+        adminOutBuf.reset()
+    }
 
-        // Start the B server and set the input stream
-        bServerThread = Thread.start {
-            mockStdin.setStream(readBServerStdin)
-            ServerMain.main(new String[] { bPort.toString(), "B" })
+    def prepareServers(List<String> qualifiers) {
+        for (i in 0..<qualifiers.size()) {
+            // Prepare the server input and output stream
+            def readServerStdin = new PipedInputStream()
+            writeServerStdins << new PipedOutputStream(readServerStdin)
+            serverOutBufs << new ByteArrayOutputStream()
+
+            // Start the server and set the input and output stream
+            serverThreads << Thread.start {
+                mockStdout.setStream(serverOutBufs[i])
+                mockStdin.setStream(readServerStdin)
+                ServerMain.main(new String[] { (baseServerPort + i).toString(), qualifiers[i] })
+            }
+            
+            // Wait for the server to start
+            while (!serverOutBufs[i].toString().endsWith("Press enter to shutdown\n")) {}
+            serverOutBufs[i].reset()
         }
+    }
 
-        // Hacky way to wait for the B server to start
-        def bServerStartupMsg = "Server started, listening on " +
-                bPort.toString() +
-                "\nPress enter to shutdown\n"
-        while (outBuf.size() != bServerStartupMsg.length()) {}
-        outBuf.reset()
+    def prepareUsers(int n) {
+        for (i in 0..<n) {
+            // Prepare the user client input and output stream
+            def readUserStdin = new PipedInputStream()
+            writeUserStdins << new PipedOutputStream(readUserStdin)
+            userOutBufs << new ByteArrayOutputStream()
+
+            // Start the user client and set the input and output stream
+            userThreads << Thread.start {
+                mockStdout.setStream(userOutBufs[i])
+                mockStdin.setStream(readUserStdin)
+                UserClientMain.main(new String[]{})
+            }
+
+            // Wait for the user client to start
+            while (!userOutBufs[i].toString().endsWith("> ")) {}
+            userOutBufs[i].reset()
+        }
     }
 
     def cleanup() {
         // Send input to the servers to shutdown
-        writeAServerStdin.write("\n".getBytes())
-        writeBServerStdin.write("\n".getBytes())
-        aServerThread.join()
-        bServerThread.join()
+        for (writeServerStdin in writeServerStdins) {
+            writeServerStdin.write("\n".getBytes())
+        }
+        for (serverThread in serverThreads) {
+            serverThread.join()
+        }
 
         // Send input to the naming server to shutdown
         writeNamingServerStdin.write("\n".getBytes())
         namingServerThread.join()
 
+        // Shutdown admin client
+        writeAdminStdin.close()
+        adminThread.join()
+
+        // Shutdown user clients
+        for (writeUserStdin in writeUserStdins) {
+            writeUserStdin.close()
+        }
+        for (userThread in userThreads) {
+            userThread.join()
+        }
+
         System.setIn(initialStdin)
         System.setOut(initialStdout)
     }
 
-    def prepareUser(String input) {
-        runUser(input)
-        outBuf.reset()
-    }
-
-    def prepareAdmin(String input) {
-        runAdmin(input)
-        outBuf.reset()
+    def runAdmin(String input) {
+        writeAdminStdin.write((input + '\n').getBytes())
+        while (!adminOutBuf.toString().endsWith("\n\n> ")) {}
+        def str = adminOutBuf.toString().replace("\n\n> ", "")
+        adminOutBuf.reset()
+        return str
     }
 
     def runUser(String input) {
-        provideInput(input)
-        UserClientMain.main(new String[]{})
+        runUser(0, input)
     }
 
-    def runAdmin(String input) {
-        provideInput(input)
-        AdminClientMain.main(new String[]{})
-    }
-
-    def provideInput(String input) {
-        mockStdin.setStream(new ByteArrayInputStream(input.getBytes()))
-    }
-
-    def extractOutput() {
-        def str = outBuf.toString()
-        outBuf.reset()
+    def runUser(int i, String input) {
+        writeUserStdins[i].write((input + '\n').getBytes())
+        while (!userOutBufs[i].toString().endsWith("\n\n> ")) {}
+        def str = userOutBufs[i].toString().replace("\n\n> ", "")
+        userOutBufs[i].reset()
         return str
     }
 }
