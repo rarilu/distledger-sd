@@ -9,7 +9,7 @@ class ReplicationIT extends BaseIT {
     }
 
     def "outdated replica"() {
-        given: "an user creates an account on A"
+        given: "a user creates an account on replica A"
         runUser("createAccount A Alice")
 
         when: "we get the user's timestamp"
@@ -18,22 +18,16 @@ class ReplicationIT extends BaseIT {
         then: "the timestamp is (1)"
         output == "OK\ntimestamp: (1)"
 
-        when: "the user tries reading the account's balance on B"
-        output = runUser("balance B Alice")
+        when: "the user blocks on reading the account's balance on replica B"
+        dispatchUser("balance B Alice")
 
-        then: "the query fails because the replica is outdated"
-        output == "Error: UNKNOWN: Request has timestamp (1), but the state timestamp is still ()"
-
-        when: "A gossips"
+        and: "replica A gossips"
         runAdmin("gossip A")
 
-        and: "the user tries reading the account's balance on B again"
-        output = runUser("balance B Alice")
+        then: "the output is correct"
+        waitUser() == "OK\nvalue: 0"
 
-        then: "the query succeeds"
-        output == "OK\nvalue: 0"
-
-        when: "we check the ledger's state on B"
+        when: "we check the ledger's state on replica B"
         output = runAdmin("getLedgerState B")
 
         then: "the output is correct"
@@ -53,16 +47,16 @@ class ReplicationIT extends BaseIT {
     }
 
     def "operation is only executed when prevTS >= valueTS"() {
-        given: "an user creates an account on A"
+        given: "a user creates an account on replica A"
         runUser("createAccount A Alice")
 
-        when: "the user transfers money to that account on B"
+        when: "the user makes a transfer to that account on replica B"
         output = runUser("transferTo B broker Alice 100")
 
         then: "the output is correct"
         output == "OK"
 
-        when: "we check the ledger's state on B"
+        when: "we check the ledger's state on replica B"
         output = runAdmin("getLedgerState B")
 
         then: "the output is correct"
@@ -83,22 +77,16 @@ class ReplicationIT extends BaseIT {
                 "  }\n" +
                 "}"
 
-        when: "the user tries reading the account's balance on B"
-        output = runUser("balance B Alice")
+        when: "the user blocks on reading the account's balance on replica B"
+        dispatchUser("balance B Alice")
 
-        then: "the query fails because the replica is outdated"
-        output == "Error: UNKNOWN: Request has timestamp (1, 1), but the state timestamp is still ()"
-
-        when: "A gossips"
+        and: "replica A gossips"
         runAdmin("gossip A")
 
-        and: "the user tries reading the account's balance on B again"
-        output = runUser("balance B Alice")
+        then: "the output is correct"
+        waitUser() == "OK\nvalue: 100"
 
-        then: "the query succeeds"
-        output == "OK\nvalue: 100"
-
-        when: "we check the ledger's state on B"
+        when: "we check the ledger's state on replica B"
         output = runAdmin("getLedgerState B")
 
         then: "the output is correct"
@@ -107,7 +95,7 @@ class ReplicationIT extends BaseIT {
                 "  ledger {\n" +
                 "    type: OP_CREATE_ACCOUNT\n" +
                 "    userId: \"Alice\"\n" +
-                "    prevTS {\n" +
+                "    prevTS {\n" +  
                 "    }\n" +
                 "    TS {\n" +
                 "      values: 1\n" +
@@ -130,23 +118,17 @@ class ReplicationIT extends BaseIT {
                 "  }\n" +
                 "}"
 
-        when: "the user tries reading the account's balance on A"
-        output = runUser("balance A Alice")
+        when: "the user blocks on reading the account's balance on replica A"
+        dispatchUser("balance A Alice")
 
-        then: "the query fails because the replica is outdated"
-        output == "Error: UNKNOWN: Request has timestamp (1, 1), but the state timestamp is still (1)"
-
-        when: "B gossips"
+        and: "B gossips"
         runAdmin("gossip B")
 
-        and: "the user tries reading the account's balance on A again"
-        output = runUser("balance A Alice")
-
-        then: "the query succeeds"
-        output == "OK\nvalue: 100"
+        then: "the output is correct"
+        waitUser() == "OK\nvalue: 100"
     }
 
-    def "two users transfer money to each other"() {
+    def "two users make transfers to each other"() {
         given: "an initial state with two accounts"
         runUser(0, "createAccount A Alice")
         runUser(0, "transferTo A broker Alice 100")
@@ -154,10 +136,10 @@ class ReplicationIT extends BaseIT {
         runUser(0, "transferTo A broker Bob 100")
         runAdmin("gossip A")
 
-        when: "the first user transfers money to the second user in A"
+        when: "the first user makes a transfer to the second user in replica A"
         runUser(0, "transferTo A Alice Bob 50")
 
-        and: "the second user transfers money to the first user in B"
+        and: "the second user makes a transfer to the first user in replica B"
         runUser(1, "transferTo B Bob Alice 50")
 
         then: "the first user's balance is correct"
