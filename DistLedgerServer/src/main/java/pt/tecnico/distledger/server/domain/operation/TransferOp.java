@@ -1,6 +1,9 @@
 package pt.tecnico.distledger.server.domain.operation;
 
+import java.util.Objects;
 import pt.tecnico.distledger.common.domain.VectorClock;
+import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
+import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.visitors.OperationVisitor;
 
 /** Represents a transfer operation. */
@@ -16,6 +19,8 @@ public class TransferOp extends Operation {
    * @param amount the amount to transfer
    * @param prevTimeStamp Client's timestamp when the operation was executed
    * @param timeStamp Unique timestamp of the operation
+   * @throws NonPositiveTransferException if the amount is not positive
+   * @throws NopTransferException if the source and destination accounts are the same
    */
   public TransferOp(
       String fromUserId,
@@ -26,6 +31,14 @@ public class TransferOp extends Operation {
     super(fromUserId, prevTimeStamp, timeStamp);
     this.destUserId = destUserId;
     this.amount = amount;
+
+    if (amount <= 0) {
+      throw new NonPositiveTransferException();
+    }
+
+    if (Objects.equals(fromUserId, destUserId)) {
+      throw new NopTransferException();
+    }
   }
 
   public String getDestUserId() {

@@ -15,10 +15,13 @@ import pt.tecnico.distledger.contract.user.UserDistLedger.TransferToResponse;
 import pt.tecnico.distledger.contract.user.UserServiceGrpc;
 import pt.tecnico.distledger.server.domain.ServerState;
 import pt.tecnico.distledger.server.domain.Stamped;
+import pt.tecnico.distledger.server.domain.exceptions.NonPositiveTransferException;
+import pt.tecnico.distledger.server.domain.exceptions.NopTransferException;
 import pt.tecnico.distledger.server.domain.exceptions.ServerUnavailableException;
 import pt.tecnico.distledger.server.domain.exceptions.UnknownAccountException;
 import pt.tecnico.distledger.server.domain.operation.CreateOp;
 import pt.tecnico.distledger.server.domain.operation.TransferOp;
+import pt.tecnico.distledger.server.visitors.OperationExecutor;
 
 /** Implements the User service, handling gRPC requests. */
 public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
@@ -99,6 +102,10 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(
           Status.UNAVAILABLE.withDescription(e.getMessage()).asRuntimeException());
+    } catch (NonPositiveTransferException | NopTransferException e) {
+      Logger.debug(TRANSFER_FAILED + e.getMessage());
+      responseObserver.onError(
+          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(TRANSFER_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
