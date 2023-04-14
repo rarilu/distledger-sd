@@ -19,7 +19,7 @@ class CreateAccountIT extends BaseIT {
         def output = runUser("createAccount A broker")
 
         then: "the output is correct"
-        output == "Error: ALREADY_EXISTS: Account for user broker is a system account and cannot be created"
+        output == "Error: INVALID_ARGUMENT: Account for user broker is a system account and cannot be created"
     }
 
     def "create a duplicate account"() {
@@ -28,7 +28,7 @@ class CreateAccountIT extends BaseIT {
 
         then: "the output is correct"
         output == "OK"
-        
+
         when: "the user creates a duplicate account"
         output = runUser("createAccount A Alice")
 

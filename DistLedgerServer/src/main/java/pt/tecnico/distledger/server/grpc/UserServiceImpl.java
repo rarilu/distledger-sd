@@ -71,7 +71,7 @@ public class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
     } catch (SystemAccountException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(
-          Status.ALREADY_EXISTS.withDescription(e.getMessage()).asRuntimeException());
+          Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
     } catch (RuntimeException e) {
       Logger.debug(CREATE_ACCOUNT_FAILED + e.getMessage());
       responseObserver.onError(Status.UNKNOWN.withDescription(e.getMessage()).asRuntimeException());
