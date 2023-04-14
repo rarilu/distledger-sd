@@ -56,14 +56,14 @@ public class ServerState {
 
     synchronized (this.replicaTimeStamp) {
       for (Operation op : operations) {
-        // Check if the operation is a duplicate.
+        // Check if the operation is a duplicate
         VectorClock.Order order =
             VectorClock.compare(op.getReplicaTimeStamp(), this.replicaTimeStamp);
         if (order == Order.BEFORE || order == Order.EQUAL) {
           continue;
         }
 
-        // Not a duplicate, add it to the ledger.
+        // Not a duplicate, add it to the ledger
         if (this.addToLedger(op)) {
           anyStabilized = true;
         }
