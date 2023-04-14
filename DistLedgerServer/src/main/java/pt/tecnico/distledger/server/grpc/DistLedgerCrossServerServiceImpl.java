@@ -24,7 +24,7 @@ public class DistLedgerCrossServerServiceImpl
 
   private final AtomicBoolean active;
   private final ServerState state;
-  private CrossServerService crossServerService;
+  private final CrossServerService crossServerService;
 
   /**
    * Creates a new DistLedgerCrossServerServiceImpl.

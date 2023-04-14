@@ -22,8 +22,8 @@ public class ServerState {
   private final ConcurrentMap<String, Account> accounts = new ConcurrentHashMap<>();
   private final VectorClock valueTimeStamp = new VectorClock();
   private final VectorClock replicaTimeStamp = new VectorClock();
-  private AtomicInteger firstUnstable = new AtomicInteger(0);
-  private OperationExecutor executor = new OperationExecutor(this);
+  private final AtomicInteger firstUnstable = new AtomicInteger(0);
+  private final OperationExecutor executor = new OperationExecutor(this);
 
   public ServerState(int id) {
     this.id = id;
