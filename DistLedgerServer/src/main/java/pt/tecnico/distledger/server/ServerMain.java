@@ -87,7 +87,7 @@ public class ServerMain {
           final BindableService adminServiceImpl =
               new AdminServiceImpl(state, active, crossServerService);
           final BindableService crossServerServiceImpl =
-              new DistLedgerCrossServerServiceImpl(state, active);
+              new DistLedgerCrossServerServiceImpl(state, active, crossServerService);
 
           // Launch server
           final Server server =
@@ -98,6 +98,9 @@ public class ServerMain {
                   .build();
           server.start();
           System.out.println("Server started, listening on " + port);
+
+          // Alert other servers that this server now exists
+          crossServerService.sendStartupBeacon(assignedId);
 
           // Wait for user input to shut down server
           System.out.println("Press enter to shutdown");

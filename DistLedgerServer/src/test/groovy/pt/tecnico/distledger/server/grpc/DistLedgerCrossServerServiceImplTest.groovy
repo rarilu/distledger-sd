@@ -20,13 +20,15 @@ import spock.lang.Specification
 class DistLedgerCrossServerServiceImplTest extends Specification {
     def state
     def active
+    def crossServerService
     def service
     def observer
 
     def setup() {
         state = new ServerState(0)
         active = new AtomicBoolean(true)
-        service = new DistLedgerCrossServerServiceImpl(state, active)
+        crossServerService = Mock(CrossServerService)
+        service = new DistLedgerCrossServerServiceImpl(state, active, crossServerService)
         observer = Mock(StreamObserver)
     }
 
