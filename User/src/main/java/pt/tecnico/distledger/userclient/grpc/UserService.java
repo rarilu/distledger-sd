@@ -86,6 +86,6 @@ public class UserService extends BaseService<UserServiceGrpc.UserServiceBlocking
 
   /** Handle the Timestamp command. */
   public Optional<String> timestamp() {
-    return Optional.of("timestamp: " + this.prevTimeStamp.toString() + "\n");
+    return Optional.of("timestamp: " + this.prevTimeStamp + "\n");
   }
 }
