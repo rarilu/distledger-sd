@@ -26,9 +26,10 @@ public class LedgerStateGenerator implements OperationVisitor {
             .setType(OperationType.OP_CREATE_ACCOUNT)
             .setUserId(op.getUserId())
             .setPrevTS(ProtoUtils.toProto(op.getPrevTimeStamp()))
-            .setTS(ProtoUtils.toProto(op.getTimeStamp()))
             .setStable(op.isStable())
             .setFailed(op.hasFailed())
+            .setReplicaTS(ProtoUtils.toProto(op.getReplicaTimeStamp()))
+            .setReplicaId(op.getReplicaId())
             .build());
   }
 
@@ -41,9 +42,10 @@ public class LedgerStateGenerator implements OperationVisitor {
             .setDestUserId(op.getDestUserId())
             .setAmount(op.getAmount())
             .setPrevTS(ProtoUtils.toProto(op.getPrevTimeStamp()))
-            .setTS(ProtoUtils.toProto(op.getTimeStamp()))
             .setStable(op.isStable())
             .setFailed(op.hasFailed())
+            .setReplicaTS(ProtoUtils.toProto(op.getReplicaTimeStamp()))
+            .setReplicaId(op.getReplicaId())
             .build());
   }
 }

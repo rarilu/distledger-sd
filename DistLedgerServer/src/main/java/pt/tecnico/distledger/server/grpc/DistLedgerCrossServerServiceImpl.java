@@ -45,13 +45,15 @@ public class DistLedgerCrossServerServiceImpl
       case OP_CREATE_ACCOUNT -> new CreateOp(
           operation.getUserId(),
           ProtoUtils.fromProto(operation.getPrevTS()),
-          ProtoUtils.fromProto(operation.getTS()));
+          ProtoUtils.fromProto(operation.getReplicaTS()),
+          operation.getReplicaId());
       case OP_TRANSFER_TO -> new TransferOp(
           operation.getUserId(),
           operation.getDestUserId(),
           operation.getAmount(),
           ProtoUtils.fromProto(operation.getPrevTS()),
-          ProtoUtils.fromProto(operation.getTS()));
+          ProtoUtils.fromProto(operation.getReplicaTS()),
+          operation.getReplicaId());
       default -> throw new IllegalArgumentException(PARSE_FAILED);
     };
   }

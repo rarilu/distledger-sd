@@ -8,14 +8,17 @@ import pt.tecnico.distledger.server.visitors.OperationVisitor;
 public abstract class Operation {
   private final String userId;
   private final VectorClock prevTimeStamp;
-  private final VectorClock timeStamp;
+  private final VectorClock replicaTimeStamp;
+  private final int replicaId;
   private AtomicBoolean stable = new AtomicBoolean(false);
   private AtomicBoolean failed = new AtomicBoolean(false);
 
-  protected Operation(String userId, VectorClock prevTimeStamp, VectorClock timeStamp) {
+  protected Operation(
+      String userId, VectorClock prevTimeStamp, VectorClock replicaTimeStamp, int replicaId) {
     this.userId = userId;
     this.prevTimeStamp = prevTimeStamp;
-    this.timeStamp = timeStamp;
+    this.replicaTimeStamp = replicaTimeStamp;
+    this.replicaId = replicaId;
   }
 
   public void setStable() {
@@ -42,8 +45,23 @@ public abstract class Operation {
     return this.prevTimeStamp;
   }
 
+  public VectorClock getReplicaTimeStamp() {
+    return this.replicaTimeStamp;
+  }
+
+  /**
+   * Returns the timestamp of this operation, as described in the project statement.
+   *
+   * @return the timestamp of this operation.
+   */
   public VectorClock getTimeStamp() {
-    return this.timeStamp;
+    VectorClock timeStamp = new VectorClock(this.prevTimeStamp);
+    timeStamp.mergeSingle(this.replicaTimeStamp, this.replicaId);
+    return timeStamp;
+  }
+
+  public int getReplicaId() {
+    return this.replicaId;
   }
 
   public abstract void accept(OperationVisitor visitor);
