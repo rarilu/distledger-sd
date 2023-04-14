@@ -249,13 +249,18 @@ public class ServerState {
 
   /** Executes an operation. */
   private void execute(Operation op) {
-    // Execute the operation, possibly concurrently with other threads
-    try {
-      op.accept(this.executor);
-    } catch (RuntimeException e) {
-      // If the operation fails, mark it as failed and log the error
-      op.setFailed();
-      System.err.println("Operation failed: " + e.getMessage());
+    // If the operation has already failed on another server, we should not execute it anyway
+    // Although this is not a panacea, it prevents some common errors that would otherwise
+    // introduce inconsistencies.
+    if (!op.hasFailed()) {
+      // Execute the operation, possibly concurrently with other threads
+      try {
+        op.accept(this.executor);
+      } catch (RuntimeException e) {
+        // If the operation fails, mark it as failed and log the error
+        op.setFailed();
+        System.err.println("Operation failed: " + e.getMessage());
+      }
     }
 
     // Merge the operation's timestamp with the current value timestamp

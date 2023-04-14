@@ -41,7 +41,7 @@ public class DistLedgerCrossServerServiceImpl
   }
 
   private Operation parseOperation(DistLedgerCommonDefinitions.Operation operation) {
-    return switch (operation.getType()) {
+    Operation op = switch (operation.getType()) {
       case OP_CREATE_ACCOUNT -> new CreateOp(
           operation.getUserId(),
           ProtoUtils.fromProto(operation.getPrevTS()),
@@ -56,6 +56,13 @@ public class DistLedgerCrossServerServiceImpl
           operation.getReplicaId());
       default -> throw new IllegalArgumentException(PARSE_FAILED);
     };
+
+    // May have failed already on the other server
+    if (operation.getFailed()) {
+      op.setFailed();
+    }
+
+    return op;
   }
 
   @Override
