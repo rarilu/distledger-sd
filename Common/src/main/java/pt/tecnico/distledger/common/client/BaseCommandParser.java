@@ -16,7 +16,7 @@ public abstract class BaseCommandParser {
 
   protected abstract void printUsage();
 
-  /** Reads a line from stdin because Scanner sucks. */
+  /** Reads a line from stdin. */
   private Optional<String> readLine() throws IOException {
     int c;
     String line = "";
